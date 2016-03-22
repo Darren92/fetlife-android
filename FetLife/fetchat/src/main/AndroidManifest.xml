@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bitlove.fetlife">
+    package="com.bitlove.fetchat">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".FetLifeApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".view.LoginActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,10 +21,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WebLogonActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_web_logon"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:name=".view.ConversationsActivity"
+            android:label="@string/title_activity_conversations"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".model.service.FetLifeApiIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
