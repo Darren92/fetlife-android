@@ -194,7 +194,7 @@ public class LoginActivity extends BaseActivity {
                     Response<Me> getMeResponse = getMeCall.execute();
                     if (getMeResponse.isSuccess()) {
                         getFetLifeApplication().setMe(getMeResponse.body());
-                        startActivity(ConversationsActivity.createIntent(LoginActivity.this));
+                        ConversationsActivity.startActivity(LoginActivity.this);
                         finish();
                         return true;
                     } else {

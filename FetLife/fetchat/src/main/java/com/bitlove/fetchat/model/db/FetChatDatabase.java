@@ -23,5 +23,5 @@ import com.raizlabs.android.dbflow.annotation.Database;
 public class FetChatDatabase {
 
     public static final String NAME = "fetchat";
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 }

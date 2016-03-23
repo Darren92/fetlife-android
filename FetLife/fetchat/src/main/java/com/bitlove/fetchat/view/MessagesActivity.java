@@ -4,9 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,24 +13,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.model.pojos.Conversation;
+import com.bitlove.fetchat.model.pojos.Message;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
-public class ConversationsActivity extends AppCompatActivity
+import java.util.UUID;
+
+public class MessagesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private FlowContentObserver conversationsModelObserver;
-    private ConversationsAdapter conversationsAdapter;
+    private static final String EXTRA_CONVERSATION_ID = "com.bitlove.fetchat.extra.conversation_id";
 
-    public static void startActivity(Context context) {
-        context.startActivity(new Intent(context, ConversationsActivity.class));
+    private FlowContentObserver messagesModelObserver;
+    private MessagesAdapter messagesAdapter;
+
+    private String conversationId;
+
+    public static void startActivity(Context context, String conversationId) {
+        Intent intent = new Intent(context, MessagesActivity.class);
+        intent.putExtra(EXTRA_CONVERSATION_ID, conversationId);
+        context.startActivity(intent);
     }
 
     @Override
@@ -45,7 +55,20 @@ public class ConversationsActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Here you will be able to start new conversation", Snackbar.LENGTH_LONG)
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Message message = new Message();
+                        message.setPending(true);
+                        message.setId(UUID.randomUUID().toString());
+                        message.setConversationId(conversationId);
+                        EditText messageText = (EditText) findViewById(R.id.new_message);
+                        message.setBody(messageText.getText().toString());
+                        message.save();
+                        FetLifeApiIntentService.startApiCall(MessagesActivity.this,FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
+                    }
+                }).start();
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -59,37 +82,35 @@ public class ConversationsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final ListView conversationList = (ListView) findViewById(R.id.list_view);
-        conversationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Conversation conversation = conversationsAdapter.getItem(position);
-                MessagesActivity.startActivity(ConversationsActivity.this, conversation.getId());
-            }
-        });
+        conversationId = getIntent().getStringExtra(EXTRA_CONVERSATION_ID);
 
-        conversationsAdapter = new ConversationsAdapter();
-        conversationList.setAdapter(conversationsAdapter);
+        final ListView messageList = (ListView) findViewById(R.id.list_view);
+        messageList.setDividerHeight(0);
+
+        findViewById(R.id.new_message_layout).setVisibility(View.VISIBLE);
+
+        messagesAdapter = new MessagesAdapter(conversationId);
+        messageList.setAdapter(messagesAdapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        conversationsModelObserver = new FlowContentObserver();
-        conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
+        messagesModelObserver = new FlowContentObserver();
+        messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                conversationsAdapter.refresh();
+                messagesAdapter.refresh();
             }
         });
-        conversationsModelObserver.registerForContentChanges(this, Conversation.class);
-        conversationsAdapter.refresh();
-        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+        messagesModelObserver.registerForContentChanges(this, Message.class);
+        messagesAdapter.refresh();
+        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
     }
 
     @Override
     protected void onStop() {
-        conversationsModelObserver.unregisterForContentChanges(this);
+        messagesModelObserver.unregisterForContentChanges(this);
         super.onStop();
     }
 

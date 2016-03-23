@@ -12,4 +12,27 @@
     tools:context=".view.ConversationsActivity"
     tools:showIn="@layout/app_bar_conversations">
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/new_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/new_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/prompt_new_message"
+            android:inputType="textMultiLine"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/new_message_layout">
+    </ListView>
+
 </RelativeLayout>

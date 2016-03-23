@@ -24,6 +24,10 @@
             android:name=".view.ConversationsActivity"
             android:label="@string/title_activity_conversations"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.MessagesActivity"
+            android:label="@string/title_activity_messages"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".model.service.FetLifeApiIntentService"
