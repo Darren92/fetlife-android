@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.model.pojos.Conversation;
@@ -24,7 +25,7 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
-public class ConversationsActivity extends AppCompatActivity
+public class ConversationsActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FlowContentObserver conversationsModelObserver;
@@ -70,6 +71,13 @@ public class ConversationsActivity extends AppCompatActivity
 
         conversationsAdapter = new ConversationsAdapter();
         conversationList.setAdapter(conversationsAdapter);
+
+        View navHeaderView = navigationView.getHeaderView(0);
+
+        TextView headerText = (TextView) navHeaderView.findViewById(R.id.nav_header_text);
+        headerText.setText(getFetLifeApplication().getMe().getNickname());
+        headerText = (TextView) navHeaderView.findViewById(R.id.nav_header_subtext);
+        headerText.setText(getFetLifeApplication().getMe().getId());
     }
 
     @Override
@@ -131,17 +139,9 @@ public class ConversationsActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_logout) {
+            LoginActivity.startLogout(this);
+        } else if (id == R.id.nav_feedback) {
 
         }
 

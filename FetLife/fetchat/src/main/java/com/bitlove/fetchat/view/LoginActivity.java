@@ -4,6 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import android.os.Build;
@@ -20,7 +23,7 @@ import android.widget.Toast;
 
 import com.bitlove.fetchat.BuildConfig;
 import com.bitlove.fetchat.R;
-import com.bitlove.fetchat.model.pojos.Me;
+import com.bitlove.fetchat.model.pojos.Member;
 import com.bitlove.fetchat.model.pojos.Token;
 import com.bitlove.fetchat.model.api.FetLifeService;
 
@@ -159,6 +162,12 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    public static void startLogout(Context context) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -187,11 +196,10 @@ public class LoginActivity extends BaseActivity {
                 Response<Token> tokenResponse = tokenCall.execute();
                 if (tokenResponse.isSuccess()) {
                     String accessToken = tokenResponse.body().getAccessToken();
-                    showToast(accessToken);
                     getFetLifeApplication().setAccessToken(accessToken);
 
-                    Call<Me> getMeCall = getFetLifeApplication().getFetLifeService().getFetLifeApi().getMe(FetLifeService.AUTH_HEADER_PREFIX + accessToken);
-                    Response<Me> getMeResponse = getMeCall.execute();
+                    Call<Member> getMeCall = getFetLifeApplication().getFetLifeService().getFetLifeApi().getMe(FetLifeService.AUTH_HEADER_PREFIX + accessToken);
+                    Response<Member> getMeResponse = getMeCall.execute();
                     if (getMeResponse.isSuccess()) {
                         getFetLifeApplication().setMe(getMeResponse.body());
                         ConversationsActivity.startActivity(LoginActivity.this);

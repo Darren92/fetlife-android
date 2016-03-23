@@ -3,6 +3,7 @@ package com.bitlove.fetchat.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -17,18 +18,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.model.pojos.Conversation;
 import com.bitlove.fetchat.model.pojos.Message;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
+import com.raizlabs.android.dbflow.StringUtils;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import java.util.UUID;
 
-public class MessagesActivity extends AppCompatActivity
+public class MessagesActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String EXTRA_CONVERSATION_ID = "com.bitlove.fetchat.extra.conversation_id";
@@ -37,6 +40,9 @@ public class MessagesActivity extends AppCompatActivity
     private MessagesAdapter messagesAdapter;
 
     private String conversationId;
+    private Handler handler;
+    private boolean isVisible;
+    private volatile boolean refreshRuns;
 
     public static void startActivity(Context context, String conversationId) {
         Intent intent = new Intent(context, MessagesActivity.class);
@@ -58,18 +64,27 @@ public class MessagesActivity extends AppCompatActivity
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        final EditText messageText = (EditText) findViewById(R.id.new_message);
+                        String text = messageText.getText().toString();
+                        if (text == null || text.trim().length() == 0) {
+                            return;
+                        }
                         Message message = new Message();
                         message.setPending(true);
-                        message.setId(UUID.randomUUID().toString());
+                        message.setDate(System.currentTimeMillis());
+                        message.setClientId(UUID.randomUUID().toString());
                         message.setConversationId(conversationId);
-                        EditText messageText = (EditText) findViewById(R.id.new_message);
-                        message.setBody(messageText.getText().toString());
+                        message.setBody(text);
                         message.save();
-                        FetLifeApiIntentService.startApiCall(MessagesActivity.this,FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                messageText.setText("");
+                            }
+                        });
+                        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
                     }
                 }).start();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -86,31 +101,75 @@ public class MessagesActivity extends AppCompatActivity
 
         final ListView messageList = (ListView) findViewById(R.id.list_view);
         messageList.setDividerHeight(0);
+        messageList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        messageList.setStackFromBottom(true);
 
         findViewById(R.id.new_message_layout).setVisibility(View.VISIBLE);
 
         messagesAdapter = new MessagesAdapter(conversationId);
         messageList.setAdapter(messagesAdapter);
+
+        handler = new Handler();
+
+        View navHeaderView = navigationView.getHeaderView(0);
+
+        TextView headerText = (TextView) navHeaderView.findViewById(R.id.nav_header_text);
+        headerText.setText(getFetLifeApplication().getMe().getNickname());
+        headerText = (TextView) navHeaderView.findViewById(R.id.nav_header_subtext);
+        headerText.setText(getFetLifeApplication().getMe().getId());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        isVisible = true;
         messagesModelObserver = new FlowContentObserver();
         messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
                 messagesAdapter.refresh();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ListView messagesList = (ListView) findViewById(R.id.list_view);
+                        messagesList.setSelection(messagesList.getCount() - 1);
+                    }
+                });
+
             }
         });
         messagesModelObserver.registerForContentChanges(this, Message.class);
         messagesAdapter.refresh();
+
+        ListView messagesList = (ListView) findViewById(R.id.list_view);
+        messagesList.setSelection(messagesList.getCount() - 1);
+
         FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
+
+        if (!refreshRuns) {
+            setUpNextCall();
+        }
+    }
+
+    private void setUpNextCall() {
+        if (!isVisible) {
+            refreshRuns = false;
+            return;
+        }
+        refreshRuns = true;
+        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setUpNextCall();
+            }
+        }, 3000);
     }
 
     @Override
     protected void onStop() {
         messagesModelObserver.unregisterForContentChanges(this);
+        isVisible = false;
         super.onStop();
     }
 
@@ -152,17 +211,9 @@ public class MessagesActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_logout) {
+            LoginActivity.startLogout(this);
+        } else if (id == R.id.nav_feedback) {
 
         }
 

@@ -1,7 +1,7 @@
 package com.bitlove.fetchat.model.api;
 
 import com.bitlove.fetchat.model.pojos.Conversation;
-import com.bitlove.fetchat.model.pojos.Me;
+import com.bitlove.fetchat.model.pojos.Member;
 import com.bitlove.fetchat.model.pojos.Message;
 import com.bitlove.fetchat.model.pojos.Token;
 
@@ -21,7 +21,7 @@ public interface FetLifeApi {
     Call<Token> login(@Query("client_id") String clientId, @Query("client_secret") String clientSecret, @Query("redirect_uri") String redirectUrl, @Query("grant_type") String grantType, @Query("username") String username, @Query("password") String password);
 
     @GET("/api/v2/me")
-    Call<Me> getMe(@Header("Authorization") String authHeader);
+    Call<Member> getMe(@Header("Authorization") String authHeader);
 
     @GET("/api/v2/me/conversations")
     Call<List<Conversation>> getConversations(@Header("Authorization") String authHeader);

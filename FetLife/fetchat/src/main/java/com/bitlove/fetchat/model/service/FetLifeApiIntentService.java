@@ -22,6 +22,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit.Call;
 import retrofit.Response;
@@ -76,8 +77,10 @@ public class FetLifeApiIntentService extends IntentService {
             Response<Message> postMessageResponse = postMessagesCall.execute();
             if (postMessageResponse.isSuccess()) {
                 final Message message = postMessageResponse.body();
-                pendingMessage.delete();
-                message.save();
+                message.setClientId(pendingMessage.getClientId());
+                message.setPending(false);
+                message.setConversationId(pendingMessage.getConversationId());
+                message.update();
             } else {
                 //TODO: error handling
             }
@@ -96,8 +99,13 @@ public class FetLifeApiIntentService extends IntentService {
                 TransactionManager.transact(FlowManager.getDatabase(FetChatDatabase.NAME).getWritableDatabase(), new Runnable() {
                     @Override
                     public void run() {
-                        new Delete().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId), Condition.column(Message$Table.PENDING).eq(false)).queryClose();
                         for (Message message : messages) {
+                            Message storedMessage = new Select().from(Message.class).where(Condition.column(Message$Table.ID).eq(message.getId())).querySingle();
+                            if (storedMessage != null) {
+                                message.setClientId(storedMessage.getClientId());
+                            } else {
+                                message.setClientId(UUID.randomUUID().toString());
+                            }
                             message.setConversationId(conversationId);
                             message.setPending(false);
                             message.save();
