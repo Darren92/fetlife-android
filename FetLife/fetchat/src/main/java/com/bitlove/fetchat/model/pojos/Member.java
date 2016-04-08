@@ -10,6 +10,9 @@ public class Member {
     @JsonProperty("nickname")
     private String nickname;
 
+    @JsonProperty("notification_token")
+    private String notificationToken;
+
     public String getNickname() {
         return nickname;
     }
@@ -24,5 +27,13 @@ public class Member {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getNotificationToken() {
+        return notificationToken;
+    }
+
+    public void setNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
     }
 }

@@ -11,6 +11,9 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
+                                onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
+                                onesignal_google_project_number: "875783571094"]
     }
     buildTypes {
         debug {
@@ -42,6 +45,10 @@ dependencies {
     compile "com.raizlabs.android:DBFlow-Core:2.2.1"
     compile "com.raizlabs.android:DBFlow:2.2.1"
     compile 'joda-time:joda-time:2.9.1'
+    compile 'com.onesignal:OneSignal:2.+@aar'
+    compile 'com.google.android.gms:play-services-gcm:+'
+    compile 'com.google.android.gms:play-services-analytics:+'
+    compile "com.google.android.gms:play-services-location:+"
 
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
 

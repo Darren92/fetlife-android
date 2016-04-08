@@ -1,7 +1,5 @@
 package com.bitlove.fetchat.model.api;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Interceptor;
@@ -22,17 +20,17 @@ public class FetLifeService {
 
     private final FetLifeApi fetLifeApi;
 
+    private int lastResponseCode = -1;
+
     public FetLifeService() {
 
         OkHttpClient client = new OkHttpClient();
-
         client.interceptors().add(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-
                 Request request = chain.request();
                 Response response = chain.proceed(request);
-                Log.d("FETCHAT", "" + response.code());
+                lastResponseCode = response.code();
                 return response;
             }
         });
@@ -49,5 +47,9 @@ public class FetLifeService {
 
     public FetLifeApi getFetLifeApi() {
         return fetLifeApi;
+    }
+
+    public int getLastResponseCode() {
+        return lastResponseCode;
     }
 }
