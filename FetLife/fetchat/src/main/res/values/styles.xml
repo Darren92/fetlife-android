@@ -22,7 +22,7 @@
         <item name="android:textColorHint">@color/textColorSecondaryDark</item>
     </style>
 
-    <style name="LogonButton">
+    <style name="LogonButton" parent="Base.Widget.AppCompat.Button">
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:background">@drawable/button_background_gradient</item>
         <item name="android:minHeight">@dimen/button_minheight</item>
