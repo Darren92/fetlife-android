@@ -170,7 +170,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void openLink(String link) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("link"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         startActivity(browserIntent);
     }
 
