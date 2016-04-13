@@ -17,14 +17,18 @@ import retrofit.http.Query;
 public interface FetLifeApi {
 
     @POST("/api/oauth/token")
-    //@QueryParam(name="constantVariable", value="constantValue")
+        //@QueryParam(name="constantVariable", value="constantValue")
     Call<Token> login(@Query("client_id") String clientId, @Query("client_secret") String clientSecret, @Query("redirect_uri") String redirectUrl, @Query("grant_type") String grantType, @Query("username") String username, @Query("password") String password);
+
+    @POST("/api/oauth/token")
+        //@QueryParam(name="constantVariable", value="constantValue")
+    Call<Token> refreshToken(@Query("client_id") String clientId, @Query("client_secret") String clientSecret, @Query("redirect_uri") String redirectUrl, @Query("grant_type") String grantType, @Query("refresh_token") String refreshToken);
 
     @GET("/api/v2/me")
     Call<Member> getMe(@Header("Authorization") String authHeader);
 
     @GET("/api/v2/me/conversations")
-    Call<List<Conversation>> getConversations(@Header("Authorization") String authHeader);
+    Call<List<Conversation>> getConversations(@Header("Authorization") String authHeader, @Query("order_by") String orderBy);
 
     @GET("/api/v2/me/conversations/{conversationId}/messages")
     Call<List<Message>> getMessages(@Header("Authorization") String authHeader, @Path("conversationId") String conversationId);

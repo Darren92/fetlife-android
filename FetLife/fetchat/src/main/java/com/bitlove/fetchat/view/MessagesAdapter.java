@@ -1,9 +1,11 @@
 package com.bitlove.fetchat.view;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,14 +57,44 @@ public class MessagesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem_message, parent, false);
+        //TODO: OPTIMIZE
+
+        Context context = parent.getContext();
+
+        View view = LayoutInflater.from(context).inflate(R.layout.listitem_message, parent, false);
 
         Message message = itemList.get(position);
+        Message previousMessage = position != 0 ? itemList.get(position-1) : null;
+        Message nextMessage = position != itemList.size()-1 ? itemList.get(position+1) : null;
 
-        TextView headerText = (TextView) view.findViewById(R.id.list_item_header);
-        headerText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
-        TextView messageText = (TextView) view.findViewById(R.id.list_item_text);
-        messageText.setText(Html.fromHtml(message.getBody()));
+        boolean myMessage = message.getSenderId().equals(getFetLifeApplication(context).getMe().getId());
+
+        if (previousMessage == null || !message.getSenderId().equals(previousMessage.getSenderId())) {
+            TextView senderText = (TextView) view.findViewById(R.id.message_sender);
+            senderText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
+            senderText.setText(message.getSenderNickname());
+            senderText.setVisibility(View.VISIBLE);
+        }
+
+        if (nextMessage == null || !message.getSenderId().equals(nextMessage.getSenderId())) {
+            TextView dateText = (TextView) view.findViewById(R.id.message_date);
+            dateText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
+            dateText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
+            dateText.setVisibility(View.VISIBLE);
+        }
+
+        TextView messageText = (TextView) view.findViewById(R.id.message_text);
+        messageText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
+
+        float padding = context.getResources().getDimension(R.dimen.listitem_horizontal_margin);
+
+        if (myMessage) {
+            messageText.setPadding((int) padding, 0, 0, 0);
+        } else {
+            messageText.setPadding(0,0, (int) padding,0);
+        }
+
+        messageText.setText(Html.fromHtml(message.getBody().trim()));
         if (message.getPending()) {
             messageText.setAlpha(0.5f);
         }
@@ -83,5 +115,10 @@ public class MessagesAdapter extends BaseAdapter {
     private void loadItems() {
         itemList = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).orderBy(true,Message$Table.DATE).queryList();
     }
+
+    protected FetLifeApplication getFetLifeApplication(Context context) {
+        return (FetLifeApplication) context.getApplicationContext();
+    }
+
 
 }

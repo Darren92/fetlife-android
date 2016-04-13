@@ -1,23 +1,16 @@
 package com.bitlove.fetchat.view;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.view.Window;
 
 import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.R;
-import com.bitlove.fetchat.model.api.FetLifeApi;
-import com.bitlove.fetchat.model.pojos.Member;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -33,30 +26,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return (FetLifeApplication) getApplication();
     }
 
-    protected void verifyUser() {
-
-        if (getFetLifeApplication().getAccessToken() != null) {
-            return;
-        }
-
-        AccountManager accountManager = AccountManager.get(getFetLifeApplication());
-
-        Account[] accounts = accountManager.getAccounts();
-        if (accounts.length == 0) {
-            LoginActivity.startLogout(this);
-            return;
-        }
-
-        Account account = accounts[0];
-
-        try {
-            String meAsJson = accountManager.getUserData(account, FetLifeApplication.CONSTANT_BUNDLE_JSON);
-            Member me = new ObjectMapper().readValue(meAsJson, Member.class);
-            getFetLifeApplication().setMe(me);
-        } catch (IOException e) {
-            LoginActivity.startLogout(this);
-            return;
-        }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -87,12 +59,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void showProgress(boolean blocking) {
-        if (blocking) {
-            showDialogProgress();
-        } else {
-            showSnackbarProgress();
-        }
+    protected void showProgress(final boolean blocking) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (blocking) {
+                    showDialogProgress();
+                } else {
+                    showToolbarProgress();
+                }
+            }
+        });
+
     }
 
     private void showSnackbarProgress() {
@@ -103,6 +81,23 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    private void dismissSnackbarProgress() {
+        if (progressSnackbar != null) {
+            progressSnackbar.dismiss();
+            progressSnackbar = null;
+        }
+    }
+
+    private void showToolbarProgress() {
+        View progressView = findViewById(R.id.toolbar_progress_bar);
+        progressView.setVisibility(View.VISIBLE);
+    }
+
+    private void dismissToolbarProgress() {
+        View progressView = findViewById(R.id.toolbar_progress_bar);
+        progressView.setVisibility(View.INVISIBLE);
+    }
+
     private void showDialogProgress() {
         if (progressDialog == null || !progressDialog.isShowing()) {
             progressDialog =  new ProgressDialog(this);
@@ -111,15 +106,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void dismissProgress() {
-        if (progressSnackbar != null) {
-            progressSnackbar.dismiss();
-            progressSnackbar = null;
-        }
+    private void dismissDialogProgress() {
         if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
         }
+    }
+
+    protected void dismissProgress() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dismissDialogProgress();
+                dismissSnackbarProgress();
+                dismissToolbarProgress();
+            }
+        });
     }
 
     protected abstract View getRootView();

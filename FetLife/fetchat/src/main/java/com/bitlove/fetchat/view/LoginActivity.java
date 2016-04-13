@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
@@ -23,10 +24,15 @@ import android.widget.Toast;
 
 import com.bitlove.fetchat.BuildConfig;
 import com.bitlove.fetchat.R;
+import com.bitlove.fetchat.event.LoginFailedEvent;
+import com.bitlove.fetchat.event.LoginFinishedEvent;
 import com.bitlove.fetchat.model.pojos.Member;
 import com.bitlove.fetchat.model.pojos.Token;
 import com.bitlove.fetchat.model.api.FetLifeService;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 
@@ -67,6 +73,18 @@ public class LoginActivity extends BaseActivity {
                 attemptLogin();
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getFetLifeApplication().getEventBus().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getFetLifeApplication().getEventBus().unregister(this);
     }
 
     /**
@@ -116,21 +134,23 @@ public class LoginActivity extends BaseActivity {
     public static void startLogout(Context context) {
         //TODO: add toast
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
     }
 
-    private void onLogonFinished() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginFinished(LoginFinishedEvent loginFinishedEvent) {
+        dismissProgress();
         ConversationsActivity.startActivity(this);
     }
 
-    private void onLogonFailed() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLogonFailed(LoginFailedEvent loginFailedEvent) {
         //TODO: handle different errors
+        dismissProgress();
         mPasswordView.setError(getString(R.string.error_incorrect_password));
         mPasswordView.requestFocus();
-        dismissProgress();
     }
-
 
     private void showToast(final String text) {
         runOnUiThread(new Runnable() {
@@ -139,6 +159,19 @@ public class LoginActivity extends BaseActivity {
                 Toast.makeText(LoginActivity.this, text, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void onSignUp(View v) {
+        openLink("https://fetlife.com/signup");
+    }
+
+    public void onForgotLogin(View v) {
+        openLink("https://fetlife.com/retrieve_login_information");
+    }
+
+    private void openLink(String link) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("link"));
+        startActivity(browserIntent);
     }
 
     @Override

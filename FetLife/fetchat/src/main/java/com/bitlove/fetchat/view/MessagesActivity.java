@@ -8,15 +8,21 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.bitlove.fetchat.R;
+import com.bitlove.fetchat.event.NewMessageEvent;
+import com.bitlove.fetchat.event.ServiceCallFailedEvent;
+import com.bitlove.fetchat.event.ServiceCallFinishedEvent;
+import com.bitlove.fetchat.model.pojos.Member;
 import com.bitlove.fetchat.model.pojos.Message;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.UUID;
 
-public class MessagesActivity extends RecyclerActivity
+public class MessagesActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String EXTRA_CONVERSATION_ID = "com.bitlove.fetchat.extra.conversation_id";
@@ -43,8 +49,6 @@ public class MessagesActivity extends RecyclerActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        verifyUser();
-
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +64,10 @@ public class MessagesActivity extends RecyclerActivity
                         message.setDate(System.currentTimeMillis());
                         message.setClientId(UUID.randomUUID().toString());
                         message.setConversationId(conversationId);
-                        message.setBody(text);
+                        message.setBody(text.trim());
+                        Member me = getFetLifeApplication().getMe();
+                        message.setSenderId(me.getId());
+                        message.setSenderNickname(me.getNickname());
                         message.save();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -74,24 +81,34 @@ public class MessagesActivity extends RecyclerActivity
             }
         });
 
-        conversationId = getIntent().getStringExtra(EXTRA_CONVERSATION_ID);
-
         recyclerList.setDividerHeight(0);
         recyclerList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         recyclerList.setStackFromBottom(true);
 
         textInputLayout.setVisibility(View.VISIBLE);
 
+        setConversation(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        setConversation(intent);
+    }
+
+    private void setConversation(Intent intent) {
+        conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
         messagesAdapter = new MessagesAdapter(conversationId);
         recyclerList.setAdapter(messagesAdapter);
-
-        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        getFetLifeApplication().getEventBus().register(this);
+
         messagesModelObserver = new FlowContentObserver();
         messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
@@ -110,6 +127,9 @@ public class MessagesActivity extends RecyclerActivity
         messagesModelObserver.registerForContentChanges(this, Message.class);
         messagesAdapter.refresh();
 
+        showProgress(false);
+        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
+
         ListView messagesList = (ListView) findViewById(R.id.list_view);
         messagesList.setSelection(messagesList.getCount() - 1);
 
@@ -122,8 +142,12 @@ public class MessagesActivity extends RecyclerActivity
 
     @Override
     protected void onStop() {
-        messagesModelObserver.unregisterForContentChanges(this);
         super.onStop();
+
+        messagesModelObserver.unregisterForContentChanges(this);
+
+        getFetLifeApplication().getEventBus().unregister(this);
+
 //Polling
 //        isVisible = false;
     }
@@ -143,5 +167,29 @@ public class MessagesActivity extends RecyclerActivity
 //            }
 //        }, 3000);
 //    }
+
+    @Subscribe
+    public void onMessagesCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
+        if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
+            dismissProgress();
+        }
+    }
+
+    @Subscribe
+    public void onMessagesCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
+        if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
+            //TODO: display toast error message
+            dismissProgress();
+        }
+    }
+
+    @Subscribe
+    public void onNewMessageArrived(NewMessageEvent newMessageEvent) {
+        if (!conversationId.equals(newMessageEvent.getConversationId())) {
+            //TODO: display (snackbar?) notification
+        } else {
+            //wait for the already started refresh
+        }
+    }
 
 }

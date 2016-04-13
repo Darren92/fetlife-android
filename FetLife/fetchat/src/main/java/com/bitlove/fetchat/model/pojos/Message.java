@@ -33,6 +33,9 @@ public class Message extends BaseModel {
     @JsonProperty("created_at")
     private String createdAt;
 
+    @JsonProperty("member")
+    private Member sender;
+
     @Column
     @JsonIgnore
     private long date;
@@ -40,6 +43,14 @@ public class Message extends BaseModel {
     @Column
     @JsonIgnore
     private String conversationId;
+
+    @Column
+    @JsonIgnore
+    private String senderId;
+
+    @Column
+    @JsonIgnore
+    private String senderNickname;
 
     @Column
     @JsonIgnore
@@ -67,6 +78,38 @@ public class Message extends BaseModel {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @JsonIgnore
+    public String getSenderId() {
+        return senderId;
+    }
+
+    @JsonIgnore
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    @JsonIgnore
+    public String getSenderNickname() {
+        return senderNickname;
+    }
+
+    @JsonIgnore
+    public void setSenderNickname(String senderNickname) {
+        this.senderNickname = senderNickname;
+    }
+
+    public Member getSender() {
+        return sender;
+    }
+
+    public void setSender(Member sender) {
+        this.sender = sender;
+        if (sender != null) {
+            setSenderId(sender.getId());
+            setSenderNickname(sender.getNickname());
+        }
     }
 
     @JsonIgnore

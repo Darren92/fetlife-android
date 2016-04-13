@@ -2,6 +2,7 @@ package com.bitlove.fetchat.model.pojos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+//TODO: handle token type
 public class Token {
 
     @JsonProperty("access_token")

@@ -16,6 +16,7 @@ public class FetLifeService {
 
     private static final String LOGON_BASE_URL = "https://fetlife.com";
     public static final String GRANT_TYPE_PASSWORD = "password";
+    public static final String GRANT_TYPE_TOKEN_REFRESH = "refresh_token";
     public static final String AUTH_HEADER_PREFIX = "Bearer ";
 
     private final FetLifeApi fetLifeApi;

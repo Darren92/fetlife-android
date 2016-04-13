@@ -49,6 +49,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:+'
     compile 'com.google.android.gms:play-services-analytics:+'
     compile "com.google.android.gms:play-services-location:+"
+    compile 'org.greenrobot:eventbus:3.0.0'
 
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
 

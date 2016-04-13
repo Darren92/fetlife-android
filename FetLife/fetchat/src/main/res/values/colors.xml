@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1c1c1c</color>
-    <color name="colorPrimaryDark">#0c0c0c</color>
-    <color name="colorAccent">#0c0c0c</color>
+    <color name="windowBackground">#ff1a1a1a</color>
+
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#ff1a1a1a</color>
+    <color name="colorSecondary">#ffffff</color>
+    <color name="colorSecondaryDark">#000000</color>
+
+    <color name="colorAccent">#ff880000</color>
+    <color name="colorAccentEnd">#ff700000</color>
+    <color name="colorAccentStart">#ffa00000</color>
+
+    <color name="textColorPrimary">#ffffff</color>
+    <color name="textColorPrimaryDark">#000000</color>
+    <color name="textColorSecondary">#ff777777</color>
+    <color name="textColorSecondaryDark">#ff4a4a4a</color>
+
+    <color name="editBackground">#fffaffbd</color>
+    <color name="editBackgroundDark">#fffaffbd</color>
+
+    <color name="areaBackground">#ffffff</color>
+    <color name="areaBackgroundDark">#ff111111</color>
+
 </resources>
