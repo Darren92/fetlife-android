@@ -60,17 +60,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void showProgress(final boolean blocking) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (blocking) {
-                    showDialogProgress();
-                } else {
-                    showToolbarProgress();
-                }
-            }
-        });
-
+        if (blocking) {
+            showDialogProgress();
+        } else {
+            showToolbarProgress();
+        }
     }
 
     private void showSnackbarProgress() {
@@ -90,12 +84,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void showToolbarProgress() {
         View progressView = findViewById(R.id.toolbar_progress_bar);
-        progressView.setVisibility(View.VISIBLE);
+        if (progressView != null) {
+            progressView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void dismissToolbarProgress() {
         View progressView = findViewById(R.id.toolbar_progress_bar);
-        progressView.setVisibility(View.INVISIBLE);
+        if (progressView != null) {
+            progressView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void showDialogProgress() {
@@ -114,14 +112,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void dismissProgress() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dismissDialogProgress();
-                dismissSnackbarProgress();
-                dismissToolbarProgress();
-            }
-        });
+            dismissDialogProgress();
+            dismissSnackbarProgress();
+            dismissToolbarProgress();
     }
 
     protected abstract View getRootView();

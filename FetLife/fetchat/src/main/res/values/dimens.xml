@@ -8,17 +8,19 @@
 
 	<dimen name="fab_margin">16dp</dimen>
 
-	<dimen name="listitem_horizontal_margin">16dp</dimen>
-	<dimen name="listitem_vertical_margin">8dp</dimen>
-
-	<dimen name="abi_margin">8dp</dimen>
-
 	<dimen name="edittext_padding">8dp</dimen>
+	<dimen name="text_padding">8dp</dimen>
 	<dimen name="area_padding">12dp</dimen>
+	<dimen name="listitem_padding">6dp</dimen>
 
 	<dimen name="edittext_minheight">32dp</dimen>
 	<dimen name="button_minheight">30dp</dimen>
 
 	<dimen name="logon_header_margin">32dp</dimen>
 	<dimen name="area_margin">32dp</dimen>
+	<dimen name="listitem_horizontal_margin">8dp</dimen>
+	<dimen name="listitem_vertical_margin">4dp</dimen>
+
+	<dimen name="abi_margin">8dp</dimen>
+
 </resources>

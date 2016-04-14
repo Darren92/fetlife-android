@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="windowBackground">#ff1a1a1a</color>
+    <color name="window_background">#ff1a1a1a</color>
 
-    <color name="colorPrimary">#ffffff</color>
-    <color name="colorPrimaryDark">#ff1a1a1a</color>
-    <color name="colorSecondary">#ffffff</color>
-    <color name="colorSecondaryDark">#000000</color>
+    <color name="color_primary">#ff1a1a1a</color>
+    <color name="color_primary_dark">#ff111111</color>
+    <color name="color_secondary">#ffffff</color>
+    <color name="color_secondary_dark">#000000</color>
 
-    <color name="colorAccent">#ff880000</color>
-    <color name="colorAccentEnd">#ff700000</color>
-    <color name="colorAccentStart">#ffa00000</color>
+    <color name="color_accent">#ff880000</color>
+    <color name="color_accent_dark">#ff700000</color>
+    <color name="color_accent_light">#ffa00000</color>
 
-    <color name="textColorPrimary">#ffffff</color>
-    <color name="textColorPrimaryDark">#000000</color>
-    <color name="textColorSecondary">#ff777777</color>
-    <color name="textColorSecondaryDark">#ff4a4a4a</color>
+    <color name="text_color_primary">#ffffff</color>
+    <color name="text_color_primary_dark">#000000</color>
+    <color name="text_color_secondary">#ff777777</color>
+    <color name="text_color_secondary_dark">#ff4a4a4a</color>
 
-    <color name="editBackground">#fffaffbd</color>
-    <color name="editBackgroundDark">#fffaffbd</color>
+    <color name="edit_background">#fffaffbd</color>
+    <color name="edit_background_dark">#fffaffbd</color>
 
-    <color name="areaBackground">#ffffff</color>
-    <color name="areaBackgroundDark">#ff111111</color>
+    <color name="area_background">#ffffff</color>
+    <color name="area_background_dark">#ff111111</color>
 
 </resources>

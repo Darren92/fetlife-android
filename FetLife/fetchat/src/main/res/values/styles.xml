@@ -1,9 +1,12 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="colorPrimary">@color/color_primary_dark</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary</item>
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -14,35 +17,5 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="LogonEditText" parent="Widget.AppCompat.EditText">
-        <item name="android:background">@drawable/edittext_background_rounded</item>
-        <item name="android:padding">@dimen/edittext_padding</item>
-        <item name="android:minHeight">@dimen/edittext_minheight</item>
-        <item name="android:textColorHint">@color/textColorSecondaryDark</item>
-    </style>
-
-    <style name="LogonButton" parent="Base.Widget.AppCompat.Button">
-        <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:background">@drawable/button_background_gradient</item>
-        <item name="android:minHeight">@dimen/button_minheight</item>
-        <item name="android:textColorHint">@color/textColorPrimary</item>
-    </style>
-
-    <style name="LogonArea">
-        <item name="android:background">@drawable/area_dark_background_rounded</item>
-        <item name="android:padding">@dimen/area_padding</item>
-        <item name="android:layout_marginBottom">@dimen/area_margin</item>
-    </style>
-
-    <style name="LogonHeader" parent="TextAppearance.AppCompat.Large">
-        <item name="android:textColor">@color/textColorSecondaryDark</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_margin">@dimen/logon_header_margin</item>
-    </style>
-
-    <style name="LogonText" parent="TextAppearance.AppCompat.Small">
-        <item name="android:textColor">@color/textColorSecondary</item>
-    </style>
 
 </resources>

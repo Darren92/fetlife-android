@@ -44,10 +44,14 @@ public class ConversationsAdapter extends BaseAdapter {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem_conversation, parent, false);
         Conversation conversation = itemList.get(position);
         TextView headerText = (TextView) view.findViewById(R.id.conversation_header);
-        headerText.setText(conversation.getNickname());
-        TextView messageText = (TextView) view.findViewById(R.id.conversation_text);
-//        messageText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(conversation.getDate())));
-        messageText.setText(conversation.getSubject());
+        headerText.setText(conversation.getSubject());
+        TextView messageText = (TextView) view.findViewById(R.id.conversation_message_text);
+        messageText.setText("" + conversation.getHasNewMessage());
+        TextView senderText = (TextView) view.findViewById(R.id.conversation_sender);
+        senderText.setText(conversation.getNickname());
+        TextView dateText = (TextView) view.findViewById(R.id.conversation_date);
+        dateText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(conversation.getDate())));
+        headerText.setText(conversation.getSubject());
         return view;
     }
 

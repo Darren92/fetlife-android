@@ -4,10 +4,7 @@
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/listitem_vertical_margin"
-    android:paddingLeft="@dimen/listitem_horizontal_margin"
-    android:paddingRight="@dimen/listitem_horizontal_margin"
-    android:paddingTop="@dimen/listitem_vertical_margin">
+    style="@style/MessageItem">
 
     <TextView
         android:id="@+id/message_sender"
