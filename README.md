@@ -14,3 +14,8 @@
 ### Getting files on your Android device
 
 - Mac: https://www.android.com/filetransfer/
+
+
+### License
+
+FetLife's iOS app is released under the [MIT License](http://www.opensource.org/licenses/MIT).
