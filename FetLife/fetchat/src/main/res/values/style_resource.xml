@@ -1,0 +1,11 @@
+<resources>
+
+    <style name="ResourceEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edit_background_rounded</item>
+        <item name="android:padding">@dimen/edittext_padding</item>
+        <item name="android:minHeight">@dimen/edittext_minheight</item>
+        <item name="android:textColor">@color/text_color_primary_dark</item>
+        <item name="android:textColorHint">@color/text_color_secondary</item>
+    </style>
+
+</resources>

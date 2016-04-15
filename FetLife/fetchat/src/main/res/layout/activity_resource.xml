@@ -9,7 +9,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_recycler"
+        layout="@layout/app_bar_resource"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_recycler"
+        app:headerLayout="@layout/nav_header_resource"
         app:menu="@menu/activity_conversations_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

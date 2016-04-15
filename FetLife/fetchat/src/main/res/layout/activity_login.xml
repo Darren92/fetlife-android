@@ -25,23 +25,23 @@
                 style="@style/LogonHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:text="@string/app_name" />
 
             <LinearLayout
                 android:id="@+id/username_login_form"
+                style="@style/LogonArea"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/LogonArea"
                 android:orientation="vertical">
 
                 <TextView
                     style="@style/LogonText"
-                    android:gravity="left"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/logon_title"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="left"
+                    android:text="@string/logon_title" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -50,9 +50,9 @@
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/username"
+                        style="@style/LogonEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/LogonEditText"
                         android:hint="@string/prompt_username"
                         android:inputType="text|textPersonName"
                         android:maxLines="1"
@@ -67,9 +67,9 @@
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/password"
+                        style="@style/LogonEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/LogonEditText"
                         android:hint="@string/prompt_password"
                         android:imeActionId="@+id/login"
                         android:imeActionLabel="@string/action_sign_in_short"
@@ -93,25 +93,25 @@
 
             <TextView
                 style="@style/LogonText"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="onForgotLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/forgot_login"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="onForgotLogin"
+                android:text="@string/forgot_login" />
 
             <TextView
                 style="@style/LogonText"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="onSignUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sign_up"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="onSignUp"
+                android:text="@string/sign_up" />
 
         </LinearLayout>
     </ScrollView>

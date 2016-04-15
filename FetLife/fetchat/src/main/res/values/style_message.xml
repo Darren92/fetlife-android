@@ -2,4 +2,9 @@
     <style name="MessageItem">
         <item name="android:background">@drawable/text_background_rounded</item>
     </style>
+
+    <style name="MessageSubText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:gravity">bottom</item>
+    </style>
+
 </resources>

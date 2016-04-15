@@ -24,4 +24,7 @@
     <string name="logon_title">Log in to FetChat</string>
     <string name="sign_up">Sign up Now!</string>
     <string name="forgot_login">Forgot your login info?</string>
+
+    <string name="menu_converations">Conversations</string>
+    <string name="message_sub_separator">\ \@\ </string>
 </resources>

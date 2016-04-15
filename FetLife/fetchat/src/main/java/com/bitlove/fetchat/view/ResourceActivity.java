@@ -1,6 +1,5 @@
 package com.bitlove.fetchat.view;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -8,42 +7,44 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.model.pojos.Member;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Arrays;
 
-public class ResourceActivity extends BaseActivity
+public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected FloatingActionButton floatingActionButton;
     protected NavigationView navigationView;
     protected View navigationHeaderView;
     protected ListView recyclerList;
-    protected View textInputLayout;
+    protected View inputLayout;
+    protected View inputIcon;
     protected EditText textInput;
+    protected ProgressBar progressIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //TODO: think of moving content stuff out of this class/method
-        setContentView(R.layout.activity_recycler);
+        setContentView(R.layout.activity_resource);
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -56,10 +57,13 @@ public class ResourceActivity extends BaseActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        textInputLayout = findViewById(R.id.text_input_layout);
+        inputLayout = findViewById(R.id.text_input_layout);
+        inputIcon = findViewById(R.id.text_send_icon);
         textInput = (EditText) findViewById(R.id.text_input);
 
         recyclerList = (ListView) findViewById(R.id.list_view);
+
+        progressIndicator = (ProgressBar) findViewById(R.id.toolbar_progress_indicator);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -78,7 +82,6 @@ public class ResourceActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
-
         verifyUser();
     }
 
@@ -95,7 +98,7 @@ public class ResourceActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.conversations, menu);
+        getMenuInflater().inflate(R.menu.activity_resource, menu);
         return true;
     }
 
@@ -107,9 +110,6 @@ public class ResourceActivity extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -148,13 +148,21 @@ public class ResourceActivity extends BaseActivity
 
             getFetLifeApplication().removeMe();
             LoginActivity.startLogout(this);
-        } else if (id == R.id.nav_feedback) {
-
+        } else if (id == R.id.nav_conversations) {
+            ConversationsActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    protected void showProgress() {
+        progressIndicator.setVisibility(View.VISIBLE);
+    }
+
+    protected void dismissProgress() {
+        progressIndicator.setVisibility(View.INVISIBLE);
     }
 
     protected void verifyUser() {
@@ -167,8 +175,8 @@ public class ResourceActivity extends BaseActivity
         }
     }
 
-    @Override
-    protected View getRootView() {
-        return findViewById(R.id.content_layout);
+    protected FetLifeApplication getFetLifeApplication() {
+        return (FetLifeApplication) getApplication();
     }
+
 }

@@ -11,8 +11,10 @@ import com.bitlove.fetchat.BuildConfig;
 import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.event.LoginFailedEvent;
 import com.bitlove.fetchat.event.LoginFinishedEvent;
+import com.bitlove.fetchat.event.LoginStartedEvent;
 import com.bitlove.fetchat.event.ServiceCallFailedEvent;
 import com.bitlove.fetchat.event.ServiceCallFinishedEvent;
+import com.bitlove.fetchat.event.ServiceCallStartedEvent;
 import com.bitlove.fetchat.model.api.FetLifeApi;
 import com.bitlove.fetchat.model.api.FetLifeService;
 import com.bitlove.fetchat.model.db.FetChatDatabase;
@@ -53,15 +55,33 @@ public class FetLifeApiIntentService extends IntentService {
 
     private static final String PARAM_SORT_ORDER_UPDATED_DESC = "-updated_at";
 
+    private static String actionInProgress = null;
+
     public FetLifeApiIntentService() {
         super("FetLifeApiIntentService");
     }
 
-    public static void startApiCall(Context context, String action, String... params) {
+    public static synchronized void startApiCall(Context context, String action, String... params) {
         Intent intent = new Intent(context, FetLifeApiIntentService.class);
         intent.setAction(action);
         intent.putExtra(EXTRA_PARAMS, params);
         context.startService(intent);
+    }
+
+    //TODO: think about being more specific and store also parameters for exact identification
+    private static synchronized void setActionInProgress(String action) {
+        actionInProgress = action;
+    }
+
+    public static synchronized String getActionInProgress() {
+        return actionInProgress;
+    }
+
+    public static synchronized boolean isActionInProgress(String action) {
+        if (actionInProgress == null) {
+            return false;
+        }
+        return actionInProgress.equals(action);
     }
 
     @Override
@@ -74,6 +94,10 @@ public class FetLifeApiIntentService extends IntentService {
 
         //TODO: checkForNetworkState
         try {
+
+            setActionInProgress(action);
+
+            sendLoadStartedNotification(action);
 
             if (action != ACTION_APICALL_LOGON_USER && getFetLifeApplication().getAccessToken() == null) {
                 if (refreshToken()) {
@@ -113,6 +137,8 @@ public class FetLifeApiIntentService extends IntentService {
             }
         } catch (IOException ioe) {
             sendConnectionFailedNotification(action);
+        } finally {
+            setActionInProgress(null);
         }
     }
 
@@ -147,6 +173,17 @@ public class FetLifeApiIntentService extends IntentService {
             return false;
         }
 
+    }
+
+    private void sendLoadStartedNotification(String action) {
+        switch (action) {
+            case ACTION_APICALL_LOGON_USER:
+                getFetLifeApplication().getEventBus().post(new LoginStartedEvent());
+                break;
+            default:
+                getFetLifeApplication().getEventBus().post(new ServiceCallStartedEvent(action));
+                break;
+        }
     }
 
     private void sendLoadFinishedNotification(String action) {

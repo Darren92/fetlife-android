@@ -1,7 +1,10 @@
 package com.bitlove.fetchat.view;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.view.View;
@@ -38,56 +41,31 @@ public class MessagesActivity extends ResourceActivity
 //    private boolean isVisible;
 
     public static void startActivity(Context context, String conversationId, boolean newTask) {
+        context.startActivity(createIntent(context, conversationId, newTask));
+    }
+
+    public static Intent createIntent(Context context, String conversationId, boolean newTask) {
         Intent intent = new Intent(context, MessagesActivity.class);
         intent.putExtra(EXTRA_CONVERSATION_ID, conversationId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-        //TODO: start alone, add backstack
+        return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String text = textInput.getText().toString();
-                        if (text == null || text.trim().length() == 0) {
-                            return;
-                        }
-                        Message message = new Message();
-                        message.setPending(true);
-                        message.setDate(System.currentTimeMillis());
-                        message.setClientId(UUID.randomUUID().toString());
-                        message.setConversationId(conversationId);
-                        message.setBody(text.trim());
-                        Member me = getFetLifeApplication().getMe();
-                        message.setSenderId(me.getId());
-                        message.setSenderNickname(me.getNickname());
-                        message.save();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                textInput.setText("");
-                            }
-                        });
-                        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
-                    }
-                }).start();
-            }
-        });
+        floatingActionButton.setVisibility(View.GONE);
 
         recyclerList.setDividerHeight(0);
         recyclerList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         recyclerList.setStackFromBottom(true);
 
-        textInputLayout.setVisibility(View.VISIBLE);
+        inputLayout.setVisibility(View.VISIBLE);
+        inputIcon.setVisibility(View.VISIBLE);
 
         setConversation(getIntent());
+
+        setTitle(conversationId);
     }
 
     @Override
@@ -127,7 +105,7 @@ public class MessagesActivity extends ResourceActivity
         messagesModelObserver.registerForContentChanges(this, Message.class);
         messagesAdapter.refresh();
 
-        showProgress(false);
+        showProgress();
         FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
 
         ListView messagesList = (ListView) findViewById(R.id.list_view);
@@ -190,6 +168,35 @@ public class MessagesActivity extends ResourceActivity
         } else {
             //wait for the already started refresh
         }
+    }
+
+    public void onSend(View v) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String text = textInput.getText().toString();
+                if (text == null || text.trim().length() == 0) {
+                    return;
+                }
+                Message message = new Message();
+                message.setPending(true);
+                message.setDate(System.currentTimeMillis());
+                message.setClientId(UUID.randomUUID().toString());
+                message.setConversationId(conversationId);
+                message.setBody(text.trim());
+                Member me = getFetLifeApplication().getMe();
+                message.setSenderId(me.getId());
+                message.setSenderNickname(me.getNickname());
+                message.save();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textInput.setText("");
+                    }
+                });
+                FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
+            }
+        }).start();
     }
 
 }

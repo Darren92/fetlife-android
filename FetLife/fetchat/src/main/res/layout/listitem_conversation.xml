@@ -12,14 +12,15 @@
         <ImageView
             android:id="@+id/conversation_icon"
 
+            style="@style/ConversationAvatar"
+
             android:layout_width="?android:attr/listPreferredItemHeight"
             android:layout_height="?android:attr/listPreferredItemHeight"
 
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginRight="6dip"
 
-            android:src="@drawable/fetchat_icon" />
+            android:src="@drawable/dummy_avatar" />
 
         <TextView
             android:id="@+id/conversation_sender"

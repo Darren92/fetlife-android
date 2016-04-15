@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bitlove.fetchat.FetLifeApplication;
@@ -64,35 +65,29 @@ public class MessagesAdapter extends BaseAdapter {
         View view = LayoutInflater.from(context).inflate(R.layout.listitem_message, parent, false);
 
         Message message = itemList.get(position);
-        Message previousMessage = position != 0 ? itemList.get(position-1) : null;
-        Message nextMessage = position != itemList.size()-1 ? itemList.get(position+1) : null;
+//        Message previousMessage = position != 0 ? itemList.get(position-1) : null;
+//        Message nextMessage = position != itemList.size()-1 ? itemList.get(position+1) : null;
 
         boolean myMessage = message.getSenderId().equals(getFetLifeApplication(context).getMe().getId());
 
-        if (previousMessage == null || !message.getSenderId().equals(previousMessage.getSenderId())) {
-            TextView senderText = (TextView) view.findViewById(R.id.message_sender);
-            senderText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
-            senderText.setText(message.getSenderNickname());
-            senderText.setVisibility(View.VISIBLE);
-        }
+        TextView dateText = (TextView) view.findViewById(R.id.message_sub);
+        dateText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
+        dateText.setText(message.getSenderNickname() +  context.getResources().getString(R.string.message_sub_separator) + SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
+        dateText.setVisibility(View.VISIBLE);
 
-        if (nextMessage == null || !message.getSenderId().equals(nextMessage.getSenderId())) {
-            TextView dateText = (TextView) view.findViewById(R.id.message_date);
-            dateText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
-            dateText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
-            dateText.setVisibility(View.VISIBLE);
+        LinearLayout messageContainer = (LinearLayout) view.findViewById(R.id.message_container);
+        messageContainer.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
+
+        int hPadding = (int) context.getResources().getDimension(R.dimen.listitem_horizontal_margin);
+        int vPadding = (int) context.getResources().getDimension(R.dimen.listitem_vertical_margin);
+
+        if (myMessage) {
+            messageContainer.setPadding(hPadding*10, vPadding, hPadding, vPadding);
+        } else {
+            messageContainer.setPadding(hPadding, vPadding, hPadding*10, vPadding);
         }
 
         TextView messageText = (TextView) view.findViewById(R.id.message_text);
-        messageText.setGravity(myMessage ? Gravity.RIGHT : Gravity.LEFT);
-
-        float padding = context.getResources().getDimension(R.dimen.listitem_horizontal_margin);
-
-        if (myMessage) {
-            messageText.setPadding((int) padding, 0, 0, 0);
-        } else {
-            messageText.setPadding(0,0, (int) padding,0);
-        }
 
         messageText.setText(Html.fromHtml(message.getBody().trim()));
         if (message.getPending()) {

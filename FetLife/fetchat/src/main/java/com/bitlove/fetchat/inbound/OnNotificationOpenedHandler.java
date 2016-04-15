@@ -1,5 +1,8 @@
 package com.bitlove.fetchat.inbound;
 
+import android.app.TaskStackBuilder;
+import android.os.Build;
+
 import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.event.NewMessageEvent;
 import com.bitlove.fetchat.view.ConversationsActivity;
@@ -13,7 +16,7 @@ public class OnNotificationOpenedHandler implements OneSignal.NotificationOpened
     @Override
     public void notificationOpened(String message, JSONObject additionalData, boolean isActive) {
         FetLifeApplication application = FetLifeApplication.getInstance();
-        if (!isActive) {
+        if (isActive) {
             try {
                 application.getEventBus().post(new NewMessageEvent(additionalData.getString("side_id")));
             } catch (JSONException e) {
@@ -25,7 +28,12 @@ public class OnNotificationOpenedHandler implements OneSignal.NotificationOpened
                 ConversationsActivity.startActivity(application);
             } else {
                 try {
-                    MessagesActivity.startActivity(application, additionalData.getString("side_id"), true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        TaskStackBuilder.create(application).addNextIntent(ConversationsActivity.createIntent(application)).addNextIntent(MessagesActivity.createIntent(application, additionalData.getString("side_id"), true)).startActivities();
+                    } else {
+                        ConversationsActivity.startActivity(application);
+                        MessagesActivity.startActivity(application, additionalData.getString("side_id"), true);
+                    }
                 } catch (JSONException e) {
                     //TODO: Error handling
                 }

@@ -8,9 +8,11 @@ import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.widget.AdapterView;
 
+import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.event.NewMessageEvent;
 import com.bitlove.fetchat.event.ServiceCallFailedEvent;
 import com.bitlove.fetchat.event.ServiceCallFinishedEvent;
+import com.bitlove.fetchat.event.ServiceCallStartedEvent;
 import com.bitlove.fetchat.model.pojos.Conversation;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
@@ -18,6 +20,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class ConversationsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,9 +29,14 @@ public class ConversationsActivity extends ResourceActivity
     private ConversationsAdapter conversationsAdapter;
 
     public static void startActivity(Context context) {
+        context.startActivity(createIntent(context));
+    }
+
+    public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, ConversationsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
     }
 
     @Override
@@ -59,8 +67,6 @@ public class ConversationsActivity extends ResourceActivity
     protected void onStart() {
         super.onStart();
 
-        getFetLifeApplication().getEventBus().register(this);
-
         conversationsModelObserver = new FlowContentObserver();
         conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
@@ -71,8 +77,12 @@ public class ConversationsActivity extends ResourceActivity
         conversationsModelObserver.registerForContentChanges(this, Conversation.class);
         conversationsAdapter.refresh();
 
-        showProgress(false);
-        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+        showProgress();
+        getFetLifeApplication().getEventBus().register(this);
+
+        if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS)) {
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+        }
     }
 
     @Override
@@ -84,25 +94,35 @@ public class ConversationsActivity extends ResourceActivity
         getFetLifeApplication().getEventBus().unregister(this);
     }
 
-    @Subscribe
-    public void onMessagesCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConversationsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
         if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
             dismissProgress();
         }
     }
 
-    @Subscribe
-    public void onMessagesCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConversationsCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
         if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
             //TODO: display toast error message
             dismissProgress();
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConversationCallStarted(ServiceCallStartedEvent serviceCallStartedEvent) {
+        showProgress();
+        if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
+            showProgress();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageArrived(NewMessageEvent newMessageEvent) {
-        showProgress(false);
-        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+        showProgress();
+        if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS)) {
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+        }
     }
 
 }

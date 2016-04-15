@@ -26,4 +26,9 @@
     <style name="ConversationDate" parent="TextAppearance.AppCompat.Caption">
         <item name="android:gravity">right</item>
     </style>
+
+    <style name="ConversationAvatar" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:layout_marginRight">@dimen/icon_margin</item>
+    </style>
+
 </resources>

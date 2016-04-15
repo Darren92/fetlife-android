@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="bottom"
+    android:id="@+id/message_container"
     android:orientation="vertical"
-    style="@style/MessageItem">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/message_sender"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:paddingStart="@dimen/listitem_horizontal_margin"
+        android:paddingLeft="@dimen/listitem_horizontal_margin"
+        android:paddingEnd="@dimen/listitem_horizontal_margin"
+        android:paddingRight="@dimen/listitem_horizontal_margin"
+        android:paddingBottom="@dimen/listitem_vertical_margin"
+        android:paddingTop="@dimen/listitem_vertical_margin"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        style="@style/MessageItem">
+
+        <TextView
+            android:id="@+id/message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/message_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-    <TextView
-        android:id="@+id/message_date"
+        style="@style/MessageSubText"
+        android:id="@+id/message_sub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:layout_marginLeft="@dimen/listitem_horizontal_margin"
+        android:layout_marginRight="@dimen/listitem_horizontal_margin"
+        android:layout_marginEnd="@dimen/listitem_horizontal_margin"
+        android:layout_marginStart="@dimen/listitem_horizontal_margin"
+        android:layout_marginBottom="@dimen/listitem_vertical_margin"/>
 
 </LinearLayout>

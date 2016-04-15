@@ -1,16 +1,11 @@
 package com.bitlove.fetchat.view;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -22,10 +17,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bitlove.fetchat.BuildConfig;
+import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.event.LoginFailedEvent;
 import com.bitlove.fetchat.event.LoginFinishedEvent;
+import com.bitlove.fetchat.event.LoginStartedEvent;
 import com.bitlove.fetchat.model.pojos.Member;
 import com.bitlove.fetchat.model.pojos.Token;
 import com.bitlove.fetchat.model.api.FetLifeService;
@@ -39,13 +35,11 @@ import java.io.IOException;
 import retrofit.Call;
 import retrofit.Response;
 
-/**
- * A login screen that offers login via username/password.
- */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends Activity {
 
     private EditText mUserNameView;
     private EditText mPasswordView;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +73,26 @@ public class LoginActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         getFetLifeApplication().getEventBus().register(this);
+        if (FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_LOGON_USER)) {
+            showProgress();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         getFetLifeApplication().getEventBus().unregister(this);
+    }
+
+    private void showProgress() {
+        if (progressDialog == null || !progressDialog.isShowing()) {
+            progressDialog = ProgressDialog.show(this,"Beaming you up...", null, true);
+            progressDialog.setCancelable(false);
+        }
+    }
+
+    private void dismissProgress() {
+        progressDialog.dismiss();
     }
 
     /**
@@ -120,13 +128,9 @@ public class LoginActivity extends BaseActivity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
+            showProgress();
             FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_LOGON_USER, username, password);
         }
     }
@@ -136,6 +140,11 @@ public class LoginActivity extends BaseActivity {
         Intent intent = new Intent(context, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginStarted(LoginStartedEvent loginStartedEvent) {
+        showProgress();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -174,9 +183,9 @@ public class LoginActivity extends BaseActivity {
         startActivity(browserIntent);
     }
 
-    @Override
-    protected View getRootView() {
-        return findViewById(R.id.login_layout);
+    private FetLifeApplication getFetLifeApplication() {
+        return (FetLifeApplication) getApplication();
     }
+
 }
 
