@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.widget.AdapterView;
 
 import com.bitlove.fetchat.FetLifeApplication;
+import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.event.NewMessageEvent;
 import com.bitlove.fetchat.event.ServiceCallFailedEvent;
 import com.bitlove.fetchat.event.ServiceCallFinishedEvent;
@@ -68,6 +69,11 @@ public class ConversationsActivity extends ResourceActivity
         super.onStart();
 
         conversationsModelObserver = new FlowContentObserver();
+
+        if (isFinishing()) {
+            return;
+        }
+
         conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
@@ -104,7 +110,11 @@ public class ConversationsActivity extends ResourceActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConversationsCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
         if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
-            //TODO: display toast error message
+            if (serviceCallFailedEvent.isServerConnectionFailed()) {
+                showToast(getResources().getString(R.string.error_connection_failed));
+            } else {
+                showToast(getResources().getString(R.string.error_apicall_failed));
+            }
             dismissProgress();
         }
     }

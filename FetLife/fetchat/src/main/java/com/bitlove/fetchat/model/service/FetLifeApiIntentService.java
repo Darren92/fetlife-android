@@ -209,7 +209,14 @@ public class FetLifeApiIntentService extends IntentService {
     }
 
     private void sendConnectionFailedNotification(String action) {
-
+        switch (action) {
+            case ACTION_APICALL_LOGON_USER:
+                getFetLifeApplication().getEventBus().post(new LoginFailedEvent(true));
+                break;
+            default:
+                getFetLifeApplication().getEventBus().post(new ServiceCallFailedEvent(action, true));
+                break;
+        }
     }
 
     private boolean logonUser(String... params) throws IOException {

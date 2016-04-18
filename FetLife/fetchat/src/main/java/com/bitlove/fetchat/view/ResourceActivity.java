@@ -16,9 +16,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bitlove.fetchat.FetLifeApplication;
 import com.bitlove.fetchat.R;
+import com.bitlove.fetchat.model.db.FetChatDatabase;
 import com.bitlove.fetchat.model.pojos.Member;
 import com.onesignal.OneSignal;
 
@@ -50,6 +52,7 @@ public class ResourceActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -147,6 +150,9 @@ public class ResourceActivity extends AppCompatActivity
             }
 
             getFetLifeApplication().removeMe();
+
+            deleteDatabase(FetChatDatabase.NAME);
+
             LoginActivity.startLogout(this);
         } else if (id == R.id.nav_conversations) {
             ConversationsActivity.startActivity(this);
@@ -178,5 +184,15 @@ public class ResourceActivity extends AppCompatActivity
     protected FetLifeApplication getFetLifeApplication() {
         return (FetLifeApplication) getApplication();
     }
+
+    protected void showToast(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ResourceActivity.this, text, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
 }

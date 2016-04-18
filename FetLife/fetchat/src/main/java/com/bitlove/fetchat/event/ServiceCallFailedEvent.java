@@ -2,14 +2,23 @@ package com.bitlove.fetchat.event;
 
 public class ServiceCallFailedEvent {
 
-    private String serviceCallAction;
+    private final boolean serverConnectionFailed;
+    private final String serviceCallAction;
 
     public ServiceCallFailedEvent(String serviceCallAction) {
-        this.serviceCallAction = serviceCallAction;
+        this(serviceCallAction, false);
+    }
+
+    public ServiceCallFailedEvent(String action, boolean serverConnectionFailed) {
+        this.serverConnectionFailed = serverConnectionFailed;
+        this.serviceCallAction = action;
     }
 
     public String getServiceCallAction() {
         return serviceCallAction;
     }
 
+    public boolean isServerConnectionFailed() {
+        return serverConnectionFailed;
+    }
 }

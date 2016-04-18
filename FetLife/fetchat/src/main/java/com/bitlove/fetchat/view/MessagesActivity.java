@@ -85,9 +85,14 @@ public class MessagesActivity extends ResourceActivity
     protected void onStart() {
         super.onStart();
 
+        messagesModelObserver = new FlowContentObserver();
+
+        if (isFinishing()) {
+            return;
+        }
+
         getFetLifeApplication().getEventBus().register(this);
 
-        messagesModelObserver = new FlowContentObserver();
         messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
@@ -156,7 +161,11 @@ public class MessagesActivity extends ResourceActivity
     @Subscribe
     public void onMessagesCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
         if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
-            //TODO: display toast error message
+            if (serviceCallFailedEvent.isServerConnectionFailed()) {
+                showToast(getResources().getString(R.string.error_connection_failed));
+            } else {
+                showToast(getResources().getString(R.string.error_apicall_failed));
+            }
             dismissProgress();
         }
     }

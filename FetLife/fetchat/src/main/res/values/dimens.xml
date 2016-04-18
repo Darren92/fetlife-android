@@ -22,5 +22,6 @@
 	<dimen name="listitem_horizontal_margin">8dp</dimen>
 	<dimen name="listitem_vertical_margin">4dp</dimen>
 	<dimen name="button_round_padding">5dp</dimen>
+	<dimen name="toolbar_progress_indicator_padding">12dp</dimen>
 
 </resources>

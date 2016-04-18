@@ -81,12 +81,23 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <Button
-                    android:id="@+id/username_sign_in_button"
+                    android:id="@+id/log_on_button"
                     style="@style/LogonButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/action_sign_in"
+                    android:text="@string/action_log_on"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/logging_progress_button"
+                    style="@style/LoggingProgressButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:enabled="false"
+                    android:text="@string/progress_logging_in"
+                    android:visibility="gone"
                     android:textStyle="bold" />
 
             </LinearLayout>

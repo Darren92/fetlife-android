@@ -7,7 +7,7 @@
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_new_message">Your message here</string>
-    <string name="action_sign_in">Log me in, scotty!</string>
+    <string name="action_log_on">Log me in, scotty!</string>
     <string name="action_sign_in_short">Log in</string>
     <string name="error_invalid_username">This username is invalid</string>
     <string name="error_invalid_password">This password is invalid</string>
@@ -26,5 +26,8 @@
     <string name="forgot_login">Forgot your login info?</string>
 
     <string name="menu_converations">Conversations</string>
-    <string name="message_sub_separator">\ \@\ </string>
+    <string name="message_sub_separator">" \@ "</string>
+    <string name="progress_logging_in">Beaming you up...</string>
+    <string name="error_connection_failed">Server could not be reached. Please check your internet connection</string>
+    <string name="error_apicall_failed">Connection failed. Please try again later</string>
 </resources>

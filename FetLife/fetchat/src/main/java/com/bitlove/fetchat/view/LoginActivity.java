@@ -22,24 +22,17 @@ import com.bitlove.fetchat.R;
 import com.bitlove.fetchat.event.LoginFailedEvent;
 import com.bitlove.fetchat.event.LoginFinishedEvent;
 import com.bitlove.fetchat.event.LoginStartedEvent;
-import com.bitlove.fetchat.model.pojos.Member;
-import com.bitlove.fetchat.model.pojos.Token;
-import com.bitlove.fetchat.model.api.FetLifeService;
 import com.bitlove.fetchat.model.service.FetLifeApiIntentService;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
-
-import retrofit.Call;
-import retrofit.Response;
-
 public class LoginActivity extends Activity {
 
     private EditText mUserNameView;
     private EditText mPasswordView;
-    private ProgressDialog progressDialog;
+    private Button logonButton;
+    private Button logonProgressFakeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +53,15 @@ public class LoginActivity extends Activity {
             }
         });
 
-        Button mUsernameSignInButton = (Button) findViewById(R.id.username_sign_in_button);
-        mUsernameSignInButton.setOnClickListener(new OnClickListener() {
+        logonButton = (Button) findViewById(R.id.log_on_button);
+        logonButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
+
+        logonProgressFakeButton = (Button) findViewById(R.id.logging_progress_button);
     }
 
     @Override
@@ -85,14 +80,17 @@ public class LoginActivity extends Activity {
     }
 
     private void showProgress() {
-        if (progressDialog == null || !progressDialog.isShowing()) {
-            progressDialog = ProgressDialog.show(this,"Beaming you up...", null, true);
-            progressDialog.setCancelable(false);
-        }
+        mUserNameView.setEnabled(false);
+        mPasswordView.setEnabled(false);
+        logonButton.setVisibility(View.GONE);
+        logonProgressFakeButton.setVisibility(View.VISIBLE);
     }
 
     private void dismissProgress() {
-        progressDialog.dismiss();
+        mUserNameView.setEnabled(true);
+        mPasswordView.setEnabled(true);
+        logonButton.setVisibility(View.VISIBLE);
+        logonProgressFakeButton.setVisibility(View.GONE);
     }
 
     /**
@@ -149,7 +147,7 @@ public class LoginActivity extends Activity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginFinished(LoginFinishedEvent loginFinishedEvent) {
-        dismissProgress();
+        //dismissProgress();
         ConversationsActivity.startActivity(this);
     }
 
@@ -157,7 +155,11 @@ public class LoginActivity extends Activity {
     public void onLogonFailed(LoginFailedEvent loginFailedEvent) {
         //TODO: handle different errors
         dismissProgress();
-        mPasswordView.setError(getString(R.string.error_incorrect_password));
+        if (loginFailedEvent.isServerConnectionFailed()) {
+            showToast(getResources().getString(R.string.error_connection_failed));
+        } else {
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+        }
         mPasswordView.requestFocus();
     }
 

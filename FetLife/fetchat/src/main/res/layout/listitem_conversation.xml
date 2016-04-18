@@ -23,7 +23,7 @@
             android:src="@drawable/dummy_avatar" />
 
         <TextView
-            android:id="@+id/conversation_sender"
+            android:id="@+id/conversation_lower"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,8 +46,10 @@
             android:layout_toRightOf="@id/conversation_icon"
             android:layout_alignParentRight="true"
 
-            android:layout_above="@id/conversation_sender"
-            android:layout_alignWithParentIfMissing="true"/>
+            android:layout_above="@id/conversation_lower"
+            android:layout_alignWithParentIfMissing="true"
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
 
         <TextView
             android:id="@+id/conversation_header"
@@ -61,7 +63,10 @@
             android:layout_alignParentRight="true"
 
             android:layout_above="@id/conversation_message_text"
-            android:layout_alignWithParentIfMissing="true"/>
+            android:layout_alignWithParentIfMissing="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
 
         <TextView
             android:id="@+id/conversation_date"
@@ -71,7 +76,7 @@
 
             style="@style/ConversationDate"
 
-            android:layout_toRightOf="@id/conversation_sender"
+            android:layout_toRightOf="@id/conversation_lower"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
 
