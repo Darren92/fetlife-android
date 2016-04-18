@@ -56,7 +56,7 @@ public class FetLifeApplication extends Application {
         }
 
         OneSignal.startInit(this).setNotificationOpenedHandler(new OnNotificationOpenedHandler()).init();
-        OneSignal.enableNotificationsWhenActive(true);
+        OneSignal.enableNotificationsWhenActive(false);
 
         fetLifeService = new FetLifeService();
 

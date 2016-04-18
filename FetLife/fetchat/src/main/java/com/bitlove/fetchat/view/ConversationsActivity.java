@@ -121,7 +121,6 @@ public class ConversationsActivity extends ResourceActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConversationCallStarted(ServiceCallStartedEvent serviceCallStartedEvent) {
-        showProgress();
         if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
             showProgress();
         }
