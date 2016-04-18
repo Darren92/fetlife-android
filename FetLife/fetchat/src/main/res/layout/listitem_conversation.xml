@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight">
+
+    <RelativeLayout
+        style="@style/ConversationItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/conversation_icon"
+
+            style="@style/ConversationAvatar"
+
+            android:layout_width="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+
+            android:src="@drawable/dummy_avatar" />
+
+        <TextView
+            android:id="@+id/conversation_lower"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            style="@style/ConversationSender"
+
+            android:layout_toRightOf="@id/conversation_icon"
+            android:layout_alignParentBottom="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/conversation_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            style="@style/ConversationMessageText"
+
+            android:layout_toRightOf="@id/conversation_icon"
+            android:layout_alignParentRight="true"
+
+            android:layout_above="@id/conversation_lower"
+            android:layout_alignWithParentIfMissing="true"
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/conversation_header"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            style="@style/ConversationHeader"
+
+            android:layout_toRightOf="@id/conversation_icon"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+
+            android:layout_above="@id/conversation_message_text"
+            android:layout_alignWithParentIfMissing="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/conversation_date"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            style="@style/ConversationDate"
+
+            android:layout_toRightOf="@id/conversation_lower"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+
+    </RelativeLayout>
+</LinearLayout>

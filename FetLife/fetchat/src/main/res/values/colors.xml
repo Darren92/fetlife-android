@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_background">#ff1a1a1a</color>
+
+    <color name="color_primary">#ff1a1a1a</color>
+    <color name="color_primary_dark">#ff111111</color>
+    <color name="color_secondary">#ffffff</color>
+    <color name="color_secondary_dark">#000000</color>
+
+    <color name="color_accent">#ff880000</color>
+    <color name="color_accent_dark">#ff700000</color>
+    <color name="color_accent_light">#ffa00000</color>
+
+    <color name="text_color_primary">#ffffff</color>
+    <color name="text_color_primary_dark">#e0e0e0</color>
+    <color name="text_color_secondary">#ff777777</color>
+    <color name="text_color_secondary_dark">#ff4a4a4a</color>
+    <color name="text_color_edit">#e0e0e0</color>
+    <color name="text_color_edit_dark">#000000</color>
+
+    <color name="edit_background">#fffaffbd</color>
+    <color name="edit_background_dark">#fffaffbd</color>
+
+    <color name="area_background">#ffffff</color>
+    <color name="area_background_dark">#ff111111</color>
+
+</resources>

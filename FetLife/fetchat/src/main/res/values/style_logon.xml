@@ -1,0 +1,40 @@
+<resources>
+    <style name="LogonEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edit_background_rounded</item>
+        <item name="android:padding">@dimen/edittext_padding</item>
+        <item name="android:minHeight">@dimen/edittext_minheight</item>
+        <item name="android:textColor">@color/text_color_edit_dark</item>
+        <item name="android:textColorHint">@color/text_color_secondary</item>
+    </style>
+
+    <style name="LogonButton" parent="Base.Widget.AppCompat.Button">
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:background">@drawable/button_background_gradient</item>
+        <item name="android:minHeight">@dimen/button_minheight</item>
+        <item name="android:textColorHint">@color/text_color_primary</item>
+    </style>
+
+    <style name="LoggingProgressButton" parent="Base.Widget.AppCompat.Button">
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:background">@drawable/button_background_disabled_gradient</item>
+        <item name="android:minHeight">@dimen/button_minheight</item>
+        <item name="android:textColorHint">@color/text_color_primary</item>
+    </style>
+
+    <style name="LogonArea">
+        <item name="android:background">@drawable/area_dark_background_rounded</item>
+        <item name="android:padding">@dimen/area_padding</item>
+        <item name="android:layout_marginBottom">@dimen/area_margin</item>
+    </style>
+
+    <style name="LogonHeader" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textColor">@color/text_color_secondary_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_margin">@dimen/logon_header_margin</item>
+    </style>
+
+    <style name="LogonText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/text_color_secondary</item>
+    </style>
+
+</resources>
