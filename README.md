@@ -1,5 +1,9 @@
 # FetLife Android App
 
+### Screenshots
+
+
+
 ### Installation Instructions
 
 1. Open the "Settings" App of your device
