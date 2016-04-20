@@ -1,4 +1,6 @@
-# FetLife Android App
+# FetLife for Android
+
+Welcome to FetLife's open-source Android app!
 
 ### Features
 
@@ -6,10 +8,13 @@
 - Read and respond to conversations
 - Receive a push notification when you receive a new message
 
+### Requirements
+
+- Android 4.0.3 or newer
 
 ### Screenshots
 
-![Screenshots of FetLife Android App](https://cloud.githubusercontent.com/assets/22100/14682127/f6aa10c8-06d8-11e6-9a14-0ae9fb957498.png)
+![Screenshots of FetLife Android App](https://cloud.githubusercontent.com/assets/22100/14687516/d31bdad2-06f2-11e6-8e86-979d49a67ad3.png)
 
 
 ### Installing the App on your Android Device
@@ -27,7 +32,21 @@
 
 - Mac: https://www.android.com/filetransfer/
 
+### Kinksters Helping Kinksters
+
+Want to install the app on your phone but are not technically savvy? Ask your local kinky geek! Technically savvy and want to give back to the community... bring your laptop with you the next time you attend an event and install / update the app for anyone who's interested in having it install on their phone. *#KinkstersHelpingKinksters*
+
+
+### Got Bugs?
+
+If you find a bug please start by reading through the our current list of [open issues](https://github.com/fetlife/fetlife-android/issues) and if you can't find anything about your bug please [submit a new bug](https://github.com/fetlife/fetlife-android/issues/new).
+
+
+### Want to Contribute
+
+Woot woot!
+
 
 ### License
 
-FetLife's iOS app is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+FetLife for Android is released under the [MIT License](http://www.opensource.org/licenses/MIT).
