@@ -34,7 +34,7 @@ Welcome to FetLife's open-source Android app!
 
 ### Kinksters Helping Kinksters
 
-Want to install the app on your phone but are not technically savvy? Ask your local kinky geek! Technically savvy and want to give back to the community... bring your laptop with you the next time you attend an event and install / update the app for anyone who's interested in having it install on their iPhone. *#KinkstersHelpingKinksters*
+Want to install the app on your phone but are not technically savvy? Ask your local kinky geek! Technically savvy and want to give back to the community... bring your laptop with you the next time you attend an event and install / update the app for anyone who's interested in having it install on their phone. *#KinkstersHelpingKinksters*
 
 
 ### Got Bugs?
