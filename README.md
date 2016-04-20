@@ -4,7 +4,7 @@
 
 - View your list of conversations
 - Read and respond to conversations
-- Push notification when you received a new message
+- Receive a push notification when you receive a new message
 
 
 ### Screenshots
