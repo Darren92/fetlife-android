@@ -1,10 +1,18 @@
 # FetLife Android App
 
+### Features
+
+- View your list of conversations
+- Read and respond to conversations
+- Receive a push notification when you receive a new message
+
+
 ### Screenshots
 
 ![Screenshots of FetLife Android App](https://cloud.githubusercontent.com/assets/22100/14682127/f6aa10c8-06d8-11e6-9a14-0ae9fb957498.png)
 
-### Installation Instructions
+
+### Installing the App on your Android Device
 
 1. Open the "Settings" App of your device
 2. Find and open "Security Settings"
