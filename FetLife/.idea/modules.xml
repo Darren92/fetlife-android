@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Experiment/Experiment.iml" filepath="$PROJECT_DIR$/Experiment/Experiment.iml" />
       <module fileurl="file://$PROJECT_DIR$/FetLife.iml" filepath="$PROJECT_DIR$/FetLife.iml" />
-      <module fileurl="file://$PROJECT_DIR$/fetchat/fetchat.iml" filepath="$PROJECT_DIR$/fetchat/fetchat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fetlife/fetlife.iml" filepath="$PROJECT_DIR$/fetlife/fetlife.iml" />
     </modules>
   </component>
 </project>
