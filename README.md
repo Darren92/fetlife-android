@@ -7,6 +7,7 @@
 - Push notification when you received a new message
 
 
+### Installing the App on your Android Device
 
 1. Open the "Settings" App of your device
 2. Find and open "Security Settings"
