@@ -19,6 +19,7 @@ Welcome to FetLife's open-source Android app!
 
 ### Installing the App on your Android Device
 
+0. Uninstall any previous version of FetLife (previously FetChat) App
 1. Open the "Settings" App of your device
 2. Find and open "Security Settings"
 3. Find and turn on setting with description: Unknown sources
