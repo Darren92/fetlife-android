@@ -1,7 +1,6 @@
 package com.bitlove.fetlife.view;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
@@ -12,14 +11,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message$Table;
+import com.bitlove.fetlife.util.ColorUtil;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -66,29 +64,22 @@ public class MessagesAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.listitem_message, parent, false);
-
             messageViewHolder = new MessageViewHolder();
             messageViewHolder.messageContainer = (LinearLayout) convertView.findViewById(R.id.message_container);
             messageViewHolder.messageText = (TextView) convertView.findViewById(R.id.message_text);
             messageViewHolder.subText = (TextView) convertView.findViewById(R.id.message_sub);
-
             convertView.setTag(messageViewHolder);
-
         } else {
             messageViewHolder = (MessageViewHolder) convertView.getTag();
         }
-
 
         Message message = itemList.get(position);
         String messageBody = message.getBody().trim();
 
         messageViewHolder. messageText.setText(Html.fromHtml("<pre>" + messageBody + "</pre>"));
-
         messageViewHolder.subText.setText(message.getSenderNickname() + context.getResources().getString(R.string.message_sub_separator) + SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
 
-
         boolean myMessage = message.getSenderId().equals(getFetLifeApplication(context).getMe().getId());
-
         int hPadding = (int) context.getResources().getDimension(R.dimen.listitem_horizontal_margin);
         int vPadding = (int) context.getResources().getDimension(R.dimen.listitem_vertical_margin);
 
@@ -102,15 +93,15 @@ public class MessagesAdapter extends BaseAdapter {
             messageViewHolder.messageContainer.setPadding(hPadding, vPadding, hPadding*10, vPadding);
         }
 
-
         if (message.getPending()) {
+            messageViewHolder.messageText.setTextColor(ColorUtil.retrieverColor(context, R.color.text_color_primary));
             messageViewHolder.messageText.setAlpha(PENDING_ALPHA);
         } else if (message.getFailed()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                messageViewHolder.messageText.setTextColor(context.getColor(R.color.text_color_error));
-            } else {
-                messageViewHolder.messageText.setTextColor(context.getResources().getColor(R.color.text_color_error));
-            }
+            messageViewHolder.messageText.setAlpha(1f);
+            messageViewHolder.messageText.setTextColor(ColorUtil.retrieverColor(context, R.color.text_color_error));
+        } else {
+            messageViewHolder.messageText.setTextColor(ColorUtil.retrieverColor(context, R.color.text_color_primary));
+            messageViewHolder.messageText.setAlpha(1f);
         }
 
         return convertView;
@@ -134,5 +125,5 @@ public class MessagesAdapter extends BaseAdapter {
         return (FetLifeApplication) context.getApplicationContext();
     }
 
-
 }
+
