@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
-import com.bitlove.fetlife.model.db.FetChatDatabase;
+import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.onesignal.OneSignal;
 
@@ -151,7 +151,7 @@ public class ResourceActivity extends AppCompatActivity
 
             getFetLifeApplication().removeMe();
 
-            deleteDatabase(FetChatDatabase.NAME);
+            deleteDatabase(FetLifeDatabase.NAME);
 
             LoginActivity.startLogout(this);
         } else if (id == R.id.nav_conversations) {

@@ -19,9 +19,9 @@ package com.bitlove.fetlife.model.db;
 
 import com.raizlabs.android.dbflow.annotation.Database;
 
-@Database(name = FetChatDatabase.NAME, version = FetChatDatabase.VERSION)
-public class FetChatDatabase {
+@Database(name = FetLifeDatabase.NAME, version = FetLifeDatabase.VERSION)
+public class FetLifeDatabase {
 
-    public static final String NAME = "fetchat";
-    public static final int VERSION = 2;
+    public static final String NAME = "fetlife";
+    public static final int VERSION = 1;
 }
