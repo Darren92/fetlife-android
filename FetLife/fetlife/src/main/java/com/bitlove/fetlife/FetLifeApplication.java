@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.EventBus;
 
 public class FetLifeApplication extends Application {
 
-    public static final String CONSTANT_PREF_KEY_ME_JSON = "com.bitlove.fetchat.bundle.json";
+    public static final String CONSTANT_PREF_KEY_ME_JSON = "com.bitlove.fetlife.bundle.json";
     public static final String CONSTANT_ONESIGNAL_TAG_VERSION = "version";
     public static final String CONSTANT_ONESIGNAL_TAG_NICKNAME = "nickname";
     public static final String CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN = "member_token";

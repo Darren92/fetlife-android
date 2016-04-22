@@ -1,6 +1,6 @@
 package com.bitlove.fetlife.model.pojos;
 
-import com.bitlove.fetlife.model.db.FetChatDatabase;
+import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.util.DateUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = FetChatDatabase.NAME)
+@Table(databaseName = FetLifeDatabase.NAME)
 public class Message extends BaseModel {
 
     @Column

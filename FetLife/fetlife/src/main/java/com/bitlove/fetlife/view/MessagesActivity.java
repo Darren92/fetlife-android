@@ -25,8 +25,8 @@ import java.util.UUID;
 public class MessagesActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String EXTRA_CONVERSATION_ID = "com.bitlove.fetchat.extra.conversation_id";
-    private static final String EXTRA_CONVERSATION_TITLE = "com.bitlove.fetchat.extra.conversation_title";
+    private static final String EXTRA_CONVERSATION_ID = "com.bitlove.fetlife.extra.conversation_id";
+    private static final String EXTRA_CONVERSATION_TITLE = "com.bitlove.fetlife.extra.conversation_title";
 
     private FlowContentObserver messagesModelObserver;
     private MessagesAdapter messagesAdapter;

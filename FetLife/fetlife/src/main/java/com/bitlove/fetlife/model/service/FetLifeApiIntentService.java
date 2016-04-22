@@ -17,7 +17,7 @@ import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.api.FetLifeApi;
 import com.bitlove.fetlife.model.api.FetLifeService;
-import com.bitlove.fetlife.model.db.FetChatDatabase;
+import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
@@ -43,15 +43,15 @@ import retrofit.Response;
 
 public class FetLifeApiIntentService extends IntentService {
 
-    public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetchat.action.apicall.cpnversations";
-    public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetchat.action.apicall.messages";
-    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetchat.action.apicall.new_messages";
+    public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetlife.action.apicall.cpnversations";
+    public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
+    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_messages";
 
-    public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetchat.action.apicall.logon_user";
+    public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
-    private static final String CONSTANT_PREF_KEY_REFRESH_TOKEN = "com.bitlove.fetchat.key.pref.token.refresh";
+    private static final String CONSTANT_PREF_KEY_REFRESH_TOKEN = "com.bitlove.fetlife.key.pref.token.refresh";
 
-    private static final String EXTRA_PARAMS = "com.bitlove.fetchat.extra.params";
+    private static final String EXTRA_PARAMS = "com.bitlove.fetlife.extra.params";
 
     private static final String PARAM_SORT_ORDER_UPDATED_DESC = "-updated_at";
 
@@ -305,7 +305,7 @@ public class FetLifeApiIntentService extends IntentService {
         Response<List<Message>> messagesResponse = getMessagesCall.execute();
         if (messagesResponse.isSuccess()) {
             final List<Message> messages = messagesResponse.body();
-            TransactionManager.transact(FlowManager.getDatabase(FetChatDatabase.NAME).getWritableDatabase(), new Runnable() {
+            TransactionManager.transact(FlowManager.getDatabase(FetLifeDatabase.NAME).getWritableDatabase(), new Runnable() {
                 @Override
                 public void run() {
                     for (Message message : messages) {
@@ -332,7 +332,7 @@ public class FetLifeApiIntentService extends IntentService {
         Response<List<Conversation>> conversationsResponse = getConversationsCall.execute();
         if (conversationsResponse.isSuccess()) {
             final List<Conversation> conversations = conversationsResponse.body();
-            TransactionManager.transact(FlowManager.getDatabase(FetChatDatabase.NAME).getWritableDatabase(), new Runnable() {
+            TransactionManager.transact(FlowManager.getDatabase(FetLifeDatabase.NAME).getWritableDatabase(), new Runnable() {
                 @Override
                 public void run() {
                     new Delete().from(Conversation.class).queryClose();
