@@ -19,7 +19,12 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class MessagesActivity extends ResourceActivity
@@ -153,14 +158,38 @@ public class MessagesActivity extends ResourceActivity
 //        }, 3000);
 //    }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessagesCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
         if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
             dismissProgress();
+            setMessagesRead();
         }
     }
 
-    @Subscribe
+    private void setMessagesRead() {
+        final List<String> params = new ArrayList<>();
+        params.add(conversationId);
+
+        for (int i = 0; i < messagesAdapter.getCount(); i++) {
+            Message message = messagesAdapter.getItem(i);
+            if (!message.getPending() && message.getIsNew()) {
+                params.add(message.getId());
+            }
+        }
+
+        if (params.size() == 1) {
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FetLifeApiIntentService.startApiCall(MessagesActivity.this.getApplicationContext(), FetLifeApiIntentService.ACTION_APICALL_SET_MESSAGES_READ, params.toArray(new String[params.size()]));
+            }
+        }).run();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessagesCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
         if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
             if (serviceCallFailedEvent.isServerConnectionFailed()) {
@@ -172,7 +201,7 @@ public class MessagesActivity extends ResourceActivity
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageArrived(NewMessageEvent newMessageEvent) {
         if (!conversationId.equals(newMessageEvent.getConversationId())) {
             //TODO: display (snackbar?) notification

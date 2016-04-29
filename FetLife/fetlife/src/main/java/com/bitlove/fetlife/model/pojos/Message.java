@@ -33,6 +33,10 @@ public class Message extends BaseModel {
     private Member sender;
 
     @Column
+    @JsonProperty("is_new")
+    private boolean isNew;
+
+    @Column
     @JsonIgnore
     private long date;
 
@@ -164,5 +168,13 @@ public class Message extends BaseModel {
     @JsonIgnore
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public boolean getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
     }
 }

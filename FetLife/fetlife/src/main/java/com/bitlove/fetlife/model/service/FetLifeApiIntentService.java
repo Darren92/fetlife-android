@@ -22,6 +22,7 @@ import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message$Table;
+import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
@@ -30,11 +31,14 @@ import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.squareup.okhttp.ResponseBody;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +50,7 @@ public class FetLifeApiIntentService extends IntentService {
     public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetlife.action.apicall.cpnversations";
     public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
     public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_messages";
+    public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
 
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
@@ -120,6 +125,9 @@ public class FetLifeApiIntentService extends IntentService {
                     break;
                 case ACTION_APICALL_NEW_MESSAGE:
                     result = sendPendingMessages();
+                    break;
+                case ACTION_APICALL_SET_MESSAGES_READ:
+                    result = setMessagesRead(intent.getStringArrayExtra(EXTRA_PARAMS));
                     break;
             }
 
@@ -325,6 +333,20 @@ public class FetLifeApiIntentService extends IntentService {
         } else {
             return false;
         }
+    }
+
+    private boolean setMessagesRead(String[] params) throws IOException {
+
+        String conversationId = params[0];
+
+        String[] messageIdsArray = Arrays.copyOfRange(params, 1, params.length);
+
+        MessageIds messageIds = new MessageIds(messageIdsArray);
+
+        Call<ResponseBody> setMessagesReadCall = getFetLifeApi().setMessagesRead(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), conversationId, messageIds);
+        Response<ResponseBody> response = setMessagesReadCall.execute();
+
+        return response.isSuccess();
     }
 
     private boolean retriveConversations() throws IOException {

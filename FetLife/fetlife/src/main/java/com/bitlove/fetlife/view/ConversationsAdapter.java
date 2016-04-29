@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Conversation;
+import com.bitlove.fetlife.util.ColorUtil;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ public class ConversationsAdapter extends BaseAdapter {
         TextView messageText;
         TextView dateText;
         TextView lowerText;
+        TextView newMessageIndicator;
     }
 
     private static final float CONVERSATION_READ_ALPHA = 0.5f;
@@ -61,6 +63,7 @@ public class ConversationsAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem_conversation, parent, false);
 
             conversationViewHolder = new ConversationViewHolder();
+            conversationViewHolder.newMessageIndicator = (TextView) convertView.findViewById(R.id.conversation_new_message_indicator);
             conversationViewHolder.headerText = (TextView) convertView.findViewById(R.id.conversation_header);
             conversationViewHolder.messageText = (TextView) convertView.findViewById(R.id.conversation_message_text);
             conversationViewHolder.dateText = (TextView) convertView.findViewById(R.id.conversation_date);
@@ -78,9 +81,9 @@ public class ConversationsAdapter extends BaseAdapter {
         conversationViewHolder.messageText.setText(conversation.getSubject());
 
         if (conversation.getHasNewMessage()) {
-            conversationViewHolder.messageText.setTypeface(null, Typeface.BOLD);
+            conversationViewHolder.newMessageIndicator.setVisibility(View.VISIBLE);
         } else {
-            conversationViewHolder.messageText.setAlpha(CONVERSATION_READ_ALPHA);
+            conversationViewHolder.newMessageIndicator.setVisibility(View.GONE);
         }
         conversationViewHolder.dateText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(conversation.getDate())));
 

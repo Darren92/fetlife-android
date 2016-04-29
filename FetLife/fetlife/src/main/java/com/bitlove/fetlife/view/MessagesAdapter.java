@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message$Table;
 import com.bitlove.fetlife.util.ColorUtil;
+import com.bitlove.fetlife.util.StringUtil;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import java.text.SimpleDateFormat;
@@ -67,6 +69,7 @@ public class MessagesAdapter extends BaseAdapter {
             messageViewHolder = new MessageViewHolder();
             messageViewHolder.messageContainer = (LinearLayout) convertView.findViewById(R.id.message_container);
             messageViewHolder.messageText = (TextView) convertView.findViewById(R.id.message_text);
+            messageViewHolder.messageText.setMovementMethod(LinkMovementMethod.getInstance());
             messageViewHolder.subText = (TextView) convertView.findViewById(R.id.message_sub);
             convertView.setTag(messageViewHolder);
         } else {
@@ -76,7 +79,7 @@ public class MessagesAdapter extends BaseAdapter {
         Message message = itemList.get(position);
         String messageBody = message.getBody().trim();
 
-        messageViewHolder. messageText.setText(Html.fromHtml("<pre>" + messageBody + "</pre>"));
+        messageViewHolder.messageText.setText(StringUtil.parseHtml(messageBody));
         messageViewHolder.subText.setText(message.getSenderNickname() + context.getResources().getString(R.string.message_sub_separator) + SimpleDateFormat.getDateTimeInstance().format(new Date(message.getDate())));
 
         boolean myMessage = message.getSenderId().equals(getFetLifeApplication(context).getMe().getId());
