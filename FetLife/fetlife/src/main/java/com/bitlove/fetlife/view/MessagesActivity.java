@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.bitlove.fetlife.R;
+import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
@@ -208,6 +209,12 @@ public class MessagesActivity extends ResourceActivity
         } else {
             //wait for the already started refresh
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
+        showToast(getString(R.string.authentication_failed));
+        LoginActivity.startLogout(this);
     }
 
     public void onSend(View v) {

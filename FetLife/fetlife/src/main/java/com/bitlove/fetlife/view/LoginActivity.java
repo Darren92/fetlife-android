@@ -147,7 +147,7 @@ public class LoginActivity extends Activity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginFinished(LoginFinishedEvent loginFinishedEvent) {
         //dismissProgress();
-        ConversationsActivity.startActivity(this, false);
+        ConversationsActivity.startActivity(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
