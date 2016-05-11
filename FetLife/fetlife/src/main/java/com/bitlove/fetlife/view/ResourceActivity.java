@@ -11,6 +11,9 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +45,8 @@ public class ResourceActivity extends AppCompatActivity
     protected NavigationView navigationView;
     protected View navigationHeaderView;
     protected ListView recyclerList;
+    protected RecyclerView recyclerView;
+    protected LinearLayoutManager recyclerLayoutManager;
     protected View inputLayout;
     protected View inputIcon;
     protected EditText textInput;
@@ -71,6 +76,10 @@ public class ResourceActivity extends AppCompatActivity
         textInput = (EditText) findViewById(R.id.text_input);
 
         recyclerList = (ListView) findViewById(R.id.list_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(recyclerLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         progressIndicator = (ProgressBar) findViewById(R.id.toolbar_progress_indicator);
 
