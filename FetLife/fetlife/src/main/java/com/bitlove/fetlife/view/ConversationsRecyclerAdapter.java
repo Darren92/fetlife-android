@@ -35,6 +35,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
     }
 
     private void loadItems() {
+        //TODO: think of moving to separate thread with specific DB executor
         itemList = new Select().from(Conversation.class).orderBy(false,Conversation$Table.DATE).queryList();
     }
 
@@ -71,6 +72,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
     public void refresh() {
         loadItems();
+        //TODO: think of possibility of update only specific items instead of the whole list
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

@@ -39,6 +39,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessageViewHol
 
     public void refresh() {
         loadItems();
+        //TODO: think of possibility of update only specific items instead of the whole list
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -48,6 +49,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessageViewHol
     }
 
     private void loadItems() {
+        //TODO: think of moving to separate thread with specific DB executor
         itemList = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).orderBy(false,Message$Table.DATE).queryList();
     }
 

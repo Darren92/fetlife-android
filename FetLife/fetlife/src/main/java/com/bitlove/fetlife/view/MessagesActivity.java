@@ -76,10 +76,10 @@ public class MessagesActivity extends ResourceActivity
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
                 if(!oldMessageloadingInProgress && dy < 0) {
-                    int firstVisibleItem = recyclerLayoutManager.findFirstVisibleItemPosition();
+                    int lastVisibleItem = recyclerLayoutManager.findLastVisibleItemPosition();
                     int totalItemCount = recyclerLayoutManager.getItemCount();
 
-                    if (firstVisibleItem == (totalItemCount-1)) {
+                    if (lastVisibleItem == (totalItemCount-1)) {
                         oldMessageloadingInProgress = true;
                         //TODO: not trigger call if the old messages were already triggered and there was no older message
                         FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId, Boolean.toString(false));
