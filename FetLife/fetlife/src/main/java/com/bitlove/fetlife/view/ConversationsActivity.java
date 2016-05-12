@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
-import android.widget.AdapterView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.NewMessageEvent;
@@ -25,8 +25,12 @@ import org.greenrobot.eventbus.ThreadMode;
 public class ConversationsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int CONVERSATIONS_PAGE_COUNT = 10;
+
     private FlowContentObserver conversationsModelObserver;
     private ConversationsRecyclerAdapter conversationsAdapter;
+
+    private int requestedPage = 1;
 
     public static void startActivity(Context context) {
         context.startActivity(createIntent(context));
@@ -59,6 +63,22 @@ public class ConversationsActivity extends ResourceActivity
         });
         recyclerView.setAdapter(conversationsAdapter);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    int visibleItemCount = recyclerLayoutManager.getChildCount();
+                    int pastVisiblesItems = recyclerLayoutManager.findFirstVisibleItemPosition();
+                    int lastVisiblePosition = visibleItemCount + pastVisiblesItems;
+
+                    if (lastVisiblePosition >= (requestedPage * CONVERSATIONS_PAGE_COUNT)) {
+                        FetLifeApiIntentService.startApiCall(ConversationsActivity.this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS, Integer.toString(CONVERSATIONS_PAGE_COUNT), Integer.toString(++requestedPage));
+                    }
+
+                }
+            }
+        });
+
     }
 
     @Override
@@ -84,8 +104,10 @@ public class ConversationsActivity extends ResourceActivity
         getFetLifeApplication().getEventBus().register(this);
 
         if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS)) {
-            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS);
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS, Integer.toString(CONVERSATIONS_PAGE_COUNT));
         }
+
+        requestedPage = 1;
     }
 
     @Override

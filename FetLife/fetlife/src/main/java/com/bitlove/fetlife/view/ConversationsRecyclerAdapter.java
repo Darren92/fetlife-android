@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Conversation;
+import com.bitlove.fetlife.model.pojos.Conversation$Table;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +35,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
     }
 
     private void loadItems() {
-        itemList = new Select().from(Conversation.class).queryList();
+        itemList = new Select().from(Conversation.class).orderBy(false,Conversation$Table.DATE).queryList();
     }
 
     @Override

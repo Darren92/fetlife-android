@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ListView;
 
@@ -12,6 +13,7 @@ import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
+import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
@@ -23,8 +25,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +38,7 @@ public class MessagesActivity extends ResourceActivity
     private MessagesRecyclerAdapter messagesAdapter;
 
     private String conversationId;
+    private boolean oldMessageloadingInProgress;
 
 //Polling
 //    private volatile boolean refreshRuns;
@@ -68,6 +69,24 @@ public class MessagesActivity extends ResourceActivity
         inputIcon.setVisibility(View.VISIBLE);
 
         setConversation(getIntent());
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(!oldMessageloadingInProgress && dy < 0) {
+                    int firstVisibleItem = recyclerLayoutManager.findFirstVisibleItemPosition();
+                    int totalItemCount = recyclerLayoutManager.getItemCount();
+
+                    if (firstVisibleItem == (totalItemCount-1)) {
+                        oldMessageloadingInProgress = true;
+                        //TODO: not trigger call if the old messages were already triggered and there was no older message
+                        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId, Boolean.toString(false));
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -156,14 +175,6 @@ public class MessagesActivity extends ResourceActivity
 //        }, 3000);
 //    }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessagesCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
-        if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
-            dismissProgress();
-            setMessagesRead();
-        }
-    }
-
     private void setMessagesRead() {
         final List<String> params = new ArrayList<>();
         params.add(conversationId);
@@ -188,6 +199,16 @@ public class MessagesActivity extends ResourceActivity
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessagesCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
+        if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
+            setMessagesRead();
+            oldMessageloadingInProgress = false;
+            //TODO: solve setting this value false only if appropriate message call is finished (otherwise same call can be triggered twice)
+            dismissProgress();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessagesCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
         if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
             if (serviceCallFailedEvent.isServerConnectionFailed()) {
@@ -195,7 +216,16 @@ public class MessagesActivity extends ResourceActivity
             } else {
                 showToast(getResources().getString(R.string.error_apicall_failed));
             }
+            //TODO: solve setting this value false only if appropriate message call is failed (otherwise same call can be triggered twice)
+            oldMessageloadingInProgress = false;
             dismissProgress();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageCallStarted(ServiceCallStartedEvent serviceCallStartedEvent) {
+        if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_MESSAGES) {
+            showProgress();
         }
     }
 

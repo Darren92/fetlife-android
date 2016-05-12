@@ -48,7 +48,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessageViewHol
     }
 
     private void loadItems() {
-        itemList = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).orderBy(true,Message$Table.DATE).queryList();
+        itemList = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).orderBy(false,Message$Table.DATE).queryList();
     }
 
     @Override

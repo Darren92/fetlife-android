@@ -135,7 +135,8 @@ public class LoginActivity extends Activity {
     public static void startLogout(Context context) {
         //TODO: add toast
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK
+        );
         context.startActivity(intent);
     }
 
@@ -148,6 +149,7 @@ public class LoginActivity extends Activity {
     public void onLoginFinished(LoginFinishedEvent loginFinishedEvent) {
         //dismissProgress();
         ConversationsActivity.startActivity(this);
+        finish();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
