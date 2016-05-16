@@ -2,7 +2,6 @@ package com.bitlove.fetlife.view;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -85,13 +84,13 @@ public class ResourceActivity extends AppCompatActivity
 
         navigationHeaderView = navigationView.getHeaderView(0);
 
-//        try {
-//            String versionPrefixText = getString(R.string.version_prefix);
-//            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-//            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
-//            headerSubTextView.setText(versionPrefixText + pInfo.versionName);
-//        } catch (PackageManager.NameNotFoundException e) {
-//        }
+        try {
+            String versionPrefixText = getString(R.string.version_prefix);
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
+            headerSubTextView.setText(versionPrefixText + pInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
 
         Member me = getFetLifeApplication().getMe();
         if (me != null) {
