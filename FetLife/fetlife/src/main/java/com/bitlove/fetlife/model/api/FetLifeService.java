@@ -31,6 +31,7 @@ public class FetLifeService {
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Response response = chain.proceed(request);
+                //response.body().string();
                 lastResponseCode = response.code();
                 return response;
             }

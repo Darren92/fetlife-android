@@ -54,7 +54,7 @@ public class ConversationsActivity extends ResourceActivity
             }
         });
 
-        conversationsAdapter = new ConversationsRecyclerAdapter();
+        conversationsAdapter = new ConversationsRecyclerAdapter(getFetLifeApplication().getImageLoader());
         conversationsAdapter.setOnItemClickListener(new ConversationsRecyclerAdapter.OnConversationClickListener() {
             @Override
             public void onClick(Conversation conversation) {

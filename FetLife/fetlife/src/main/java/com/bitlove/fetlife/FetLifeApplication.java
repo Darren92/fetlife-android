@@ -8,9 +8,12 @@ import com.bitlove.fetlife.inbound.OnNotificationOpenedHandler;
 import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
+import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -24,6 +27,7 @@ public class FetLifeApplication extends Application {
     public static final String CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN = "member_token";
 
     private static FetLifeApplication instance;
+    private ImageLoader imageLoader;
 
     public static FetLifeApplication getInstance() {
         return instance;
@@ -55,13 +59,17 @@ public class FetLifeApplication extends Application {
 
         int databaseVersion = preferences.getInt(CONSTANT_PREF_KEY_DB_VERSION, 0);
         if (databaseVersion < FetLifeDatabase.MIN_SUPPORTED_VERSION) {
+            deleteDatabase(FetLifeDatabase.NAME + ".db");
+            //DBFlow library uses .db suffix, but they mentioned they might going to change this in the future
             deleteDatabase(FetLifeDatabase.NAME);
         }
-        preferences.edit().putInt(CONSTANT_PREF_KEY_DB_VERSION, FetLifeDatabase.VERSION);
+        preferences.edit().putInt(CONSTANT_PREF_KEY_DB_VERSION, FetLifeDatabase.VERSION).apply();
         FlowManager.init(this);
 
         OneSignal.startInit(this).setNotificationOpenedHandler(new OnNotificationOpenedHandler()).init();
         OneSignal.enableNotificationsWhenActive(false);
+
+        imageLoader = new ImageLoader(this);
 
         fetLifeService = new FetLifeService();
 
@@ -70,6 +78,10 @@ public class FetLifeApplication extends Application {
 
     public FetLifeService getFetLifeService() {
         return fetLifeService;
+    }
+
+    public ImageLoader getImageLoader() {
+        return imageLoader;
     }
 
     public void setAccessToken(String accessToken) {
