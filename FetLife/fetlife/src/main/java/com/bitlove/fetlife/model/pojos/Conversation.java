@@ -50,6 +50,10 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonIgnore
+    private String memberLink;
+
+    @Column
+    @JsonIgnore
     private String memberId;
 
     public String getId() {
@@ -121,6 +125,7 @@ public class Conversation extends BaseModel {
             if (avatar != null) {
                 setAvatar(avatar.getVariants().getIconUrl());
             }
+            setMemberLink(member.getLink());
         }
     }
 
@@ -152,5 +157,13 @@ public class Conversation extends BaseModel {
     @JsonIgnore
     public void setMemberId(String memberId) {
         this.memberId = memberId;
+    }
+
+    public String getMemberLink() {
+        return memberLink;
+    }
+
+    public void setMemberLink(String memberLink) {
+        this.memberLink = memberLink;
     }
 }

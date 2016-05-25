@@ -2,6 +2,7 @@ package com.bitlove.fetlife.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -57,8 +58,18 @@ public class ConversationsActivity extends ResourceActivity
         conversationsAdapter = new ConversationsRecyclerAdapter(getFetLifeApplication().getImageLoader());
         conversationsAdapter.setOnItemClickListener(new ConversationsRecyclerAdapter.OnConversationClickListener() {
             @Override
-            public void onClick(Conversation conversation) {
+            public void onItemClick(Conversation conversation) {
                 MessagesActivity.startActivity(ConversationsActivity.this, conversation.getId(), conversation.getNickname(), false);
+            }
+
+            @Override
+            public void onAvatarClick(Conversation conversation) {
+                String url = conversation.getMemberLink();
+                if (url != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
             }
         });
         recyclerView.setAdapter(conversationsAdapter);
@@ -118,6 +129,7 @@ public class ConversationsActivity extends ResourceActivity
 
         getFetLifeApplication().getEventBus().unregister(this);
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConversationsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
