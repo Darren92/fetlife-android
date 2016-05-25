@@ -6,11 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Conversation$Table;
+import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +21,8 @@ import java.util.List;
 
 public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<ConversationViewHolder> {
 
+    private final ImageLoader imageLoader;
+
     public interface OnConversationClickListener {
         public void onClick(Conversation conversation);
     }
@@ -26,7 +30,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
     private List<Conversation> itemList;
     OnConversationClickListener onConversationClickListener;
 
-    public ConversationsRecyclerAdapter() {
+    public ConversationsRecyclerAdapter(ImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
         loadItems();
     }
 
@@ -68,6 +73,12 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
                 }
             }
         });
+
+        conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
+        String avatarUrl = conversation.getAvatar();
+        if (avatarUrl != null) {
+            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatar(), conversationViewHolder.avatarImage);
+        }
     }
 
     public void refresh() {
@@ -93,6 +104,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
 class ConversationViewHolder extends RecyclerView.ViewHolder {
 
+    ImageView avatarImage;
     TextView headerText, messageText, dateText, lowerText, newMessageIndicator;
 
     public ConversationViewHolder(View itemView) {
@@ -103,5 +115,6 @@ class ConversationViewHolder extends RecyclerView.ViewHolder {
         messageText = (TextView) itemView.findViewById(R.id.conversation_message_text);
         dateText = (TextView) itemView.findViewById(R.id.conversation_date);
         lowerText = (TextView) itemView.findViewById(R.id.conversation_lower);
+        avatarImage = (ImageView) itemView.findViewById(R.id.conversation_icon);
     }
 }

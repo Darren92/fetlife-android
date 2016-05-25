@@ -35,6 +35,7 @@
     </style>
 
     <style name="ConversationAvatar" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:scaleType">fitXY</item>
         <item name="android:layout_marginRight">@dimen/icon_margin</item>
     </style>
 
