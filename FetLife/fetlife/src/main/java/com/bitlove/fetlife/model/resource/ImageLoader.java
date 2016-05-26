@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.widget.ImageView;
 
 import com.bitlove.fetlife.R;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Downloader;
@@ -52,7 +53,7 @@ public class ImageLoader {
     private FetLifeImageDownloader imageDowloader;
 
     public ImageLoader(Context context) {
-        imageDowloader = new FetLifeImageDownloader(context);
+        imageDowloader = new FetLifeImageDownloader(context, Integer.MAX_VALUE);
 
         Picasso.Builder picassoBuilder  = new Picasso.Builder(context);
         picassoBuilder.downloader(imageDowloader);
