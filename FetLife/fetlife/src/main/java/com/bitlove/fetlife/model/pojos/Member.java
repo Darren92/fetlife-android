@@ -16,6 +16,9 @@ public class Member {
     @JsonProperty("avatar")
     private Avatar avatar;
 
+    @JsonProperty("url")
+    private String link;
+
     public String getNickname() {
         return nickname;
     }
@@ -46,5 +49,13 @@ public class Member {
 
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 }

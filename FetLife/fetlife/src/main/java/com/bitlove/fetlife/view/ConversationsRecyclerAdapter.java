@@ -24,7 +24,9 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
     private final ImageLoader imageLoader;
 
     public interface OnConversationClickListener {
-        public void onClick(Conversation conversation);
+        public void onItemClick(Conversation conversation);
+
+        public void onAvatarClick(Conversation conversation);
     }
 
     private List<Conversation> itemList;
@@ -69,12 +71,20 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             @Override
             public void onClick(View v) {
                 if (onConversationClickListener != null) {
-                    onConversationClickListener.onClick(conversation);
+                    onConversationClickListener.onItemClick(conversation);
                 }
             }
         });
 
-        conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
+        conversationViewHolder.avatarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onConversationClickListener != null) {
+                    onConversationClickListener.onAvatarClick(conversation);
+                }
+            }
+        });
+
         String avatarUrl = conversation.getAvatar();
         if (avatarUrl != null) {
             imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatar(), conversationViewHolder.avatarImage);
