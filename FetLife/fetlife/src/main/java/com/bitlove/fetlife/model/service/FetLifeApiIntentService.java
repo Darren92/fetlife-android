@@ -318,7 +318,8 @@ public class FetLifeApiIntentService extends IntentService {
 
         Call<List<Message>> getMessagesCall;
         if (loadNewMessages) {
-            Message newestMessage = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).and(Condition.column(Message$Table.PENDING).eq(false)).orderBy(false,Message$Table.DATE).querySingle();
+            String selfId = getFetLifeApplication().getMe().getId();
+            Message newestMessage = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).and(Condition.column(Message$Table.SENDERID).isNot(selfId)).orderBy(false,Message$Table.DATE).querySingle();
             getMessagesCall = getFetLifeApi().getMessages(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), conversationId, newestMessage != null ? newestMessage.getId() : null, null, PARAM_NEWMESSAGE_LIMIT);
         } else {
             Message oldestMessage = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).and(Condition.column(Message$Table.PENDING).eq(false)).orderBy(true,Message$Table.DATE).querySingle();
