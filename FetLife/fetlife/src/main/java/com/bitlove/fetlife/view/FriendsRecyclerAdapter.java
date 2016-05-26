@@ -15,6 +15,7 @@ import com.bitlove.fetlife.model.pojos.Friend$Table;
 import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolder> {
@@ -39,7 +40,11 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
 
     private void loadItems() {
         //TODO: think of moving to separate thread with specific DB executor
-        itemList = new Select().from(Friend.class).orderBy(false,Friend$Table.NICKNAME).queryList();
+        try {
+            itemList = new Select().from(Friend.class).queryList();
+        } catch (Throwable t) {
+            itemList = new ArrayList<>();
+        }
     }
 
     @Override
@@ -108,6 +113,6 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         messageText = (TextView) itemView.findViewById(R.id.friend_upper);
         dateText = (TextView) itemView.findViewById(R.id.friend_right);
         lowerText = (TextView) itemView.findViewById(R.id.friend_lower);
-        avatarImage = (ImageView) itemView.findViewById(R.id.conversation_icon);
+        avatarImage = (ImageView) itemView.findViewById(R.id.friend_icon);
     }
 }

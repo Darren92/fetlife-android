@@ -23,7 +23,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 public class FetLifeDatabase {
 
     public static final String NAME = "fetlife";
-    public static final int VERSION = 3;
-    public static final int MIN_SUPPORTED_VERSION = 3;
+    public static final int VERSION = 4;
+    public static final int MIN_SUPPORTED_VERSION = 4;
 
 }
