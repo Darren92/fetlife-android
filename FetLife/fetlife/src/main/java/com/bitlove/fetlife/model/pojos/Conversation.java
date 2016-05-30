@@ -9,8 +9,28 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import java.util.UUID;
+
 @Table(databaseName = FetLifeDatabase.NAME)
 public class Conversation extends BaseModel {
+
+    private static final String PREFIX_LOCAL = "%" + Conversation.class.getName() + ".PREFIX_LOCAL%";
+
+    public static boolean isLocal(String conversationId) {
+        return conversationId.startsWith(PREFIX_LOCAL);
+    }
+
+    public static String createLocalConversation(Member member) {
+        Conversation conversation = new Conversation();
+        conversation.setId(PREFIX_LOCAL + UUID.randomUUID().toString());
+        String dateString = DateUtil.toString(System.currentTimeMillis());
+        conversation.setCreatedAt(dateString);
+        conversation.setUpdatedAt(dateString);
+        conversation.setHasNewMessage(false);
+        conversation.setMember(member);
+        conversation.save();
+        return conversation.getId();
+    }
 
     @Column
     @PrimaryKey(autoincrement = false)
@@ -46,7 +66,7 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonIgnore
-    private String avatar;
+    private String avatarLink;
 
     @Column
     @JsonIgnore
@@ -121,10 +141,7 @@ public class Conversation extends BaseModel {
         if (member != null) {
             setMemberId(member.getId());
             setNickname(member.getNickname());
-            Avatar avatar = member.getAvatar();
-            if (avatar != null) {
-                setAvatar(avatar.getVariants().getIconUrl());
-            }
+            setAvatarLink(member.getAvatarLink());
             setMemberLink(member.getLink());
         }
     }
@@ -140,13 +157,13 @@ public class Conversation extends BaseModel {
     }
 
     @JsonIgnore
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarLink() {
+        return avatarLink;
     }
 
     @JsonIgnore
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarLink(String avatarLink) {
+        this.avatarLink = avatarLink;
     }
 
     @JsonIgnore

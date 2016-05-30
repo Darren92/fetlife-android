@@ -85,9 +85,9 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             }
         });
 
-        String avatarUrl = conversation.getAvatar();
+        String avatarUrl = conversation.getAvatarLink();
         if (avatarUrl != null) {
-            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatar(), conversationViewHolder.avatarImage);
+            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatarLink(), conversationViewHolder.avatarImage);
         } else {
             conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         }

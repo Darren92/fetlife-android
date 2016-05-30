@@ -15,7 +15,9 @@ import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
+import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Friend;
+import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.google.android.gms.common.server.converter.ConverterWrapper;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
@@ -57,7 +59,8 @@ public class FriendsActivity extends ResourceActivity
         friendsAdapter.setOnItemClickListener(new FriendsRecyclerAdapter.OnFriendClickListener() {
             @Override
             public void onItemClick(Friend friend) {
-                MessagesActivity.startAsNewConversationActivity(FriendsActivity.this, friend.getId(), friend.getNickname());
+                Conversation.createLocalConversation(friend);
+                MessagesActivity.startActivity(FriendsActivity.this, friend.getId(), friend.getNickname(), false);
             }
 
             @Override

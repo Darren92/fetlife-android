@@ -9,70 +9,26 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(databaseName = FetLifeDatabase.NAME)
-public class Friend extends BaseModel {
+public class Friend extends Member {
 
+    @JsonProperty("id")
     @Column
     @PrimaryKey(autoincrement = false)
-    @JsonProperty("id")
     private String id;
 
-    @Column
     @JsonProperty("nickname")
+    @Column
     private String nickname;
 
     @JsonProperty("avatar")
-    private Avatar avatarVariants;
+    private Avatar avatar;
 
-    @Column
     @JsonProperty("url")
+    @Column
     private String link;
 
+    @JsonIgnore
     @Column
-    @JsonIgnore
-    private String avatar;
+    private String avatarLink;
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Avatar getAvatarVariants() {
-        return avatarVariants;
-    }
-
-    public void setAvatarVariants(Avatar avatarVariants) {
-        this.avatarVariants = avatarVariants;
-        if (avatarVariants != null) {
-            setAvatar(avatarVariants.getVariants().getIconUrl());
-        }
-    }
-
-    @JsonIgnore
-    public String getAvatar() {
-        return avatar;
-    }
-
-    @JsonIgnore
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
 }

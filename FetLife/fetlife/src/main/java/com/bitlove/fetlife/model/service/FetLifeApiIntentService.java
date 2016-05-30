@@ -21,6 +21,7 @@ import com.bitlove.fetlife.model.api.FetLifeApi;
 import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Conversation;
+import com.bitlove.fetlife.model.pojos.Conversation$Table;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
@@ -52,7 +53,6 @@ public class FetLifeApiIntentService extends IntentService {
     public static final String ACTION_APICALL_FRIENDS = "com.bitlove.fetlife.action.apicall.friends";
     public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
     public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_message";
-    public static final String ACTION_APICALL_NEW_CONVERSATION = "com.bitlove.fetlife.action.apicall.new_conversation";
     public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
@@ -62,8 +62,6 @@ public class FetLifeApiIntentService extends IntentService {
 
     private static final int PARAM_NEWMESSAGE_LIMIT = 50;
     private static final int PARAM_OLDMESSAGE_LIMIT = 25;
-
-    public static final String PREFIX_NEW_CONVERSATION = "%NEW4%";
 
     private static String actionInProgress = null;
 
@@ -134,7 +132,7 @@ public class FetLifeApiIntentService extends IntentService {
                     result = retrieveMessages(params);
                     break;
                 case ACTION_APICALL_NEW_MESSAGE:
-                    result = sendPendingMessages();
+                    result = sendPendingMessages(false);
                     break;
                 case ACTION_APICALL_SET_MESSAGES_READ:
                     result = setMessagesRead(params);
@@ -290,44 +288,29 @@ public class FetLifeApiIntentService extends IntentService {
         }
     }
 
-    private boolean sendPendingMessages() throws IOException {
-        boolean positiveStackedResult = false;
+    private boolean sendPendingMessages(boolean positiveStackedResult) throws IOException {
         List<Message> pendingMessages = new Select().from(Message.class).where(Condition.column(Message$Table.PENDING).eq(true)).queryList();
-        for (Message message : pendingMessages) {
-            if (!sendPendingMessage(message)) {
-                message.setPending(false);
-                message.setFailed(true);
-                message.save();
-            } else if (!positiveStackedResult) {
-                positiveStackedResult = true;
+        for (Message pendingMessage : pendingMessages) {
+            String conversationId = pendingMessage.getConversationId();
+            if (Conversation.isLocal(conversationId)) {
+                if (startNewConversation(conversationId, pendingMessage)) {
+                    //db changed, reload remaining pending messages
+                    return sendPendingMessages(true);
+                }
+            } else {
+                if (!sendPendingMessage(pendingMessage)) {
+                    pendingMessage.setPending(false);
+                    pendingMessage.setFailed(true);
+                    pendingMessage.save();
+                } else if (!positiveStackedResult) {
+                    positiveStackedResult = true;
+                }
             }
         }
         return positiveStackedResult;
     }
 
     private boolean sendPendingMessage(Message pendingMessage) throws IOException {
-        String conversationId = pendingMessage.getConversationId();
-        if (conversationId.startsWith(PREFIX_NEW_CONVERSATION)) {
-            String friendId = conversationId.substring(PREFIX_NEW_CONVERSATION.length());
-            return startNewConversation(friendId, pendingMessage);
-        } else {
-            return sendNewMessage(pendingMessage);
-        }
-    }
-
-    private boolean startNewConversation(String friendId, Message pendingMessage) throws IOException {
-        Call<Conversation> postConversationCall = getFetLifeApi().postConversation(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), friendId, pendingMessage.getBody(), pendingMessage.getBody());
-        Response<Conversation> postConversationResponse = postConversationCall.execute();
-        if (postConversationResponse.isSuccess()) {
-            Conversation conversation = postConversationResponse.body();
-            getFetLifeApplication().getEventBus().post(new NewConversationEvent(conversation.getId()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean sendNewMessage(Message pendingMessage) throws IOException {
         Call<Message> postMessagesCall = getFetLifeApi().postMessage(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingMessage.getConversationId(), pendingMessage.getBody());
         Response<Message> postMessageResponse = postMessagesCall.execute();
         if (postMessageResponse.isSuccess()) {
@@ -336,6 +319,36 @@ public class FetLifeApiIntentService extends IntentService {
             message.setPending(false);
             message.setConversationId(pendingMessage.getConversationId());
             message.update();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean startNewConversation(String localConversationId, Message startMessage) throws IOException {
+        Conversation pendingConversation = new Select().from(Conversation.class).where(Condition.column(Conversation$Table.ID).eq(localConversationId)).querySingle();
+        if (pendingConversation == null) {
+            return false;
+        }
+
+        Call<Conversation> postConversationCall = getFetLifeApi().postConversation(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingConversation.getMemberId(), startMessage.getBody(), startMessage.getBody());
+        Response<Conversation> postConversationResponse = postConversationCall.execute();
+        if (postConversationResponse.isSuccess()) {
+            pendingConversation.delete();
+            startMessage.delete();
+
+            Conversation conversation = postConversationResponse.body();
+            conversation.save();
+
+            String serverConversationId = conversation.getId();
+
+            List<Message> pendingMessages = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(localConversationId)).queryList();
+            for (Message pendingMessage : pendingMessages) {
+                pendingMessage.setConversationId(serverConversationId);
+                pendingMessage.save();
+            }
+
+            getFetLifeApplication().getEventBus().post(new NewConversationEvent(localConversationId, serverConversationId));
             return true;
         } else {
             return false;
