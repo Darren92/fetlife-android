@@ -17,6 +17,7 @@ import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
+import com.google.android.gms.common.server.converter.ConverterWrapper;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -40,10 +41,6 @@ public class FriendsActivity extends ResourceActivity
         context.startActivity(createIntent(context));
     }
 
-    public static void startActivityForResult(Activity activity, int requestCode) {
-        activity.startActivityForResult(createIntent(activity), requestCode);
-    }
-
     public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, FriendsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -60,10 +57,7 @@ public class FriendsActivity extends ResourceActivity
         friendsAdapter.setOnItemClickListener(new FriendsRecyclerAdapter.OnFriendClickListener() {
             @Override
             public void onItemClick(Friend friend) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(RESULT_EXTRA_FRIEND_ID, friend.getId());
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                MessagesActivity.startAsNewConversationActivity(FriendsActivity.this, friend.getId(), friend.getNickname());
             }
 
             @Override

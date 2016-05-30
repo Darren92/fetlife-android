@@ -13,6 +13,7 @@ import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.LoginFailedEvent;
 import com.bitlove.fetlife.event.LoginFinishedEvent;
 import com.bitlove.fetlife.event.LoginStartedEvent;
+import com.bitlove.fetlife.event.NewConversationEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
@@ -61,6 +62,8 @@ public class FetLifeApiIntentService extends IntentService {
 
     private static final int PARAM_NEWMESSAGE_LIMIT = 50;
     private static final int PARAM_OLDMESSAGE_LIMIT = 25;
+
+    public static final String PREFIX_NEW_CONVERSATION = "%NEW4%";
 
     private static String actionInProgress = null;
 
@@ -303,6 +306,28 @@ public class FetLifeApiIntentService extends IntentService {
     }
 
     private boolean sendPendingMessage(Message pendingMessage) throws IOException {
+        String conversationId = pendingMessage.getConversationId();
+        if (conversationId.startsWith(PREFIX_NEW_CONVERSATION)) {
+            String friendId = conversationId.substring(PREFIX_NEW_CONVERSATION.length());
+            return startNewConversation(friendId, pendingMessage);
+        } else {
+            return sendNewMessage(pendingMessage);
+        }
+    }
+
+    private boolean startNewConversation(String friendId, Message pendingMessage) throws IOException {
+        Call<Conversation> postConversationCall = getFetLifeApi().postConversation(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), friendId, pendingMessage.getBody(), pendingMessage.getBody());
+        Response<Conversation> postConversationResponse = postConversationCall.execute();
+        if (postConversationResponse.isSuccess()) {
+            Conversation conversation = postConversationResponse.body();
+            getFetLifeApplication().getEventBus().post(new NewConversationEvent(conversation.getId()));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean sendNewMessage(Message pendingMessage) throws IOException {
         Call<Message> postMessagesCall = getFetLifeApi().postMessage(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingMessage.getConversationId(), pendingMessage.getBody());
         Response<Message> postMessageResponse = postMessagesCall.execute();
         if (postMessageResponse.isSuccess()) {

@@ -47,4 +47,7 @@ public interface FetLifeApi {
     @PUT("/api/v2/me/conversations/{conversationId}/messages/read")
     Call<ResponseBody> setMessagesRead(@Header("Authorization") String authHeader, @Path("conversationId") String conversationId, @Body() MessageIds ids);
 
+    @POST("/api/v2/me/conversations")
+    Call<Conversation> postConversation(@Header("Authorization") String authHeader, @Query("user_id") String userId, @Query("subject") String subject, @Query("body") String body);
+
 }

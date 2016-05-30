@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.AuthenticationFailedEvent;
+import com.bitlove.fetlife.event.NewConversationEvent;
 import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
@@ -44,6 +45,11 @@ public class MessagesActivity extends ResourceActivity
 //    private volatile boolean refreshRuns;
 //    private Handler handler = new Handler();
 //    private boolean isVisible;
+
+    public static void startAsNewConversationActivity(Context context, String friendId, String title) {
+        String conversationId = FetLifeApiIntentService.PREFIX_NEW_CONVERSATION + friendId;
+        startActivity(context, conversationId, title, false);
+    }
 
     public static void startActivity(Context context, String conversationId, String title, boolean newTask) {
         context.startActivity(createIntent(context, conversationId, title, newTask));
@@ -235,6 +241,19 @@ public class MessagesActivity extends ResourceActivity
             //TODO: display (snackbar?) notification
         } else {
             //wait for the already started refresh
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewConversation(NewConversationEvent newConversationEvent) {
+        if (conversationId.startsWith(FetLifeApiIntentService.PREFIX_NEW_CONVERSATION)) {
+            conversationId = newConversationEvent.getConversationId();
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_CONVERSATION_ID, conversationId);
+            messagesAdapter = new MessagesRecyclerAdapter(conversationId);
+            recyclerLayoutManager.setReverseLayout(true);
+            recyclerView.setAdapter(messagesAdapter);
+        } else {
         }
     }
 

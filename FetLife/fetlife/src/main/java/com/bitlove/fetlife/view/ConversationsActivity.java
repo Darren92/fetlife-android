@@ -27,7 +27,6 @@ public class ConversationsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int CONVERSATIONS_PAGE_COUNT = 10;
-    private static final int REQUEST_CODE_NEW_CONVERSATION = 42;
 
     private FlowContentObserver conversationsModelObserver;
     private ConversationsRecyclerAdapter conversationsAdapter;
@@ -51,7 +50,7 @@ public class ConversationsActivity extends ResourceActivity
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendsActivity.startActivityForResult(ConversationsActivity.this, REQUEST_CODE_NEW_CONVERSATION);
+                FriendsActivity.startActivity(ConversationsActivity.this);
             }
         });
 
