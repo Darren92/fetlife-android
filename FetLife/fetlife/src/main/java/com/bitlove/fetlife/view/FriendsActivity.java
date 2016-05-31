@@ -59,8 +59,7 @@ public class FriendsActivity extends ResourceActivity
         friendsAdapter.setOnItemClickListener(new FriendsRecyclerAdapter.OnFriendClickListener() {
             @Override
             public void onItemClick(Friend friend) {
-                Conversation.createLocalConversation(friend);
-                MessagesActivity.startActivity(FriendsActivity.this, friend.getId(), friend.getNickname(), false);
+                MessagesActivity.startActivity(FriendsActivity.this, Conversation.createLocalConversation(friend), friend.getNickname(), false);
             }
 
             @Override
@@ -103,11 +102,13 @@ public class FriendsActivity extends ResourceActivity
         }
 
         friendsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
+
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
                 friendsAdapter.refresh();
             }
         });
+
         friendsModelObserver.registerForContentChanges(this, Friend.class);
         friendsAdapter.refresh();
 

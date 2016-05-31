@@ -162,7 +162,7 @@ public class MessagesActivity extends ResourceActivity
 
         for (int i = 0; i < messagesAdapter.getItemCount(); i++) {
             Message message = messagesAdapter.getItem(i);
-            if (!message.getPending() && message.getIsNew()) {
+            if (!message.getPending() && message.isNewMessage()) {
                 params.add(message.getId());
             }
         }
@@ -222,8 +222,9 @@ public class MessagesActivity extends ResourceActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewConversation(NewConversationEvent newConversationEvent) {
         if (newConversationEvent.getLocalConversationId().equals(conversationId)) {
-            getIntent().putExtra(EXTRA_CONVERSATION_ID, newConversationEvent.getConversationId());
-            recreate();
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_CONVERSATION_ID, newConversationEvent.getConversationId());
+            onNewIntent(intent);
         } else {
         }
     }
@@ -231,7 +232,7 @@ public class MessagesActivity extends ResourceActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
         showToast(getString(R.string.authentication_failed));
-        LoginActivity.startLogout(this);
+        LoginActivity.logout(getFetLifeApplication());
     }
 
     public void onSend(View v) {

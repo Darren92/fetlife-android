@@ -28,6 +28,7 @@ import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message$Table;
 import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Token;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -255,7 +256,7 @@ public class FetLifeApiIntentService extends IntentService {
 
                 Member me = getFetLifeApplication().getMe();
 
-                String meAsJson = new ObjectMapper().writeValueAsString(me);
+                String meAsJson = me.toJsonString();
                 Bundle accountData = new Bundle();
                 accountData.putString(FetLifeApplication.CONSTANT_PREF_KEY_ME_JSON, meAsJson);
 
@@ -335,12 +336,13 @@ public class FetLifeApiIntentService extends IntentService {
         Response<Conversation> postConversationResponse = postConversationCall.execute();
         if (postConversationResponse.isSuccess()) {
             pendingConversation.delete();
-            startMessage.delete();
 
             Conversation conversation = postConversationResponse.body();
             conversation.save();
 
             String serverConversationId = conversation.getId();
+            startMessage.delete();
+            retrieveMessages(serverConversationId);
 
             List<Message> pendingMessages = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(localConversationId)).queryList();
             for (Message pendingMessage : pendingMessages) {

@@ -102,11 +102,13 @@ public class ConversationsActivity extends ResourceActivity
         }
 
         conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
+
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
                 conversationsAdapter.refresh();
             }
         });
+
         conversationsModelObserver.registerForContentChanges(this, Conversation.class);
         conversationsAdapter.refresh();
 

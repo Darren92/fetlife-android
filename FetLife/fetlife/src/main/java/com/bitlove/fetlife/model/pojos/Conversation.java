@@ -124,6 +124,10 @@ public class Conversation extends BaseModel {
         this.date = date;
     }
 
+    public boolean isHasNewMessage() {
+        return getHasNewMessage();
+    }
+
     public boolean getHasNewMessage() {
         return hasNewMessage;
     }

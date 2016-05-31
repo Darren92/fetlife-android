@@ -3,7 +3,6 @@ package com.bitlove.fetlife.view;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,14 +24,7 @@ import android.widget.Toast;
 
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
-import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
-import com.onesignal.OneSignal;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Arrays;
 
 public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -143,36 +135,7 @@ public class ResourceActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-
-            getFetLifeApplication().setAccessToken(null);
-
-            //TODO: think about to move to the intent service
-            PreferenceManager.getDefaultSharedPreferences(getFetLifeApplication()).edit().clear().apply();
-            OneSignal.setSubscription(false);
-
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION, 1);
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME, getFetLifeApplication().getMe().getNickname());
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN, "");
-                OneSignal.sendTags(jsonObject);
-
-                String[] tags = new String[]{
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION,
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME,
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN
-                };
-                OneSignal.deleteTags(Arrays.asList(tags));
-
-            } catch (JSONException e) {
-                //TODO: error handling
-            }
-
-            getFetLifeApplication().removeMe();
-
-            deleteDatabase(FetLifeDatabase.NAME);
-
-            LoginActivity.startLogout(this);
+            LoginActivity.logout(getFetLifeApplication());
         } else if (id == R.id.nav_conversations) {
             ConversationsActivity.startActivity(this);
         }
@@ -193,7 +156,7 @@ public class ResourceActivity extends AppCompatActivity
     protected void verifyUser() {
 
         if (getFetLifeApplication().getMe() == null) {
-            LoginActivity.startLogout(this);
+            LoginActivity.logout(getFetLifeApplication());
             finish();
             overridePendingTransition(0, 0);
             return;

@@ -2,13 +2,20 @@ package com.bitlove.fetlife.model.pojos;
 
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(databaseName = FetLifeDatabase.NAME)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseModel {
 
     @JsonProperty("id")
@@ -89,5 +96,14 @@ public class Member extends BaseModel {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String toJsonString() throws JsonProcessingException {
+        return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+            @Override
+            public boolean hasIgnoreMarker(AnnotatedMember m) {
+                return m.getDeclaringClass() == BaseModel.class || super.hasIgnoreMarker(m);
+            }
+        }).writeValueAsString(this);
     }
 }
