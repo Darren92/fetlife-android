@@ -50,7 +50,7 @@ public class ConversationsActivity extends ResourceActivity
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendsActivity.startActivity(ConversationsActivity.this);
+                FriendsActivity.startActivity(ConversationsActivity.this, FriendsActivity.FriendListMode.NEW_CONVERSATION);
             }
         });
 

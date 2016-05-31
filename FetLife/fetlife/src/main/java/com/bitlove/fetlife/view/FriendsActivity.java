@@ -17,9 +17,7 @@ import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Friend;
-import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
-import com.google.android.gms.common.server.converter.ConverterWrapper;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -30,7 +28,12 @@ import org.greenrobot.eventbus.ThreadMode;
 public class FriendsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String RESULT_EXTRA_FRIEND_ID = "com.bitlove.fetlife.result.extra.friend_id";
+    public static final String EXTRA_FRIEND_LIST_MODE = "com.bitlove.fetlife.extra.friend_list_mode";
+
+    public enum FriendListMode {
+        NEW_CONVERSATION,
+        FRIEND_PROFILE
+    }
 
     private static final int FRIENDS_PAGE_COUNT = 10;
 
@@ -40,11 +43,16 @@ public class FriendsActivity extends ResourceActivity
     private int requestedPage = 1;
 
     public static void startActivity(Context context) {
-        context.startActivity(createIntent(context));
+        context.startActivity(createIntent(context, FriendListMode.FRIEND_PROFILE));
     }
 
-    public static Intent createIntent(Context context) {
+    public static void startActivity(Context context, FriendListMode friendListMode) {
+        context.startActivity(createIntent(context, friendListMode));
+    }
+
+    public static Intent createIntent(Context context, FriendListMode friendListMode) {
         Intent intent = new Intent(context, FriendsActivity.class);
+        intent.putExtra(EXTRA_FRIEND_LIST_MODE, friendListMode.toString());
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
@@ -59,7 +67,15 @@ public class FriendsActivity extends ResourceActivity
         friendsAdapter.setOnItemClickListener(new FriendsRecyclerAdapter.OnFriendClickListener() {
             @Override
             public void onItemClick(Friend friend) {
-                MessagesActivity.startActivity(FriendsActivity.this, Conversation.createLocalConversation(friend), friend.getNickname(), false);
+                switch (getFriendListMode()) {
+                    case NEW_CONVERSATION:
+                        MessagesActivity.startActivity(FriendsActivity.this, Conversation.createLocalConversation(friend), friend.getNickname(), false);
+                        finish();
+                        return;
+                    case FRIEND_PROFILE:
+                        onAvatarClick(friend);
+                        return;
+                }
             }
 
             @Override
@@ -89,6 +105,10 @@ public class FriendsActivity extends ResourceActivity
                 }
             }
         });
+    }
+
+    private FriendListMode getFriendListMode() {
+        return FriendListMode.valueOf(getIntent().getStringExtra(EXTRA_FRIEND_LIST_MODE));
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.bitlove.fetlife.view;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Member;
+import com.bitlove.fetlife.model.resource.ImageLoader;
 
 public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,8 +83,8 @@ public class ResourceActivity extends AppCompatActivity
         try {
             String versionPrefixText = getString(R.string.version_prefix);
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
-            headerSubTextView.setText(versionPrefixText + pInfo.versionName);
+            TextView versionTextView = (TextView) navigationView.findViewById(R.id.version_text);
+            versionTextView.setText(versionPrefixText + pInfo.versionName);
         } catch (PackageManager.NameNotFoundException e) {
         }
 
@@ -88,8 +92,21 @@ public class ResourceActivity extends AppCompatActivity
         if (me != null) {
             TextView headerTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_text);
             headerTextView.setText(me.getNickname());
-//        headerTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
-//        headerTextView.setText(getFetLifeApplication().getMe().getId());
+            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
+            headerSubTextView.setText(me.getMetaInfo());
+            ImageView headerAvatar = (ImageView) navigationHeaderView.findViewById(R.id.nav_header_image);
+            getFetLifeApplication().getImageLoader().loadImage(this, me.getAvatarLink(), headerAvatar);
+            final String selfLink = me.getLink();
+            if (selfLink != null) {
+                headerAvatar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(selfLink));
+                        startActivity(intent);
+                    }
+                });
+            }
         }
     }
 
@@ -138,6 +155,8 @@ public class ResourceActivity extends AppCompatActivity
             LoginActivity.logout(getFetLifeApplication());
         } else if (id == R.id.nav_conversations) {
             ConversationsActivity.startActivity(this);
+        } else if (id == R.id.nav_friends) {
+            FriendsActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

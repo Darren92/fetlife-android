@@ -31,6 +31,10 @@ public class Member extends BaseModel {
     @Column
     private String notificationToken;
 
+    @JsonProperty("meta_line")
+    @Column
+    private String metaInfo;
+
     @JsonProperty("avatar")
     private Avatar avatar;
 
@@ -78,6 +82,14 @@ public class Member extends BaseModel {
                 setAvatarLink(variants.getIconUrl());
             }
         }
+    }
+
+    public String getMetaInfo() {
+        return metaInfo;
+    }
+
+    public void setMetaInfo(String metaInfo) {
+        this.metaInfo = metaInfo;
     }
 
     @JsonIgnore

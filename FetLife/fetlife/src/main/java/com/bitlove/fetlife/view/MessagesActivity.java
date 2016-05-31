@@ -16,10 +16,15 @@ import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Conversation;
+import com.bitlove.fetlife.model.pojos.Conversation$Table;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
+import com.bitlove.fetlife.model.pojos.Message$Table;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
@@ -154,6 +159,20 @@ public class MessagesActivity extends ResourceActivity
 
         getFetLifeApplication().getEventBus().unregister(this);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Conversation.isLocal(conversationId) && messagesAdapter.getItemCount() == 0) {
+            //TODO: consider using it in a db thread executor
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    new Delete().from(Conversation.class).where(Condition.column(Conversation$Table.ID).eq(conversationId)).query();
+                }
+            }).start();
+        }
+        super.onBackPressed();
     }
 
     private void setMessagesRead() {

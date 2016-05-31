@@ -7,6 +7,7 @@
         <item name="android:textColor">@color/text_color_primary</item>
         <item name="android:textColorPrimary">@color/text_color_primary</item>
         <item name="android:textColorSecondary">@color/text_color_secondary</item>
+        <item name="android:listDivider">@color/text_color_primary</item>
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 

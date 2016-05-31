@@ -35,4 +35,8 @@ public class Friend extends Member {
     @Column
     private String avatarLink;
 
+    @JsonProperty("meta_line")
+    @Column
+    private String metaInfo;
+
 }

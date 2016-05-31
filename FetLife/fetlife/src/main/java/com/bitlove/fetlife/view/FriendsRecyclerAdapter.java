@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Friend;
-import com.bitlove.fetlife.model.pojos.Friend$Table;
 import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -60,7 +59,7 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
         final Friend friend = itemList.get(position);
 
         friendViewHolder.headerText.setText(friend.getNickname());
-//        friendViewHolder.messageText.setText(friend.getSubject());
+        friendViewHolder.upperText.setText(friend.getMetaInfo());
 
 //        friendViewHolder.dateText.setText(SimpleDateFormat.getDateTimeInstance().format(new Date(friend.getDate())));
 
@@ -82,11 +81,10 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
             }
         });
 
+        friendViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         String avatarUrl = friend.getAvatarLink();
         if (avatarUrl != null) {
             imageLoader.loadImage(friendViewHolder.itemView.getContext(), avatarUrl, friendViewHolder.avatarImage);
-        } else {
-            friendViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         }
     }
 
@@ -114,13 +112,13 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
 class FriendViewHolder extends RecyclerView.ViewHolder {
 
     ImageView avatarImage;
-    TextView headerText, messageText, dateText, lowerText;
+    TextView headerText, upperText, dateText, lowerText;
 
     public FriendViewHolder(View itemView) {
         super(itemView);
 
         headerText = (TextView) itemView.findViewById(R.id.friend_header);
-        messageText = (TextView) itemView.findViewById(R.id.friend_upper);
+        upperText = (TextView) itemView.findViewById(R.id.friend_upper);
         dateText = (TextView) itemView.findViewById(R.id.friend_right);
         lowerText = (TextView) itemView.findViewById(R.id.friend_lower);
         avatarImage = (ImageView) itemView.findViewById(R.id.friend_icon);
