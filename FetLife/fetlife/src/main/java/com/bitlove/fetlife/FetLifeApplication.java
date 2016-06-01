@@ -59,9 +59,7 @@ public class FetLifeApplication extends Application {
 
         int databaseVersion = preferences.getInt(CONSTANT_PREF_KEY_DB_VERSION, 0);
         if (databaseVersion < FetLifeDatabase.MIN_SUPPORTED_VERSION) {
-            deleteDatabase(FetLifeDatabase.NAME + ".db");
-            //DBFlow library uses .db suffix, but they mentioned they might going to change this in the future
-            deleteDatabase(FetLifeDatabase.NAME);
+            deleteDatabase();
         }
         preferences.edit().putInt(CONSTANT_PREF_KEY_DB_VERSION, FetLifeDatabase.VERSION).apply();
         FlowManager.init(this);
@@ -108,4 +106,9 @@ public class FetLifeApplication extends Application {
         return eventBus;
     }
 
+    public void deleteDatabase() {
+        deleteDatabase(FetLifeDatabase.NAME + ".db");
+        //DBFlow library uses .db suffix, but they mentioned they might going to change this in the future
+        deleteDatabase(FetLifeDatabase.NAME);
+    }
 }

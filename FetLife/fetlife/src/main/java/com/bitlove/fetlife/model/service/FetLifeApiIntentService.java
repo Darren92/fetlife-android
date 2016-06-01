@@ -13,6 +13,7 @@ import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.LoginFailedEvent;
 import com.bitlove.fetlife.event.LoginFinishedEvent;
 import com.bitlove.fetlife.event.LoginStartedEvent;
+import com.bitlove.fetlife.event.NewConversationEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
@@ -20,11 +21,14 @@ import com.bitlove.fetlife.model.api.FetLifeApi;
 import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Conversation;
+import com.bitlove.fetlife.model.pojos.Conversation$Table;
+import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message$Table;
 import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Token;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -47,8 +51,9 @@ import retrofit.Response;
 public class FetLifeApiIntentService extends IntentService {
 
     public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetlife.action.apicall.cpnversations";
+    public static final String ACTION_APICALL_FRIENDS = "com.bitlove.fetlife.action.apicall.friends";
     public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
-    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_messages";
+    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_message";
     public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
@@ -121,11 +126,14 @@ public class FetLifeApiIntentService extends IntentService {
                 case ACTION_APICALL_CONVERSATIONS:
                     result = retriveConversations(params);
                     break;
+                case ACTION_APICALL_FRIENDS:
+                    result = retriveFriends(params);
+                    break;
                 case ACTION_APICALL_MESSAGES:
                     result = retrieveMessages(params);
                     break;
                 case ACTION_APICALL_NEW_MESSAGE:
-                    result = sendPendingMessages();
+                    result = sendPendingMessages(false);
                     break;
                 case ACTION_APICALL_SET_MESSAGES_READ:
                     result = setMessagesRead(params);
@@ -248,7 +256,7 @@ public class FetLifeApiIntentService extends IntentService {
 
                 Member me = getFetLifeApplication().getMe();
 
-                String meAsJson = new ObjectMapper().writeValueAsString(me);
+                String meAsJson = me.toJsonString();
                 Bundle accountData = new Bundle();
                 accountData.putString(FetLifeApplication.CONSTANT_PREF_KEY_ME_JSON, meAsJson);
 
@@ -281,16 +289,23 @@ public class FetLifeApiIntentService extends IntentService {
         }
     }
 
-    private boolean sendPendingMessages() throws IOException {
-        boolean positiveStackedResult = false;
+    private boolean sendPendingMessages(boolean positiveStackedResult) throws IOException {
         List<Message> pendingMessages = new Select().from(Message.class).where(Condition.column(Message$Table.PENDING).eq(true)).queryList();
-        for (Message message : pendingMessages) {
-            if (!sendPendingMessage(message)) {
-                message.setPending(false);
-                message.setFailed(true);
-                message.save();
-            } else if (!positiveStackedResult) {
-                positiveStackedResult = true;
+        for (Message pendingMessage : pendingMessages) {
+            String conversationId = pendingMessage.getConversationId();
+            if (Conversation.isLocal(conversationId)) {
+                if (startNewConversation(conversationId, pendingMessage)) {
+                    //db changed, reload remaining pending messages
+                    return sendPendingMessages(true);
+                }
+            } else {
+                if (!sendPendingMessage(pendingMessage)) {
+                    pendingMessage.setPending(false);
+                    pendingMessage.setFailed(true);
+                    pendingMessage.save();
+                } else if (!positiveStackedResult) {
+                    positiveStackedResult = true;
+                }
             }
         }
         return positiveStackedResult;
@@ -305,6 +320,37 @@ public class FetLifeApiIntentService extends IntentService {
             message.setPending(false);
             message.setConversationId(pendingMessage.getConversationId());
             message.update();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean startNewConversation(String localConversationId, Message startMessage) throws IOException {
+        Conversation pendingConversation = new Select().from(Conversation.class).where(Condition.column(Conversation$Table.ID).eq(localConversationId)).querySingle();
+        if (pendingConversation == null) {
+            return false;
+        }
+
+        Call<Conversation> postConversationCall = getFetLifeApi().postConversation(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingConversation.getMemberId(), startMessage.getBody(), startMessage.getBody());
+        Response<Conversation> postConversationResponse = postConversationCall.execute();
+        if (postConversationResponse.isSuccess()) {
+            pendingConversation.delete();
+
+            Conversation conversation = postConversationResponse.body();
+            conversation.save();
+
+            String serverConversationId = conversation.getId();
+            startMessage.delete();
+            retrieveMessages(serverConversationId);
+
+            List<Message> pendingMessages = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(localConversationId)).queryList();
+            for (Message pendingMessage : pendingMessages) {
+                pendingMessage.setConversationId(serverConversationId);
+                pendingMessage.save();
+            }
+
+            getFetLifeApplication().getEventBus().post(new NewConversationEvent(localConversationId, serverConversationId));
             return true;
         } else {
             return false;
@@ -375,6 +421,28 @@ public class FetLifeApiIntentService extends IntentService {
                 public void run() {
                     for (Conversation conversation : conversations) {
                         conversation.save();
+                    }
+                }
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean retriveFriends(String[] params) throws IOException {
+        final int limit = getIntFromParams(params, 0, 10);
+        final int page = getIntFromParams(params, 1, 1);
+
+        Call<List<Friend>> getFriendsCall = getFetLifeApi().getFriends(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), limit, page);
+        Response<List<Friend>> friendsResponse = getFriendsCall.execute();
+        if (friendsResponse.isSuccess()) {
+            final List<Friend> friends = friendsResponse.body();
+            TransactionManager.transact(FlowManager.getDatabase(FetLifeDatabase.NAME).getWritableDatabase(), new Runnable() {
+                @Override
+                public void run() {
+                    for (Friend friend : friends) {
+                        friend.save();
                     }
                 }
             });

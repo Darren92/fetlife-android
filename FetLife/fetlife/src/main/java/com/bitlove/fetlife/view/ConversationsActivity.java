@@ -50,8 +50,7 @@ public class ConversationsActivity extends ResourceActivity
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Here you will be able to start new conversation", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                FriendsActivity.startActivity(ConversationsActivity.this, FriendsActivity.FriendListMode.NEW_CONVERSATION);
             }
         });
 
@@ -103,11 +102,13 @@ public class ConversationsActivity extends ResourceActivity
         }
 
         conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
+
             @Override
             public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
                 conversationsAdapter.refresh();
             }
         });
+
         conversationsModelObserver.registerForContentChanges(this, Conversation.class);
         conversationsAdapter.refresh();
 

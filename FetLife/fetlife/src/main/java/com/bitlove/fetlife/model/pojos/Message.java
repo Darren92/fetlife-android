@@ -34,7 +34,7 @@ public class Message extends BaseModel {
 
     @Column
     @JsonProperty("is_new")
-    private boolean isNew;
+    private boolean newMessage;
 
     @Column
     @JsonIgnore
@@ -128,6 +128,10 @@ public class Message extends BaseModel {
 
     @JsonIgnore
     public boolean getPending() {
+        return isPending();
+    }
+
+    public boolean isPending() {
         return pending;
     }
 
@@ -138,6 +142,10 @@ public class Message extends BaseModel {
 
     @JsonIgnore
     public boolean getFailed() {
+        return isFailed();
+    }
+
+    public boolean isFailed() {
         return failed;
     }
 
@@ -170,11 +178,15 @@ public class Message extends BaseModel {
         this.date = date;
     }
 
-    public boolean getIsNew() {
-        return isNew;
+    public boolean getNewMessage() {
+        return isNewMessage();
     }
 
-    public void setIsNew(boolean isNew) {
-        this.isNew = isNew;
+    public boolean isNewMessage() {
+        return newMessage;
+    }
+
+    public void setNewMessage(boolean isNew) {
+        this.newMessage = isNew;
     }
 }

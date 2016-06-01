@@ -27,4 +27,8 @@ public class DateUtil {
     public static long parseDate(String input) {
         return parser.parseDateTime(input).getMillis();
     }
+
+    public static String toString(long time) {
+        return parser.print(time);
+    }
 }

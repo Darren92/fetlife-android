@@ -35,4 +35,7 @@
     <string name="new_message_indication">NEW</string>
     <string name="version_prefix">"App version: "</string>
     <string name="error_saved_message">Log saved into file fetlife.log, Please send us the log file via our github project.</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="menu_friends">Friends</string>
+    <string name="menu_logout">Log out</string>
 </resources>
