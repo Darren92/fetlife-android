@@ -60,7 +60,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         conversationViewHolder.headerText.setText(conversation.getNickname());
         conversationViewHolder.messageText.setText(conversation.getSubject());
 
-        if (conversation.getHasNewMessage()) {
+        if (conversation.getContainNewMessage()) {
             conversationViewHolder.newMessageIndicator.setVisibility(View.VISIBLE);
         } else {
             conversationViewHolder.newMessageIndicator.setVisibility(View.GONE);
