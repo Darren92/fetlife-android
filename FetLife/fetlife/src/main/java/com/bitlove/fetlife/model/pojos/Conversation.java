@@ -26,7 +26,7 @@ public class Conversation extends BaseModel {
         String dateString = DateUtil.toString(System.currentTimeMillis());
         conversation.setCreatedAt(dateString);
         conversation.setUpdatedAt(dateString);
-        conversation.setHasNewMessage(false);
+        conversation.setContainNewMessage(false);
         conversation.setMember(member);
         conversation.save();
         return conversation.getId();
@@ -55,7 +55,7 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonProperty("has_new_messages")
-    private boolean hasNewMessage;
+    private boolean containNewMessage;
 
     @JsonProperty("member")
     private Member member;
@@ -124,16 +124,16 @@ public class Conversation extends BaseModel {
         this.date = date;
     }
 
-    public boolean isHasNewMessage() {
-        return getHasNewMessage();
+    public boolean isContainNewMessage() {
+        return getContainNewMessage();
     }
 
-    public boolean getHasNewMessage() {
-        return hasNewMessage;
+    public boolean getContainNewMessage() {
+        return containNewMessage;
     }
 
-    public void setHasNewMessage(boolean hasNewMessage) {
-        this.hasNewMessage = hasNewMessage;
+    public void setContainNewMessage(boolean containNewMessage) {
+        this.containNewMessage = containNewMessage;
     }
 
     public Member getMember() {
