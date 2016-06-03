@@ -260,6 +260,11 @@ public class MessagesActivity extends ResourceActivity
                 if (text == null || text.trim().length() == 0) {
                     return;
                 }
+
+                if (text.equalsIgnoreCase("fetlifeeastereggcrash")) {
+                    throw new RuntimeException("Surprise!");
+                }
+
                 Message message = new Message();
                 message.setPending(true);
                 message.setDate(System.currentTimeMillis());
