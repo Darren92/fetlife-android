@@ -11,7 +11,8 @@ import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Conversation;
-import com.bitlove.fetlife.model.pojos.Conversation$Table;
+
+import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -43,7 +44,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
     private void loadItems() {
         //TODO: think of moving to separate thread with specific DB executor
-        itemList = new Select().from(Conversation.class).orderBy(false,Conversation$Table.DATE).queryList();
+        itemList = new Select().from(Conversation.class).orderBy(Conversation_Table.date,false).queryList();
     }
 
     @Override
@@ -88,7 +89,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         String avatarUrl = conversation.getAvatarLink();
         if (avatarUrl != null) {
-            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatarLink(), conversationViewHolder.avatarImage);
+            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), avatarUrl, conversationViewHolder.avatarImage);
         }
     }
 

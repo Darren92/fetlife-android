@@ -14,7 +14,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = FetLifeDatabase.NAME)
+@Table(database = FetLifeDatabase.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends BaseModel {
 

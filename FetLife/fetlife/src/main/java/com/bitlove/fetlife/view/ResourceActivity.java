@@ -27,8 +27,12 @@ import android.widget.Toast;
 
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
+import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.resource.ImageLoader;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,7 +40,6 @@ public class ResourceActivity extends AppCompatActivity
     protected FloatingActionButton floatingActionButton;
     protected NavigationView navigationView;
     protected View navigationHeaderView;
-    protected ListView recyclerList;
     protected RecyclerView recyclerView;
     protected LinearLayoutManager recyclerLayoutManager;
     protected View inputLayout;
@@ -67,7 +70,6 @@ public class ResourceActivity extends AppCompatActivity
         inputIcon = findViewById(R.id.text_send_icon);
         textInput = (EditText) findViewById(R.id.text_input);
 
-        recyclerList = (ListView) findViewById(R.id.list_view);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(recyclerLayoutManager);
@@ -180,6 +182,12 @@ public class ResourceActivity extends AppCompatActivity
             overridePendingTransition(0, 0);
             return;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
+        showToast(getString(R.string.authentication_failed));
+        LoginActivity.logout(getFetLifeApplication());
     }
 
     protected FetLifeApplication getFetLifeApplication() {

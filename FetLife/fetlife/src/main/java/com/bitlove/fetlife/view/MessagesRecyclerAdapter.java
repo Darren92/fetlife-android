@@ -15,10 +15,10 @@ import android.widget.TextView;
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Message;
-import com.bitlove.fetlife.model.pojos.Message$Table;
+
+import com.bitlove.fetlife.model.pojos.Message_Table;
 import com.bitlove.fetlife.util.ColorUtil;
 import com.bitlove.fetlife.util.StringUtil;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.text.SimpleDateFormat;
@@ -50,7 +50,7 @@ public class MessagesRecyclerAdapter extends RecyclerView.Adapter<MessageViewHol
 
     private void loadItems() {
         //TODO: think of moving to separate thread with specific DB executor
-        itemList = new Select().from(Message.class).where(Condition.column(Message$Table.CONVERSATIONID).eq(conversationId)).orderBy(false,Message$Table.DATE).queryList();
+        itemList = new Select().from(Message.class).where(Message_Table.conversationId.is(conversationId)).orderBy(Message_Table.date,false).queryList();
     }
 
     @Override

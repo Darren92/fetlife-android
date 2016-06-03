@@ -65,6 +65,10 @@ public class ImageLoader {
 
     public void loadImage(final Context context, final String imageUrl, final ImageView imageView) {
 
+        if (imageUrl == null) {
+            return;
+        }
+
         final String urlToLoad;
 
         String[] imageUrlParts = imageUrl.split(Pattern.quote(TOKEN_MIDFIX));

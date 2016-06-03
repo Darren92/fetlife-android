@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,7 @@ import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
@@ -101,14 +104,6 @@ public class ConversationsActivity extends ResourceActivity
             return;
         }
 
-        conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
-
-            @Override
-            public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                conversationsAdapter.refresh();
-            }
-        });
-
         conversationsModelObserver.registerForContentChanges(this, Conversation.class);
         conversationsAdapter.refresh();
 
@@ -135,6 +130,7 @@ public class ConversationsActivity extends ResourceActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConversationsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
         if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
+            conversationsAdapter.refresh();
             dismissProgress();
         }
     }
@@ -147,6 +143,7 @@ public class ConversationsActivity extends ResourceActivity
             } else {
                 showToast(getResources().getString(R.string.error_apicall_failed));
             }
+            conversationsAdapter.refresh();
             dismissProgress();
         }
     }

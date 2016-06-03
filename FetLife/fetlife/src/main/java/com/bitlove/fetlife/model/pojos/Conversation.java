@@ -11,7 +11,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.UUID;
 
-@Table(databaseName = FetLifeDatabase.NAME)
+@Table(database = FetLifeDatabase.class)
 public class Conversation extends BaseModel {
 
     private static final String PREFIX_LOCAL = "%" + Conversation.class.getName() + ".PREFIX_LOCAL%";

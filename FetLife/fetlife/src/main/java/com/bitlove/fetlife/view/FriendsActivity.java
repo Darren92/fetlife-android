@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
@@ -60,6 +63,15 @@ public class FriendsActivity extends ResourceActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        switch (getFriendListMode()) {
+            case FRIEND_PROFILE:
+                setTitle(R.string.title_activity_friends);
+                break;
+            case NEW_CONVERSATION:
+                setTitle(R.string.title_activity_friends_new_conversation);
+                break;
+        }
 
         floatingActionButton.setVisibility(View.GONE);
 
@@ -121,14 +133,6 @@ public class FriendsActivity extends ResourceActivity
             return;
         }
 
-        friendsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
-
-            @Override
-            public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                friendsAdapter.refresh();
-            }
-        });
-
         friendsModelObserver.registerForContentChanges(this, Friend.class);
         friendsAdapter.refresh();
 
@@ -154,6 +158,7 @@ public class FriendsActivity extends ResourceActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFriendsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
         if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDS) {
+            friendsAdapter.refresh();
             dismissProgress();
         }
     }
@@ -166,6 +171,7 @@ public class FriendsActivity extends ResourceActivity
             } else {
                 showToast(getResources().getString(R.string.error_apicall_failed));
             }
+            friendsAdapter.refresh();
             dismissProgress();
         }
     }
@@ -174,14 +180,6 @@ public class FriendsActivity extends ResourceActivity
     public void onFriendCallStarted(ServiceCallStartedEvent serviceCallStartedEvent) {
         if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDS) {
             showProgress();
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageArrived(NewMessageEvent newMessageEvent) {
-        showProgress();
-        if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_FRIENDS)) {
-            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_FRIENDS);
         }
     }
 

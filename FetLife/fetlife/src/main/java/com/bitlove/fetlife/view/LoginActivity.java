@@ -26,6 +26,7 @@ import com.bitlove.fetlife.event.LoginStartedEvent;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.onesignal.OneSignal;
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -169,6 +170,10 @@ public class LoginActivity extends Activity {
             } catch (JSONException e) {
                 //TODO: error handling
             }
+
+            fetLifeApplication.deleteDatabase();
+            FlowManager.destroy();
+            FlowManager.init(new FlowConfig.Builder(fetLifeApplication).build());
 
             fetLifeApplication.removeMe();
         }
