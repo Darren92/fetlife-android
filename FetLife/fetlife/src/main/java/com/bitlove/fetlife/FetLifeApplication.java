@@ -11,6 +11,7 @@ import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
@@ -62,7 +63,7 @@ public class FetLifeApplication extends Application {
             deleteDatabase();
         }
         preferences.edit().putInt(CONSTANT_PREF_KEY_DB_VERSION, FetLifeDatabase.VERSION).apply();
-        FlowManager.init(this);
+        FlowManager.init(new FlowConfig.Builder(this).build());
 
         OneSignal.startInit(this).setNotificationOpenedHandler(new OnNotificationOpenedHandler()).init();
         OneSignal.enableNotificationsWhenActive(false);

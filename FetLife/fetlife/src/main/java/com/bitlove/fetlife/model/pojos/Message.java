@@ -9,7 +9,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = FetLifeDatabase.NAME)
+@Table(database = FetLifeDatabase.class)
 public class Message extends BaseModel {
 
     @Column

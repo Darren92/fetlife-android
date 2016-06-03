@@ -3,6 +3,8 @@ package com.bitlove.fetlife.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,20 +12,23 @@ import android.widget.ListView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.AuthenticationFailedEvent;
+import com.bitlove.fetlife.event.MessageSendFailedEvent;
+import com.bitlove.fetlife.event.MessageSendSucceededEvent;
 import com.bitlove.fetlife.event.NewConversationEvent;
 import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Conversation;
-import com.bitlove.fetlife.model.pojos.Conversation$Table;
+
+import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
-import com.bitlove.fetlife.model.pojos.Message$Table;
+
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -121,20 +126,6 @@ public class MessagesActivity extends ResourceActivity
 
         getFetLifeApplication().getEventBus().register(this);
 
-        messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
-            @Override
-            public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                messagesAdapter.refresh();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ListView messagesList = (ListView) findViewById(R.id.list_view);
-                        messagesList.setSelection(messagesList.getCount() - 1);
-                    }
-                });
-
-            }
-        });
         messagesModelObserver.registerForContentChanges(this, Message.class);
         messagesAdapter.refresh();
 
@@ -145,9 +136,6 @@ public class MessagesActivity extends ResourceActivity
             showProgress();
             FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE, conversationId);
         }
-
-        ListView messagesList = (ListView) findViewById(R.id.list_view);
-        messagesList.setSelection(messagesList.getCount() - 1);
 
     }
 
@@ -168,7 +156,7 @@ public class MessagesActivity extends ResourceActivity
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    new Delete().from(Conversation.class).where(Condition.column(Conversation$Table.ID).eq(conversationId)).query();
+                    new Delete().from(Conversation.class).where(Conversation_Table.id.is(conversationId)).query();
                 }
             }).start();
         }
@@ -204,6 +192,7 @@ public class MessagesActivity extends ResourceActivity
             setMessagesRead();
             oldMessageloadingInProgress = false;
             //TODO: solve setting this value false only if appropriate message call is finished (otherwise same call can be triggered twice)
+            messagesAdapter.refresh();
             dismissProgress();
         }
     }
@@ -218,6 +207,7 @@ public class MessagesActivity extends ResourceActivity
             }
             //TODO: solve setting this value false only if appropriate message call is failed (otherwise same call can be triggered twice)
             oldMessageloadingInProgress = false;
+            messagesAdapter.refresh();
             dismissProgress();
         }
     }
@@ -234,7 +224,21 @@ public class MessagesActivity extends ResourceActivity
         if (!conversationId.equals(newMessageEvent.getConversationId())) {
             //TODO: display (snackbar?) notification
         } else {
-            //wait for the already started refresh
+            messagesAdapter.refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageSent(MessageSendSucceededEvent messageSendSucceededEvent) {
+        if (conversationId.equals(messageSendSucceededEvent.getConversationId())) {
+            messagesAdapter.refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageSendFailed(MessageSendFailedEvent messageSendFailedEvent) {
+        if (conversationId.equals(messageSendFailedEvent.getConversationId())) {
+            messagesAdapter.refresh();
         }
     }
 
@@ -246,12 +250,6 @@ public class MessagesActivity extends ResourceActivity
             onNewIntent(intent);
         } else {
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
-        showToast(getString(R.string.authentication_failed));
-        LoginActivity.logout(getFetLifeApplication());
     }
 
     public void onSend(View v) {
@@ -276,6 +274,7 @@ public class MessagesActivity extends ResourceActivity
                     @Override
                     public void run() {
                         textInput.setText("");
+                        messagesAdapter.refresh();
                     }
                 });
                 FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);

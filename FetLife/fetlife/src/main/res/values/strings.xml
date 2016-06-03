@@ -38,4 +38,5 @@
     <string name="title_activity_friends">Friends</string>
     <string name="menu_friends">Friends</string>
     <string name="menu_logout">Log out</string>
+    <string name="title_activity_friends_new_conversation">New Conversation</string>
 </resources>
