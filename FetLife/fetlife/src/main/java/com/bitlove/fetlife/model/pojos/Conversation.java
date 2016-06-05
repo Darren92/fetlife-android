@@ -46,6 +46,10 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonIgnore
+    private String avatar;
+
+    @Column
+    @JsonIgnore
     private String memberId;
 
     public String getId() {
@@ -113,6 +117,10 @@ public class Conversation extends BaseModel {
         if (member != null) {
             setMemberId(member.getId());
             setNickname(member.getNickname());
+            Avatar avatar = member.getAvatar();
+            if (avatar != null) {
+                setAvatar(avatar.getVariants().getIconUrl());
+            }
         }
     }
 
@@ -124,6 +132,16 @@ public class Conversation extends BaseModel {
     @JsonIgnore
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    @JsonIgnore
+    public String getAvatar() {
+        return avatar;
+    }
+
+    @JsonIgnore
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @JsonIgnore

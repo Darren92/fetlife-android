@@ -13,6 +13,9 @@ public class Member {
     @JsonProperty("notification_token")
     private String notificationToken;
 
+    @JsonProperty("avatar")
+    private Avatar avatar;
+
     public String getNickname() {
         return nickname;
     }
@@ -35,5 +38,13 @@ public class Member {
 
     public void setNotificationToken(String notificationToken) {
         this.notificationToken = notificationToken;
+    }
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
     }
 }
