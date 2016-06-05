@@ -21,7 +21,7 @@ Welcome to FetLife's open-source Android app!
 
 1. Enable installing application from unknwon sources.
 For more information about how to do it please read the following [guideline](https://developer.android.com/distribute/tools/open-distribution.html#unknown-sources)
-2. Download and install the [fetlife-debug.apk](https://raw.githubusercontent.com/fetlife/fetlife-android/master/FetLifeApp/fetlife-debug.apk) to your device
+2. Download and install the [fetlife-debug.apk](https://github.com/fetlife/fetlife-android/tree/master/FetLifeApp/fetlife-debug.apk) to your device
 3. (Optional) disable application install from unknown sources.
 
 ### Kinksters Helping Kinksters
