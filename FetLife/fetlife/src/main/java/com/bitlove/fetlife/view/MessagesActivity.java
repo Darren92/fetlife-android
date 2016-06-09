@@ -3,15 +3,11 @@ package com.bitlove.fetlife.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ListView;
 
 import com.bitlove.fetlife.R;
-import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.MessageSendFailedEvent;
 import com.bitlove.fetlife.event.MessageSendSucceededEvent;
 import com.bitlove.fetlife.event.NewConversationEvent;
@@ -28,10 +24,6 @@ import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.sql.language.Delete;
-import com.raizlabs.android.dbflow.sql.language.SQLCondition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -134,7 +126,7 @@ public class MessagesActivity extends ResourceActivity
             FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
         } else if (messagesAdapter.getItemCount() != 0) {
             showProgress();
-            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE, conversationId);
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES, conversationId);
         }
 
     }
@@ -282,7 +274,7 @@ public class MessagesActivity extends ResourceActivity
                         messagesAdapter.refresh();
                     }
                 });
-                FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
+                FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES);
             }
         }).start();
     }
