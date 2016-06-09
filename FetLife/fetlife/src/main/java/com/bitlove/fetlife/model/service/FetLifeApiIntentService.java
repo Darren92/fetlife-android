@@ -30,6 +30,7 @@ import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Message_Table;
 import com.bitlove.fetlife.model.pojos.Token;
+import com.bitlove.fetlife.util.NetworkUtil;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -102,7 +103,11 @@ public class FetLifeApiIntentService extends IntentService {
 
         final String action = intent.getAction();
 
-        //TODO: checkForNetworkState
+        if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.NETWORK_STATUS_NOT_CONNECTED) {
+            sendConnectionFailedNotification(action);
+            return;
+        }
+
         try {
 
             String[] params = intent.getStringArrayExtra(EXTRA_PARAMS);
