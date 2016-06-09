@@ -53,7 +53,7 @@ public class FetLifeApiIntentService extends IntentService {
     public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetlife.action.apicall.cpnversations";
     public static final String ACTION_APICALL_FRIENDS = "com.bitlove.fetlife.action.apicall.friends";
     public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
-    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_message";
+    public static final String ACTION_APICALL_SEND_MESSAGES = "com.bitlove.fetlife.action.apicall.send_messages";
     public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
@@ -134,7 +134,7 @@ public class FetLifeApiIntentService extends IntentService {
                 case ACTION_APICALL_MESSAGES:
                     result = retrieveMessages(params);
                     break;
-                case ACTION_APICALL_NEW_MESSAGE:
+                case ACTION_APICALL_SEND_MESSAGES:
                     result = sendPendingMessages(false);
                     break;
                 case ACTION_APICALL_SET_MESSAGES_READ:
