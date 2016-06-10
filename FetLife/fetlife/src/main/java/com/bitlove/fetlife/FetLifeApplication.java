@@ -9,6 +9,7 @@ import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.resource.ImageLoader;
+import com.crashlytics.android.Crashlytics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowConfig;
@@ -16,6 +17,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
+import io.fabric.sdk.android.Fabric;
 import org.greenrobot.eventbus.EventBus;
 
 public class FetLifeApplication extends Application {
@@ -44,6 +46,7 @@ public class FetLifeApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         Thread.currentThread().setUncaughtExceptionHandler(new FetlifeExceptionHandler(this, Thread.currentThread().getDefaultUncaughtExceptionHandler()));
 

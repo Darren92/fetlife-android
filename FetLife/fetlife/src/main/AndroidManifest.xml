@@ -57,6 +57,9 @@
             android:name=".model.service.FetLifeApiIntentService"
             android:exported="false" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="9458d1130328510f43f88f9262670d7f81276071" />
     </application>
 
 </manifest>
