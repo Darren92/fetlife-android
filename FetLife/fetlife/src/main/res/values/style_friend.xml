@@ -1,0 +1,35 @@
+<resources>
+    <style name="FriendItem">
+        <item name="android:background">@drawable/listitem_background_rounded</item>
+        <item name="android:padding">@dimen/listitem_padding</item>
+        <item name="android:layout_marginTop">@dimen/listitem_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/listitem_vertical_margin</item>
+        <item name="android:layout_marginLeft">@dimen/listitem_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/listitem_horizontal_margin</item>
+        <item name="android:minHeight">?android:listPreferredItemHeight</item>
+    </style>
+
+    <style name="FriendHeader" parent="TextAppearance.AppCompat.Title">
+        <item name="android:gravity">top</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="FriendUpperText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:gravity">top</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="FriendLowerText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:gravity">bottom</item>
+    </style>
+
+    <style name="FriendRightText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="FriendAvatar" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:layout_marginRight">@dimen/icon_margin</item>
+    </style>
+
+</resources>
