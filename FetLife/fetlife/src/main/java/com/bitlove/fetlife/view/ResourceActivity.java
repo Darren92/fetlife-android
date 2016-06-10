@@ -97,7 +97,7 @@ public class ResourceActivity extends AppCompatActivity
             TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
             headerSubTextView.setText(me.getMetaInfo());
             ImageView headerAvatar = (ImageView) navigationHeaderView.findViewById(R.id.nav_header_image);
-            getFetLifeApplication().getImageLoader().loadImage(this, me.getAvatarLink(), headerAvatar);
+            getFetLifeApplication().getImageLoader().loadImage(this, me.getAvatarLink(), headerAvatar, R.drawable.dummy_avatar);
             final String selfLink = me.getLink();
             if (selfLink != null) {
                 headerAvatar.setOnClickListener(new View.OnClickListener() {

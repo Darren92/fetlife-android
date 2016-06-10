@@ -83,9 +83,7 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
 
         friendViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         String avatarUrl = friend.getAvatarLink();
-        if (avatarUrl != null) {
-            imageLoader.loadImage(friendViewHolder.itemView.getContext(), avatarUrl, friendViewHolder.avatarImage);
-        }
+        imageLoader.loadImage(friendViewHolder.itemView.getContext(), avatarUrl, friendViewHolder.avatarImage, R.drawable.dummy_avatar);
     }
 
     public void refresh() {

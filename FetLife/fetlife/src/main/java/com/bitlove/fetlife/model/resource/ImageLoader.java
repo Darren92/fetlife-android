@@ -13,6 +13,7 @@ import com.squareup.picasso.Downloader;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,51 +64,57 @@ public class ImageLoader {
         Picasso.setSingletonInstance(picasso);
     }
 
-    public void loadImage(final Context context, final String imageUrl, final ImageView imageView) {
-
-        if (imageUrl == null) {
-            return;
-        }
+    public void loadImage(final Context context, final String imageUrl, final ImageView imageView, final int defaultResourceId) {
 
         final String urlToLoad;
 
-        String[] imageUrlParts = imageUrl.split(Pattern.quote(TOKEN_MIDFIX));
-
-        if (imageUrlParts.length >= 2) {
-            urlToLoad = imageUrlParts[0];
-            String token = imageUrlParts[1];
-            imageDowloader.urlTokenMap.put(urlToLoad, token);
+        if (imageUrl == null) {
+            urlToLoad = null;
         } else {
-            urlToLoad = imageUrl;
+            String[] imageUrlParts = imageUrl.split(Pattern.quote(TOKEN_MIDFIX));
+
+            if (imageUrlParts.length >= 2) {
+                urlToLoad = imageUrlParts[0];
+                String token = imageUrlParts[1];
+                imageDowloader.urlTokenMap.put(urlToLoad, token);
+            } else {
+                urlToLoad = imageUrl;
+            }
         }
 
-        Picasso.with(context)
-                .load(urlToLoad)
-                .placeholder(R.drawable.dummy_avatar)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(imageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                    }
+        if (urlToLoad != null) {
+            Picasso.with(context)
+                    .load(urlToLoad)
+                    .placeholder(defaultResourceId)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                        }
 
-                    @Override
-                    public void onError() {
-                        //Try again online if cache failed
-                        Picasso.with(context)
-                                .load(urlToLoad)
-                                .placeholder(R.drawable.dummy_avatar)
-                                .error(R.drawable.dummy_avatar)
-                                .into(imageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                    }
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            Picasso.with(context)
+                                    .load(urlToLoad)
+                                    .placeholder(defaultResourceId)
+                                    .error(defaultResourceId)
+                                    .into(imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                        }
 
-                                    @Override
-                                    public void onError() {
-                                    }
-                                });
-                    }
-                });
+                                        @Override
+                                        public void onError() {
+                                        }
+                                    });
+                        }
+                    });
+        } else {
+            Picasso.with(context)
+                    .load(defaultResourceId)
+                    .into(imageView);
+        }
     }
 
 }

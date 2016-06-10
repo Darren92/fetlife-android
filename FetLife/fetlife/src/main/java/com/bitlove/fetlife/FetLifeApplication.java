@@ -50,6 +50,7 @@ public class FetLifeApplication extends Application {
         instance = this;
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //TODO: move me to database and check also for structure update
         String meAsJson = preferences.getString(FetLifeApplication.CONSTANT_PREF_KEY_ME_JSON, null);
         try {
             Member me = new ObjectMapper().readValue(meAsJson, Member.class);
