@@ -12,6 +12,9 @@
 bin/
 gen/
 
+# Crashlytics api key
+fabric.propeties
+
 # Local configuration file (sdk path, etc)
 local.properties
 
