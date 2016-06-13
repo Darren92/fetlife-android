@@ -82,14 +82,6 @@ public class ResourceActivity extends AppCompatActivity
 
         navigationHeaderView = navigationView.getHeaderView(0);
 
-        try {
-            String versionPrefixText = getString(R.string.version_prefix);
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            TextView versionTextView = (TextView) navigationView.findViewById(R.id.version_text);
-            versionTextView.setText(versionPrefixText + pInfo.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-
         Member me = getFetLifeApplication().getMe();
         if (me != null) {
             TextView headerTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_text);
@@ -147,7 +139,6 @@ public class ResourceActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -159,11 +150,25 @@ public class ResourceActivity extends AppCompatActivity
             ConversationsActivity.startActivity(this);
         } else if (id == R.id.nav_friends) {
             FriendsActivity.startActivity(this);
+        } else if (id == R.id.nav_about) {
+
+            String versionText;
+            try {
+                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                versionText = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                versionText = getString(R.string.text_unknown);
+            }
+
+            String aboutText = getString(R.string.text_about) + versionText;
+            showToast(aboutText);
+
+            return false;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     protected void showProgress() {
