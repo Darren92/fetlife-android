@@ -22,12 +22,12 @@ import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.api.FetLifeApi;
 import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
+import com.bitlove.fetlife.model.pojos.AuthBody;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
-import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Message_Table;
 import com.bitlove.fetlife.model.pojos.Token;
 import com.onesignal.OneSignal;
@@ -247,8 +247,7 @@ public class FetLifeApiIntentService extends IntentService {
                 BuildConfig.CLIENT_ID,
                 BuildConfig.CLIENT_SECRET,
                 BuildConfig.REDIRECT_URL,
-                FetLifeService.GRANT_TYPE_PASSWORD,
-                params[0], params[1]);
+                new AuthBody(params[0], params[1]));
 
         Response<Token> tokenResponse = tokenCall.execute();
         if (tokenResponse.isSuccess()) {
@@ -407,8 +406,7 @@ public class FetLifeApiIntentService extends IntentService {
 
     private boolean setMessagesRead(String[] params) throws IOException {
         String conversationId = params[0];
-        String[] messageIdsArray = Arrays.copyOfRange(params, 1, params.length);
-        MessageIds messageIds = new MessageIds(messageIdsArray);
+        String[] messageIds = Arrays.copyOfRange(params, 1, params.length);
         Call<ResponseBody> setMessagesReadCall = getFetLifeApi().setMessagesRead(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), conversationId, messageIds);
         Response<ResponseBody> response = setMessagesReadCall.execute();
         return response.isSuccess();
