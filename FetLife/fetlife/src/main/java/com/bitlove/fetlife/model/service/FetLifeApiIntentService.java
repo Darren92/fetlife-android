@@ -30,6 +30,7 @@ import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message_Table;
 import com.bitlove.fetlife.model.pojos.Token;
+import com.bitlove.fetlife.util.NetworkUtil;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -53,7 +54,7 @@ public class FetLifeApiIntentService extends IntentService {
     public static final String ACTION_APICALL_CONVERSATIONS = "com.bitlove.fetlife.action.apicall.cpnversations";
     public static final String ACTION_APICALL_FRIENDS = "com.bitlove.fetlife.action.apicall.friends";
     public static final String ACTION_APICALL_MESSAGES = "com.bitlove.fetlife.action.apicall.messages";
-    public static final String ACTION_APICALL_NEW_MESSAGE = "com.bitlove.fetlife.action.apicall.new_message";
+    public static final String ACTION_APICALL_SEND_MESSAGES = "com.bitlove.fetlife.action.apicall.send_messages";
     public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
 
@@ -102,7 +103,11 @@ public class FetLifeApiIntentService extends IntentService {
 
         final String action = intent.getAction();
 
-        //TODO: checkForNetworkState
+        if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.NETWORK_STATUS_NOT_CONNECTED) {
+            sendConnectionFailedNotification(action);
+            return;
+        }
+
         try {
 
             String[] params = intent.getStringArrayExtra(EXTRA_PARAMS);
@@ -134,7 +139,7 @@ public class FetLifeApiIntentService extends IntentService {
                 case ACTION_APICALL_MESSAGES:
                     result = retrieveMessages(params);
                     break;
-                case ACTION_APICALL_NEW_MESSAGE:
+                case ACTION_APICALL_SEND_MESSAGES:
                     result = sendPendingMessages(false);
                     break;
                 case ACTION_APICALL_SET_MESSAGES_READ:

@@ -1,10 +1,9 @@
 package com.bitlove.fetlife.model.pojos;
 
+import com.bitlove.fetlife.model.api.FetLifeService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AuthBody {
-
-    private static final String GRANT_TYPE_PASSWORD = "password";
 
     @JsonProperty("grant_type")
     private String grantType;
@@ -16,7 +15,7 @@ public class AuthBody {
     private String password;
 
     public AuthBody(String username, String password) {
-        this.grantType = GRANT_TYPE_PASSWORD;
+        this.grantType = FetLifeService.GRANT_TYPE_PASSWORD;
         this.username = username;
         this.password = password;
     }

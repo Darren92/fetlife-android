@@ -74,7 +74,11 @@ public class FetLifeApplication extends Application {
 
         imageLoader = new ImageLoader(this);
 
-        fetLifeService = new FetLifeService();
+        try {
+            fetLifeService = new FetLifeService(this);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         eventBus = EventBus.getDefault();
     }
