@@ -4,16 +4,26 @@
     <group android:id="@+id/navigation" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_conversations"
+            android:icon="@android:drawable/ic_menu_view"
             android:title="@string/menu_converations" />
         <item
             android:id="@+id/nav_friends"
+            android:icon="@android:drawable/ic_menu_search"
             android:title="@string/menu_friends" />
     </group>
 
     <group android:id="@+id/logout" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_logout"
+            android:icon="@android:drawable/ic_menu_close_clear_cancel"
             android:title="@string/menu_logout" />
+    </group>
+
+    <group android:id="@+id/about" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="@string/menu_about" />
     </group>
 
 </menu>
