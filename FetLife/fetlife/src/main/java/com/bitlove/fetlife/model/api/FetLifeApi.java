@@ -5,7 +5,6 @@ import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
-import com.bitlove.fetlife.model.pojos.MessageIds;
 import com.bitlove.fetlife.model.pojos.Token;
 import com.squareup.okhttp.ResponseBody;
 
