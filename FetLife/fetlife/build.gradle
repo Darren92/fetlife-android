@@ -54,6 +54,4 @@ dependencies {
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
 
     testCompile 'junit:junit:4.12'
-
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
