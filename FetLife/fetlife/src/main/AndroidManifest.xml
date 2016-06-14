@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".FetLifeApplication"
@@ -51,10 +52,6 @@
             android:name=".model.service.FetLifeApiIntentService"
             android:exported="false" />
 
-        <activity
-            android:name=".view.ErrorReportActivity"
-            android:label="@string/title_activity_error_report"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

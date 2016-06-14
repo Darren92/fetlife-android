@@ -8,9 +8,9 @@ android {
     defaultConfig {
         applicationId "com.bitlove.fetlife"
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 4
-        versionName "0.4"
+        targetSdkVersion 22
+        versionCode 5
+        versionName "0.5"
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
                                 onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
                                 onesignal_google_project_number: "875783571094"]

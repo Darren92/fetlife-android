@@ -3,10 +3,10 @@ package com.bitlove.fetlife.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.support.design.widget.NavigationView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.NewMessageEvent;

@@ -2,13 +2,12 @@ package com.bitlove.fetlife;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 
+import com.bitlove.fetlife.inbound.OnNotificationOpenedHandler;
+import com.bitlove.fetlife.model.api.FetLifeService;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
-import com.bitlove.fetlife.model.api.FetLifeService;
-import com.bitlove.fetlife.inbound.OnNotificationOpenedHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -41,7 +40,7 @@ public class FetLifeApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Thread.currentThread().setUncaughtExceptionHandler(new FetlifeExceptionHandler(this));
+        Thread.currentThread().setUncaughtExceptionHandler(new FetlifeExceptionHandler(this, Thread.currentThread().getDefaultUncaughtExceptionHandler()));
 
         instance = this;
 
