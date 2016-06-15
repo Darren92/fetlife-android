@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'io.fabric'
 
 def Properties releaseProperties = new Properties()
-def propFile = file('../../release.properties')
+def propFile = file('../../../fetlife-release/release.properties')
 if (propFile.canRead()) {
     releaseProperties.load(new FileInputStream(propFile))
 } else {
@@ -20,26 +20,52 @@ android {
         targetSdkVersion 22
         versionCode 10000
         versionName "1.0.0"
-        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
-                                onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
-                                onesignal_google_project_number: "875783571094"]
     }
-    buildTypes {
-        debug {
-            buildConfigField "String", "CLIENT_ID", "\"d8f8ebd522bf5123c3f29db3c8faf09029a032b44f0d1739d4325cd3ccf11570\"";
-            buildConfigField "String", "CLIENT_SECRET", "\"47273306a9a3a3448a908748eff13a21a477cc46f6a3968b5c7d05611c4f2f26\"";
-            buildConfigField "String", "REDIRECT_URL", "\"urn:ietf:wg:oauth:2.0:oob\"";
-        }
+
+    signingConfigs {
+
         release {
+            if (releaseProperties != null) {
+                storeFile file(releaseProperties['ks.url'])
+                storePassword releaseProperties['ks.password']
+                keyAlias releaseProperties['ks.key.alias']
+                keyPassword releaseProperties['ks.key.password']
+            }
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
+                                    onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
+                                    onesignal_google_project_number: "875783571094",
+                                    fabricApiKey: "9458d1130328510f43f88f9262670d7f81276071"]
+
+            buildConfigField "String", "CLIENT_ID", "\"d8f8ebd522bf5123c3f29db3c8faf09029a032b44f0d1739d4325cd3ccf11570\""
+            buildConfigField "String", "CLIENT_SECRET", "\"47273306a9a3a3448a908748eff13a21a477cc46f6a3968b5c7d05611c4f2f26\""
+            buildConfigField "String", "REDIRECT_URL", "\"urn:ietf:wg:oauth:2.0:oob\""
+        }
+
+        release {
+            if (releaseProperties != null) {
+                manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
+                                        onesignal_app_id: releaseProperties['onesignal.appId'],
+                                        onesignal_google_project_number: releaseProperties['onesignal.projectNumber'],
+                                        fabricApiKey: releaseProperties['fabric.apiKey']]
+
+                buildConfigField "String", "CLIENT_ID", releaseProperties['api.clientId']
+                buildConfigField "String", "CLIENT_SECRET", releaseProperties['api.clientSecret']
+                buildConfigField "String", "REDIRECT_URL", releaseProperties['api.redirectUrl']
+            }
+
+            signingConfig signingConfigs.release
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            if (releaseProperties != null) {
-                buildConfigField "String", "CLIENT_ID", releaseProperties['clientId'];
-                buildConfigField "String", "CLIENT_SECRET", releaseProperties['clientSecret'];
-                buildConfigField "String", "REDIRECT_URL", releaseProperties['redirectUrl'];
-            }
         }
+
     }
 
     packagingOptions {
