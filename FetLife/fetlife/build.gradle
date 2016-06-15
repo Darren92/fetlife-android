@@ -37,10 +37,14 @@ android {
     buildTypes {
 
         debug {
+
+            ext.fabricApiKey = "9458d1130328510f43f88f9262670d7f81276071"
+            ext.fabricApiSecret = "44a9fb077adf858f979097d8315bd1de9124dda2c00b63a067015d3610315c0a"
+
             manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
                                     onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
                                     onesignal_google_project_number: "875783571094",
-                                    fabricApiKey: "9458d1130328510f43f88f9262670d7f81276071"]
+                                    fabricApiKey: "${ext.fabricApiKey}"]
 
             buildConfigField "String", "CLIENT_ID", "\"d8f8ebd522bf5123c3f29db3c8faf09029a032b44f0d1739d4325cd3ccf11570\""
             buildConfigField "String", "CLIENT_SECRET", "\"47273306a9a3a3448a908748eff13a21a477cc46f6a3968b5c7d05611c4f2f26\""
@@ -49,6 +53,10 @@ android {
 
         release {
             if (releaseProperties != null) {
+
+                ext.fabricApiKey = releaseProperties['fabric.apiKey']
+                ext.fabricApiSecret = releaseProperties['fabric.apiSecret']
+
                 manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
                                         onesignal_app_id: releaseProperties['onesignal.appId'],
                                         onesignal_google_project_number: releaseProperties['onesignal.projectNumber'],
@@ -107,4 +115,20 @@ dependencies {
     }
 
     testCompile 'junit:junit:4.12'
+}
+
+
+import com.crashlytics.tools.utils.PropertiesUtils
+
+File crashlyticsProperties = new File("${project.projectDir.absolutePath}/fabric.properties")
+android.applicationVariants.all { variant ->
+    def variantSuffix = variant.name.capitalize()
+    def generateResourcesTask = project.tasks.getByName("fabricGenerateResources${variantSuffix}")
+    def generatePropertiesTask = task("fabricGenerateProperties${variantSuffix}") << {
+        Properties properties = new Properties()
+        properties.put("apiSecret", variant.buildType.fabricApiSecret)
+        properties.put("apiKey", variant.buildType.fabricApiKey)
+        PropertiesUtils.injectPropertyInFile(crashlyticsProperties, properties, "")
+    }
+    generateResourcesTask.dependsOn generatePropertiesTask
 }
