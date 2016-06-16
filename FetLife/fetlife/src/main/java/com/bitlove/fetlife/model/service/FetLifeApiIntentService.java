@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.bitlove.fetlife.BuildConfig;
 import com.bitlove.fetlife.FetLifeApplication;
+import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.event.LoginFailedEvent;
 import com.bitlove.fetlife.event.LoginFinishedEvent;
 import com.bitlove.fetlife.event.LoginStartedEvent;
@@ -108,7 +109,7 @@ public class FetLifeApiIntentService extends IntentService {
                 if (refreshToken()) {
                     onHandleIntent(intent);
                 } else {
-                    sendLoadFailedNotification(action);
+                    sendAuthenticaionFailedNotification();
                 }
             }
 
@@ -181,6 +182,10 @@ public class FetLifeApiIntentService extends IntentService {
             return false;
         }
 
+    }
+
+    private void sendAuthenticaionFailedNotification() {
+        getFetLifeApplication().getEventBus().post(new AuthenticationFailedEvent());
     }
 
     private void sendLoadStartedNotification(String action) {

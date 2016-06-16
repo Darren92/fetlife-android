@@ -155,7 +155,7 @@ public class ResourceActivity extends AppCompatActivity
 
             LoginActivity.startLogout(this);
         } else if (id == R.id.nav_conversations) {
-            ConversationsActivity.startActivity(this, false);
+            ConversationsActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -189,7 +189,7 @@ public class ResourceActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ResourceActivity.this, text, Toast.LENGTH_LONG).show();
+                Toast.makeText(ResourceActivity.this, text, Toast.LENGTH_SHORT).show();
             }
         });
     }
