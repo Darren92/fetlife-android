@@ -19,6 +19,8 @@ import com.squareup.picasso.Picasso;
 
 import io.fabric.sdk.android.Fabric;
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FetLifeApplication extends Application {
 

@@ -18,8 +18,8 @@ android {
         applicationId "com.bitlove.fetlife"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 10000
-        versionName "1.0.0"
+        versionCode 10002
+        versionName "1.0.2"
     }
 
     signingConfigs {
@@ -122,6 +122,13 @@ import com.crashlytics.tools.utils.PropertiesUtils
 
 File crashlyticsProperties = new File("${project.projectDir.absolutePath}/fabric.properties")
 android.applicationVariants.all { variant ->
+
+    variant.outputs.each { output ->
+        output.outputFile = new File(
+                output.outputFile.parent,
+                output.outputFile.name.replace(".apk", "-${variant.versionName}.apk").replace("-release", ""))
+    }
+
     def variantSuffix = variant.name.capitalize()
     def generateResourcesTask = project.tasks.getByName("fabricGenerateResources${variantSuffix}")
     def generatePropertiesTask = task("fabricGenerateProperties${variantSuffix}") << {

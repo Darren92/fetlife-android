@@ -42,4 +42,7 @@
     <string name="menu_about">About</string>
     <string name="text_about">Official FetLife App v</string>
     <string name="text_unknown">unknown</string>
+    <string name="button_new_conversation_discription">New Conversation</string>
+    <string name="button_send_description">Send Message</string>
+    <string name="input_message_description">Your Message</string>
 </resources>
