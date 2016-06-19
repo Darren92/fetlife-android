@@ -1,5 +1,8 @@
 package com.bitlove.fetlife.view;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +28,9 @@ import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.pojos.Member;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.onesignal.OneSignal;
 
 import org.json.JSONException;
@@ -81,6 +87,14 @@ public class ResourceActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         navigationHeaderView = navigationView.getHeaderView(0);
+
+        try {
+            String versionPrefixText = getString(R.string.version_prefix);
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
+            headerSubTextView.setText(versionPrefixText + pInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
 
         Member me = getFetLifeApplication().getMe();
         if (me != null) {
@@ -142,12 +156,12 @@ public class ResourceActivity extends AppCompatActivity
 
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION,1);
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME,getFetLifeApplication().getMe().getNickname());
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN,"");
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION, 1);
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME, getFetLifeApplication().getMe().getNickname());
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN, "");
                 OneSignal.sendTags(jsonObject);
 
-                String[] tags = new String[] {
+                String[] tags = new String[]{
                         FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION,
                         FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME,
                         FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN
@@ -164,7 +178,7 @@ public class ResourceActivity extends AppCompatActivity
 
             LoginActivity.startLogout(this);
         } else if (id == R.id.nav_conversations) {
-            ConversationsActivity.startActivity(this, false);
+            ConversationsActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -198,10 +212,8 @@ public class ResourceActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ResourceActivity.this, text, Toast.LENGTH_LONG).show();
+                Toast.makeText(ResourceActivity.this, text, Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
 }

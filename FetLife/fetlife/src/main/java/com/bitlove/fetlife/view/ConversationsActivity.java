@@ -28,16 +28,13 @@ public class ConversationsActivity extends ResourceActivity
     private FlowContentObserver conversationsModelObserver;
     private ConversationsRecyclerAdapter conversationsAdapter;
 
-    public static void startActivity(Context context, boolean newTask) {
-        context.startActivity(createIntent(context, newTask));
+    public static void startActivity(Context context) {
+        context.startActivity(createIntent(context));
     }
 
-    public static Intent createIntent(Context context, boolean newTask) {
+    public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, ConversationsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (newTask) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
-        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 
