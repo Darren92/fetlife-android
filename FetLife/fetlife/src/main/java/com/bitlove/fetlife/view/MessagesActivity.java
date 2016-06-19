@@ -34,7 +34,7 @@ public class MessagesActivity extends ResourceActivity
     private static final String EXTRA_CONVERSATION_TITLE = "com.bitlove.fetlife.extra.conversation_title";
 
     private FlowContentObserver messagesModelObserver;
-    private MessagesAdapter messagesAdapter;
+    private MessagesRecyclerAdapter messagesAdapter;
 
     private String conversationId;
 
@@ -63,10 +63,6 @@ public class MessagesActivity extends ResourceActivity
 
         floatingActionButton.setVisibility(View.GONE);
 
-        recyclerList.setDividerHeight(0);
-        recyclerList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        recyclerList.setStackFromBottom(true);
-
         inputLayout.setVisibility(View.VISIBLE);
         inputIcon.setVisibility(View.VISIBLE);
 
@@ -84,8 +80,9 @@ public class MessagesActivity extends ResourceActivity
         conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
         String conversationTitle = intent.getStringExtra(EXTRA_CONVERSATION_TITLE);
         setTitle(conversationTitle);
-        messagesAdapter = new MessagesAdapter(conversationId);
-        recyclerList.setAdapter(messagesAdapter);
+        messagesAdapter = new MessagesRecyclerAdapter(conversationId);
+        recyclerLayoutManager.setReverseLayout(true);
+        recyclerView.setAdapter(messagesAdapter);
     }
 
     @Override
@@ -170,7 +167,7 @@ public class MessagesActivity extends ResourceActivity
         final List<String> params = new ArrayList<>();
         params.add(conversationId);
 
-        for (int i = 0; i < messagesAdapter.getCount(); i++) {
+        for (int i = 0; i < messagesAdapter.getItemCount(); i++) {
             Message message = messagesAdapter.getItem(i);
             if (!message.getPending() && message.getIsNew()) {
                 params.add(message.getId());

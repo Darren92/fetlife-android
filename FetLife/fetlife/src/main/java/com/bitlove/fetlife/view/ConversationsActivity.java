@@ -26,7 +26,7 @@ public class ConversationsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FlowContentObserver conversationsModelObserver;
-    private ConversationsAdapter conversationsAdapter;
+    private ConversationsRecyclerAdapter conversationsAdapter;
 
     public static void startActivity(Context context, boolean newTask) {
         context.startActivity(createIntent(context, newTask));
@@ -53,16 +53,15 @@ public class ConversationsActivity extends ResourceActivity
             }
         });
 
-        recyclerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        conversationsAdapter = new ConversationsRecyclerAdapter();
+        conversationsAdapter.setOnItemClickListener(new ConversationsRecyclerAdapter.OnConversationClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Conversation conversation = conversationsAdapter.getItem(position);
+            public void onClick(Conversation conversation) {
                 MessagesActivity.startActivity(ConversationsActivity.this, conversation.getId(), conversation.getNickname(), false);
             }
         });
+        recyclerView.setAdapter(conversationsAdapter);
 
-        conversationsAdapter = new ConversationsAdapter();
-        recyclerList.setAdapter(conversationsAdapter);
     }
 
     @Override
