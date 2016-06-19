@@ -33,4 +33,5 @@
     <string name="authentication_failed">Please login again</string>
 
     <string name="new_message_indication">NEW</string>
+    <string name="version_prefix">"App version: "</string>
 </resources>
