@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.FriendRequest;
 import com.bitlove.fetlife.model.resource.ImageLoader;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
     private void loadItems() {
         //TODO: think of moving to separate thread with specific DB executor
         try {
-//            itemList = new Select().from(FriendRequest.class).orderBy(FriendRequest_Table.nickname,true).queryList();
+            itemList = new Select().from(FriendRequest.class).queryList();
         } catch (Throwable t) {
             itemList = new ArrayList<>();
         }
@@ -114,10 +115,10 @@ class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     public FriendRequestViewHolder(View itemView) {
         super(itemView);
 
-        headerText = (TextView) itemView.findViewById(R.id.friend_header);
-        upperText = (TextView) itemView.findViewById(R.id.friend_upper);
-        dateText = (TextView) itemView.findViewById(R.id.friend_right);
-        lowerText = (TextView) itemView.findViewById(R.id.friend_lower);
-        avatarImage = (ImageView) itemView.findViewById(R.id.friend_icon);
+        headerText = (TextView) itemView.findViewById(R.id.friendrequest_header);
+        upperText = (TextView) itemView.findViewById(R.id.friendrequest_upper);
+        dateText = (TextView) itemView.findViewById(R.id.friendrequest_right);
+        lowerText = (TextView) itemView.findViewById(R.id.friendrequest_lower);
+        avatarImage = (ImageView) itemView.findViewById(R.id.friendrequest_icon);
     }
 }

@@ -1,6 +1,7 @@
 package com.bitlove.fetlife.model.pojos;
 
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -12,10 +13,25 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FriendRequest extends BaseModel {
 
-    @JsonProperty("id")
+    public static enum PendingState {
+        NEW,
+        ACCEPTED,
+        REJECTED
+    }
+
     @Column
     @PrimaryKey(autoincrement = false)
+    private String clientId;
+
+    @Column
+    @JsonProperty("id")
     private String id;
+
+    @Column
+    private PendingState pendingState;
+
+    @Column
+    private boolean pending;
 
     @Column
     private String nickname;
@@ -26,12 +42,36 @@ public class FriendRequest extends BaseModel {
     @Column
     private String avatarLink;
 
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isPending() {
+        return pending;
+    }
+
+    public void setPending(boolean pending) {
+        this.pending = pending;
+    }
+
+    public PendingState getPendingState() {
+        return pendingState;
+    }
+
+    public void setPendingState(PendingState pendingState) {
+        this.pendingState = pendingState;
     }
 
     public String getNickname() {

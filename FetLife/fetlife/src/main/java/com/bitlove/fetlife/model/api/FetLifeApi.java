@@ -3,6 +3,7 @@ package com.bitlove.fetlife.model.api;
 import com.bitlove.fetlife.model.pojos.AuthBody;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Friend;
+import com.bitlove.fetlife.model.pojos.FriendRequest;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Token;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import retrofit.Call;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -53,5 +55,19 @@ public interface FetLifeApi {
     @FormUrlEncoded
     @POST("/api/v2/me/conversations")
     Call<Conversation> postConversation(@Header("Authorization") String authHeader, @Field("user_id") String userId, @Field("subject") String subject, @Field("body") String body);
+
+    @GET("/api/v2/me/friendrequests")
+    Call<FriendRequest> getFriendRequests(@Header("Authorization") String authHeader, @Query("limit") int limit, @Query("page") int page);
+
+    @PUT("/api/v2/me/friendrequests/{friendRequestId}")
+    Call<FriendRequest> acceptFriendRequests(@Header("Authorization") String authHeader, @Path("friendRequestId") String friendRequestId);
+
+    @DELETE("/api/v2/me/friendrequests/{friendRequestId}")
+    Call<FriendRequest> removeFriendRequests(@Header("Authorization") String authHeader, @Path("friendRequestId") String friendRequestId);
+
+    @FormUrlEncoded
+    @POST("/api/v2/me/friendrequests")
+    Call<FriendRequest> createFriendRequests(@Header("Authorization") String authHeader, @Field("member_id") String friendId);
+
 
 }

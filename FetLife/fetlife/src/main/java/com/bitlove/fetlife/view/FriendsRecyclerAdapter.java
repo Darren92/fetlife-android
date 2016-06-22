@@ -116,10 +116,10 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
     public FriendViewHolder(View itemView) {
         super(itemView);
 
-        headerText = (TextView) itemView.findViewById(R.id.friend_header);
-        upperText = (TextView) itemView.findViewById(R.id.friend_upper);
-        dateText = (TextView) itemView.findViewById(R.id.friend_right);
-        lowerText = (TextView) itemView.findViewById(R.id.friend_lower);
-        avatarImage = (ImageView) itemView.findViewById(R.id.friend_icon);
+        headerText = (TextView) itemView.findViewById(R.id.friendrequest_header);
+        upperText = (TextView) itemView.findViewById(R.id.friendrequest_upper);
+        dateText = (TextView) itemView.findViewById(R.id.friendrequest_right);
+        lowerText = (TextView) itemView.findViewById(R.id.friendrequest_lower);
+        avatarImage = (ImageView) itemView.findViewById(R.id.friendrequest_icon);
     }
 }
