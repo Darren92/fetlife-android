@@ -3,6 +3,7 @@ package com.bitlove.fetlife.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -58,11 +59,21 @@ public class FriendsActivity extends ResourceActivity
         friendsAdapter = new FriendsRecyclerAdapter(getFetLifeApplication().getImageLoader());
         friendsAdapter.setOnItemClickListener(new FriendsRecyclerAdapter.OnFriendClickListener() {
             @Override
-            public void onClick(Friend friend) {
+            public void onItemClick(Friend friend) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(RESULT_EXTRA_FRIEND_ID, friend.getId());
                 setResult(RESULT_OK, resultIntent);
                 finish();
+            }
+
+            @Override
+            public void onAvatarClick(Friend friend) {
+                String url = friend.getLink();
+                if (url != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
             }
         });
         recyclerView.setAdapter(friendsAdapter);

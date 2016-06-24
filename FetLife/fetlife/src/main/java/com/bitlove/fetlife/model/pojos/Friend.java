@@ -24,6 +24,10 @@ public class Friend extends BaseModel {
     private Avatar avatarVariants;
 
     @Column
+    @JsonProperty("url")
+    private String link;
+
+    @Column
     @JsonIgnore
     private String avatar;
 
@@ -62,5 +66,13 @@ public class Friend extends BaseModel {
     @JsonIgnore
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 }

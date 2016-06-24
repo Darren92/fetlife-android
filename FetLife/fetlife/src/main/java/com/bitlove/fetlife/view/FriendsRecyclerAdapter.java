@@ -23,7 +23,8 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
     private final ImageLoader imageLoader;
 
     public interface OnFriendClickListener {
-        public void onClick(Friend friend);
+        public void onItemClick(Friend friend);
+        public void onAvatarClick(Friend friend);
     }
 
     private List<Friend> itemList;
@@ -67,17 +68,26 @@ public class FriendsRecyclerAdapter extends RecyclerView.Adapter<FriendViewHolde
             @Override
             public void onClick(View v) {
                 if (onFriendClickListener != null) {
-                    onFriendClickListener.onClick(friend);
+                    onFriendClickListener.onItemClick(friend);
                 }
             }
         });
 
-        friendViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
+        friendViewHolder.avatarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onFriendClickListener != null) {
+                    onFriendClickListener.onAvatarClick(friend);
+                }
+            }
+        });
+
         String avatarUrl = friend.getAvatar();
         if (avatarUrl != null) {
             imageLoader.loadImage(friendViewHolder.itemView.getContext(), friend.getAvatar(), friendViewHolder.avatarImage);
+        } else {
+            friendViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         }
-
     }
 
     public void refresh() {

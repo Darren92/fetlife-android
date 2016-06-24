@@ -88,6 +88,8 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         String avatarUrl = conversation.getAvatar();
         if (avatarUrl != null) {
             imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatar(), conversationViewHolder.avatarImage);
+        } else {
+            conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
         }
     }
 
