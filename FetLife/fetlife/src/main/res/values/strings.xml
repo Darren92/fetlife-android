@@ -47,4 +47,7 @@
     <string name="input_message_description">Your Message</string>
     <string name="menu_friendrequests">Friendrequests</string>
     <string name="title_activity_friendrequests">Friendrequests</string>
+    <string name="action_undo">UNDO</string>
+    <string name="text_friendrequests_rejected">Rejected</string>
+    <string name="text_friendrequests_accepted">Accepted</string>
 </resources>

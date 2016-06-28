@@ -1,6 +1,7 @@
 package com.bitlove.fetlife.model.pojos;
 
 import com.bitlove.fetlife.model.db.FetLifeDatabase;
+import com.bitlove.fetlife.util.DateUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,13 +29,26 @@ public class FriendRequest extends BaseModel {
     private String id;
 
     @Column
+    @JsonProperty("created_at")
+    private String createdAt;
+
+    @JsonProperty("member")
+    private Member member;
+
+    @Column
+    private long date;
+
+    @Column
     private PendingState pendingState;
 
     @Column
     private boolean pending;
 
     @Column
-    private String link;
+    private String memberId;
+
+    @Column
+    private String memberLink;
 
     @Column
     private String nickname;
@@ -101,13 +115,59 @@ public class FriendRequest extends BaseModel {
         this.avatarLink = avatarLink;
     }
 
-    public String getLink() {
-        return link;
+    public String getMemberLink() {
+        return memberLink;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setMemberLink(String memberLink) {
+        this.memberLink = memberLink;
     }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+        if (createdAt != null) {
+            try {
+                setDate(DateUtil.parseDate(createdAt));
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        if (member != null) {
+            setMemberId(member.getId());
+            setNickname(member.getNickname());
+            setMetaInfo(member.getMetaInfo());
+            setAvatarLink(member.getAvatarLink());
+            setMemberLink(member.getLink());
+        }
+    }
+
 }
 
 

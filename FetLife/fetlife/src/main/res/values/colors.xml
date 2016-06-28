@@ -28,4 +28,7 @@
     <color name="area_background">#ffffff</color>
     <color name="area_background_dark">#ff111111</color>
 
+    <color name="color_accept">#32CD32</color>
+    <color name="color_reject">#cd0000</color>
+
 </resources>

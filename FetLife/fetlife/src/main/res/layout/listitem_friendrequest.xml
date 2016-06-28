@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fixed_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight">
 
+    <FrameLayout
+        android:id="@+id/background_layout"
+        android:visibility="gone"
+        style="@style/FriendRequestItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight" />
+
+    </FrameLayout>
+
     <RelativeLayout
-        style="@style/FriendItem"
+        android:id="@+id/swipeable_layout"
+        style="@style/FriendRequestItem"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/friendrequest_icon"
 
-            style="@style/FriendAvatar"
+            style="@style/FriendRequestAvatar"
 
             android:layout_width="?android:attr/listPreferredItemHeight"
             android:layout_height="?android:attr/listPreferredItemHeight"
@@ -28,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            style="@style/FriendLowerText"
+            style="@style/FriendRequestLowerText"
 
             android:layout_toRightOf="@id/friendrequest_icon"
             android:layout_alignParentBottom="true"
@@ -41,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            style="@style/FriendUpperText"
+            style="@style/FriendRequestUpperText"
 
             android:layout_toRightOf="@id/friendrequest_icon"
             android:layout_alignParentRight="true"
@@ -56,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
-            style="@style/FriendHeader"
+            style="@style/FriendRequestHeader"
 
             android:layout_toRightOf="@id/friendrequest_icon"
             android:layout_alignParentRight="true"
@@ -74,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            style="@style/FriendRightText"
+            style="@style/FriendRequestRightText"
 
             android:layout_toRightOf="@id/friendrequest_lower"
             android:layout_alignParentBottom="true"
@@ -85,4 +100,4 @@
 
 
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

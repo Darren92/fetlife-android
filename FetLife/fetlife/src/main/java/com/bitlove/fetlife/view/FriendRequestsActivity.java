@@ -9,10 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.bitlove.fetlife.R;
+import com.bitlove.fetlife.event.FriendRequestSendFailedEvent;
+import com.bitlove.fetlife.event.FriendRequestSendSucceededEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
-import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.FriendRequest;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
@@ -25,11 +26,6 @@ public class FriendRequestsActivity extends ResourceActivity
 
     public static final String EXTRA_FRIENDREQUEST_LIST_MODE = "com.bitlove.fetlife.extra.friendRequest_list_mode";
 
-    public enum FriendRequestListMode {
-        NEW_CONVERSATION,
-        FRIENDREQUEST_PROFILE
-    }
-
     private static final int FRIENDREQUESTS_PAGE_COUNT = 10;
 
     private FlowContentObserver friendRequestsModelObserver;
@@ -38,16 +34,11 @@ public class FriendRequestsActivity extends ResourceActivity
     private int requestedPage = 1;
 
     public static void startActivity(Context context) {
-        context.startActivity(createIntent(context, FriendRequestListMode.FRIENDREQUEST_PROFILE));
+        context.startActivity(createIntent(context));
     }
 
-    public static void startActivity(Context context, FriendRequestListMode friendRequestListMode) {
-        context.startActivity(createIntent(context, friendRequestListMode));
-    }
-
-    public static Intent createIntent(Context context, FriendRequestListMode friendRequestListMode) {
+    public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, FriendRequestsActivity.class);
-        intent.putExtra(EXTRA_FRIENDREQUEST_LIST_MODE, friendRequestListMode.toString());
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
@@ -58,7 +49,7 @@ public class FriendRequestsActivity extends ResourceActivity
 
         floatingActionButton.setVisibility(View.GONE);
 
-        friendRequestsAdapter = new FriendRequestsRecyclerAdapter(getFetLifeApplication().getImageLoader());
+        friendRequestsAdapter = new FriendRequestsRecyclerAdapter(getFetLifeApplication().getImageLoader(), savedInstanceState == null);
         friendRequestsAdapter.setOnItemClickListener(new FriendRequestsRecyclerAdapter.OnFriendRequestClickListener() {
             @Override
             public void onItemClick(FriendRequest friendRequest) {
@@ -66,7 +57,7 @@ public class FriendRequestsActivity extends ResourceActivity
 
             @Override
             public void onAvatarClick(FriendRequest friendRequest) {
-                String url = friendRequest.getLink();
+                String url = friendRequest.getMemberLink();
                 if (url != null) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
@@ -91,10 +82,6 @@ public class FriendRequestsActivity extends ResourceActivity
                 }
             }
         });
-    }
-
-    private FriendRequestListMode getFriendRequestListMode() {
-        return FriendRequestListMode.valueOf(getIntent().getStringExtra(EXTRA_FRIENDREQUEST_LIST_MODE));
     }
 
     @Override
@@ -155,6 +142,16 @@ public class FriendRequestsActivity extends ResourceActivity
         if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS) {
             showProgress();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFriendRequestDecisionSent(FriendRequestSendSucceededEvent friendRequestSendSucceededEvent) {
+        friendRequestsAdapter.refresh();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFriendRequestDecisionSendFailed(FriendRequestSendFailedEvent friendRequestSendFailedEvent) {
+        friendRequestsAdapter.refresh();
     }
 
 }
