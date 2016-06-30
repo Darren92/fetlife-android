@@ -4,7 +4,7 @@
     <gradient
         android:startColor="@color/color_accept"
         android:endColor="@color/window_background"
-        android:angle="0"/>
+        android:angle="180"/>
     <corners
         android:bottomRightRadius="6dp"
         android:bottomLeftRadius="6dp"

@@ -2,8 +2,6 @@ package com.bitlove.fetlife.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.Snackbar;
@@ -25,6 +23,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRequestViewHolder> {
 
@@ -35,6 +34,10 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
     public interface OnFriendRequestClickListener {
         public void onItemClick(FriendRequest FriendRequest);
         public void onAvatarClick(FriendRequest FriendRequest);
+    }
+
+    static class Undo {
+        AtomicBoolean pending = new AtomicBoolean(true);
     }
 
     private List<FriendRequest> itemList;
@@ -85,12 +88,6 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
             }
 
             @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-                return makeMovementFlags(0, swipeFlags);
-            }
-
-            @Override
             public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
                 if (viewHolder != null) {
                     getDefaultUIUtil().onSelected(((FriendRequestViewHolder) viewHolder).swipableLayout);
@@ -100,7 +97,8 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
             @Override
             public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 FriendRequestViewHolder friendRequestViewHolder = ((FriendRequestViewHolder) viewHolder);
-                friendRequestViewHolder.backgroundLayout.setVisibility(View.GONE);
+                friendRequestViewHolder.acceptBackgroundLayout.setVisibility(View.GONE);
+                friendRequestViewHolder.rejectBackgroundLayout.setVisibility(View.GONE);
                 getDefaultUIUtil().clearView(((FriendRequestViewHolder) viewHolder).swipableLayout);
             }
 
@@ -113,8 +111,19 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
             public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 FriendRequestViewHolder friendRequestViewHolder = ((FriendRequestViewHolder) viewHolder);
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCurrentlyActive) {
-                    friendRequestViewHolder.backgroundLayout.setVisibility(View.VISIBLE);
-                    friendRequestViewHolder.backgroundLayout.setBackgroundResource(dX > 0 ? R.drawable.listitem_background_accept_rounded : R.drawable.listitem_background_reject_rounded);
+                    if (dX > 0) {
+                        friendRequestViewHolder.acceptBackgroundLayout.setVisibility(View.VISIBLE);
+                        friendRequestViewHolder.rejectBackgroundLayout.setVisibility(View.GONE);
+                    } else if (dX < 0) {
+                        friendRequestViewHolder.acceptBackgroundLayout.setVisibility(View.GONE);
+                        friendRequestViewHolder.rejectBackgroundLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        friendRequestViewHolder.acceptBackgroundLayout.setVisibility(View.GONE);
+                        friendRequestViewHolder.rejectBackgroundLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    friendRequestViewHolder.acceptBackgroundLayout.setVisibility(View.GONE);
+                    friendRequestViewHolder.rejectBackgroundLayout.setVisibility(View.GONE);
                 }
                 getDefaultUIUtil().onDrawOver(c, recyclerView, friendRequestViewHolder.swipableLayout, dX, dY, actionState, isCurrentlyActive);
             }
@@ -127,41 +136,41 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
     void onItemRemove(final RecyclerView.ViewHolder viewHolder, final RecyclerView recyclerView, boolean accepted) {
         final int adapterPosition = viewHolder.getAdapterPosition();
         final FriendRequest friendRequest = itemList.get(adapterPosition);
+
+        final Undo undo = new Undo();
+
         Snackbar snackbar = Snackbar
                 .make(recyclerView, accepted ? R.string.text_friendrequests_accepted :  R.string.text_friendrequests_rejected, Snackbar.LENGTH_LONG)
                 .setActionTextColor(recyclerView.getContext().getResources().getColor(R.color.text_color_link))
                 .setAction(R.string.action_undo, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        synchronized (friendRequest) {
-                            if (!friendRequest.isPending()) {
-                                friendRequest.setPendingState(null);
-                                itemList.add(adapterPosition, friendRequest);
-                                notifyItemInserted(adapterPosition);
-                                recyclerView.scrollToPosition(adapterPosition);
-                            }
+                        if (undo.pending.compareAndSet(true, false)) {
+                            friendRequest.setPendingState(null);
+                            itemList.add(adapterPosition, friendRequest);
+                            notifyItemInserted(adapterPosition);
+                            recyclerView.scrollToPosition(adapterPosition);
                         }
                     }
                 });
+        snackbar.getView().setBackgroundColor(accepted ? recyclerView.getContext().getResources().getColor(R.color.color_accept) : recyclerView.getContext().getResources().getColor(R.color.color_reject));
 
         friendRequest.setPendingState(accepted ? FriendRequest.PendingState.ACCEPTED : FriendRequest.PendingState.REJECTED);
         itemList.remove(adapterPosition);
         notifyItemRemoved(adapterPosition);
         snackbar.show();
 
-        startDelayedFriendRequestDecision(friendRequest, friendRequest.getPendingState(), FRIENDREQUEST_UNDO_DURATION, recyclerView.getContext());
+        startDelayedFriendRequestDecision(friendRequest, friendRequest.getPendingState(), undo, FRIENDREQUEST_UNDO_DURATION, recyclerView.getContext());
     }
 
-    private void startDelayedFriendRequestDecision(final FriendRequest friendRequest, final FriendRequest.PendingState pendingState, int friendrequestUndoDuration, final Context context) {
+    private void startDelayedFriendRequestDecision(final FriendRequest friendRequest, final FriendRequest.PendingState pendingState, final Undo undo, int friendrequestUndoDuration, final Context context) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                synchronized (friendRequest) {
-                    if (friendRequest.getPendingState() == pendingState) {
-                        friendRequest.setPending(true);
-                        friendRequest.save();
-                        FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_SEND_FRIENDREQUESTS);
-                    }
+                if (undo.pending.compareAndSet(true, false)) {
+                    friendRequest.setPending(true);
+                    friendRequest.save();
+                    FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_SEND_FRIENDREQUESTS);
                 }
             }
         }, friendrequestUndoDuration);
@@ -231,13 +240,15 @@ class FriendRequestViewHolder extends RecyclerView.ViewHolder {
 
     ImageView avatarImage;
     TextView headerText, upperText, dateText, lowerText;
-    View swipableLayout, backgroundLayout;
+    View swipableLayout, acceptBackgroundLayout, rejectBackgroundLayout;
 
     public FriendRequestViewHolder(View itemView) {
         super(itemView);
 
         swipableLayout = itemView.findViewById(R.id.swipeable_layout);
-        backgroundLayout = itemView.findViewById(R.id.background_layout);
+        acceptBackgroundLayout = itemView.findViewById(R.id.friendrequest_accept_layout);
+        rejectBackgroundLayout = itemView.findViewById(R.id.friendrequest_reject_layout);
+
         headerText = (TextView) itemView.findViewById(R.id.friendrequest_header);
         upperText = (TextView) itemView.findViewById(R.id.friendrequest_upper);
         dateText = (TextView) itemView.findViewById(R.id.friendrequest_right);

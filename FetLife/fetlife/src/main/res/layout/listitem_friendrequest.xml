@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fixed_layout"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight">
+    android:layout_height="@dimen/listitem_height">
 
     <FrameLayout
-        android:id="@+id/background_layout"
+        android:id="@+id/friendrequest_accept_layout"
         android:visibility="gone"
-        style="@style/FriendRequestItem"
+        style="@style/FriendRequestAcceptLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/friendrequest_accept_text"
+            android:text="@string/text_friendrequests_toaccept"
+            style="@style/FriendRequestDecisionText"
+            android:gravity="center_vertical|left"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/friendrequest_reject_layout"
+        android:visibility="gone"
+        style="@style/FriendRequestRejectLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/friendrequest_reject_text"
+            style="@style/FriendRequestDecisionText"
+            android:text="@string/text_friendrequests_toreject"
+            android:gravity="center_vertical|right"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight" />
 
@@ -21,8 +40,9 @@
     <RelativeLayout
         android:id="@+id/swipeable_layout"
         style="@style/FriendRequestItem"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/friendrequest_icon"
@@ -100,4 +120,4 @@
 
 
     </RelativeLayout>
-</RelativeLayout>
+</FrameLayout>

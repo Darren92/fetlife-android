@@ -50,4 +50,6 @@
     <string name="action_undo">UNDO</string>
     <string name="text_friendrequests_rejected">Rejected</string>
     <string name="text_friendrequests_accepted">Accepted</string>
+    <string name="text_friendrequests_toaccept">Accept</string>
+    <string name="text_friendrequests_toreject">Reject</string>
 </resources>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight">
+    android:layout_height="@dimen/listitem_height">
 
     <RelativeLayout
         style="@style/FriendItem"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/friendrequest_icon"
+            android:id="@+id/friend_icon"
 
             style="@style/FriendAvatar"
 
@@ -23,60 +23,60 @@
             android:src="@drawable/dummy_avatar" />
 
         <TextView
-            android:id="@+id/friendrequest_lower"
+            android:id="@+id/friend_lower"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             style="@style/FriendLowerText"
 
-            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_toRightOf="@id/friend_icon"
             android:layout_alignParentBottom="true"
 
             android:singleLine="true"
             android:ellipsize="marquee"/>
 
         <TextView
-            android:id="@+id/friendrequest_upper"
+            android:id="@+id/friend_upper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             style="@style/FriendUpperText"
 
-            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_toRightOf="@id/friend_icon"
             android:layout_alignParentRight="true"
 
-            android:layout_above="@id/friendrequest_lower"
+            android:layout_above="@id/friend_lower"
             android:layout_alignWithParentIfMissing="true"
             android:singleLine="true"
             android:ellipsize="marquee"/>
 
         <TextView
-            android:id="@+id/friendrequest_header"
+            android:id="@+id/friend_header"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
             style="@style/FriendHeader"
 
-            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_toRightOf="@id/friend_icon"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
 
-            android:layout_above="@id/friendrequest_upper"
+            android:layout_above="@id/friend_upper"
             android:layout_alignWithParentIfMissing="true"
 
             android:singleLine="true"
             android:ellipsize="marquee"/>
 
         <TextView
-            android:id="@+id/friendrequest_right"
+            android:id="@+id/friend_right"
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
             style="@style/FriendRightText"
 
-            android:layout_toRightOf="@id/friendrequest_lower"
+            android:layout_toRightOf="@id/friend_lower"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
 
@@ -85,4 +85,4 @@
 
 
     </RelativeLayout>
-</LinearLayout>
+</FrameLayout>
