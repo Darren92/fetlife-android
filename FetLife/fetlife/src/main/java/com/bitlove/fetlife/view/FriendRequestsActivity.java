@@ -14,6 +14,7 @@ import com.bitlove.fetlife.event.FriendRequestSendSucceededEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
+import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.FriendRequest;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
@@ -47,7 +48,12 @@ public class FriendRequestsActivity extends ResourceActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        floatingActionButton.setVisibility(View.GONE);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddNfcFriendActivity.startActivity(FriendRequestsActivity.this);
+            }
+        });
 
         friendRequestsAdapter = new FriendRequestsRecyclerAdapter(getFetLifeApplication().getImageLoader(), savedInstanceState == null);
         friendRequestsAdapter.setOnItemClickListener(new FriendRequestsRecyclerAdapter.OnFriendRequestClickListener() {
