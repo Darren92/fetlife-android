@@ -56,7 +56,7 @@ public class FriendsActivity extends ResourceActivity
     public static Intent createIntent(Context context, FriendListMode friendListMode) {
         Intent intent = new Intent(context, FriendsActivity.class);
         intent.putExtra(EXTRA_FRIEND_LIST_MODE, friendListMode.toString());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
     }
 

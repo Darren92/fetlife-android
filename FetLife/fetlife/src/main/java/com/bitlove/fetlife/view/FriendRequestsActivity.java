@@ -39,7 +39,7 @@ public class FriendRequestsActivity extends ResourceActivity
 
     public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, FriendRequestsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
     }
 
@@ -82,6 +82,8 @@ public class FriendRequestsActivity extends ResourceActivity
                 }
             }
         });
+
+        showToast(getResources().getString(R.string.friendrequest_activity_hint));
     }
 
     @Override

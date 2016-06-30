@@ -20,6 +20,7 @@ import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.squareup.okhttp.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,6 +151,11 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
                             itemList.add(adapterPosition, friendRequest);
                             notifyItemInserted(adapterPosition);
                             recyclerView.scrollToPosition(adapterPosition);
+                        } else {
+                            Context context = recyclerView.getContext();
+                            if (context instanceof ResourceActivity) {
+                                ((ResourceActivity)context).showToast(context.getString(R.string.undo_no_longer_possible));
+                            }
                         }
                     }
                 });
