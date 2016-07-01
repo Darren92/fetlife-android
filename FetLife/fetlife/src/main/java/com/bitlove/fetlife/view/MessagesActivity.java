@@ -51,8 +51,9 @@ public class MessagesActivity extends ResourceActivity
     public static Intent createIntent(Context context, String conversationId, String title, boolean newTask) {
         Intent intent = new Intent(context, MessagesActivity.class);
         if (newTask) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra(EXTRA_CONVERSATION_ID, conversationId);
         intent.putExtra(EXTRA_CONVERSATION_TITLE, title);
         return intent;

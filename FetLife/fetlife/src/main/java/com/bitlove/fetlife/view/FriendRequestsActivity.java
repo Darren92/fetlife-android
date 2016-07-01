@@ -25,8 +25,6 @@ import org.greenrobot.eventbus.ThreadMode;
 public class FriendRequestsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String EXTRA_FRIENDREQUEST_LIST_MODE = "com.bitlove.fetlife.extra.friendRequest_list_mode";
-
     private static final int FRIENDREQUESTS_PAGE_COUNT = 10;
 
     private FlowContentObserver friendRequestsModelObserver;
@@ -40,7 +38,7 @@ public class FriendRequestsActivity extends ResourceActivity
 
     public static Intent createIntent(Context context) {
         Intent intent = new Intent(context, FriendRequestsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
     }
 
@@ -88,6 +86,8 @@ public class FriendRequestsActivity extends ResourceActivity
                 }
             }
         });
+
+        showToast(getResources().getString(R.string.friendrequest_activity_hint));
     }
 
     @Override
