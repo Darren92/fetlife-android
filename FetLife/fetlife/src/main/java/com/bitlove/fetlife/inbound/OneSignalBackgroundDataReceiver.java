@@ -17,7 +17,7 @@ public class OneSignalBackgroundDataReceiver extends WakefulBroadcastReceiver {
             JSONObject customJSON = new JSONObject(dataBundle.getString("custom"));
             if (customJSON.has("a")) {
                 JSONObject additionalData = customJSON.getJSONObject("a");
-                String conversationId = additionalData.getString("side_id");
+                String conversationId = additionalData.getString("conversation_id");
                 if (conversationId != null) {
                     FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
                 }
