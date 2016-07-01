@@ -150,6 +150,8 @@ public class ResourceActivity extends AppCompatActivity
             ConversationsActivity.startActivity(this);
         } else if (id == R.id.nav_friends) {
             FriendsActivity.startActivity(this);
+        } else if (id == R.id.nav_friendrequests) {
+            FriendRequestsActivity.startActivity(this);
         } else if (id == R.id.nav_about) {
 
             String versionText;

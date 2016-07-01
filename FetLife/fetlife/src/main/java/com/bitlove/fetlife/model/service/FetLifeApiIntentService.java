@@ -10,6 +10,8 @@ import android.preference.PreferenceManager;
 import com.bitlove.fetlife.BuildConfig;
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.event.AuthenticationFailedEvent;
+import com.bitlove.fetlife.event.FriendRequestSendFailedEvent;
+import com.bitlove.fetlife.event.FriendRequestSendSucceededEvent;
 import com.bitlove.fetlife.event.LoginFailedEvent;
 import com.bitlove.fetlife.event.LoginFinishedEvent;
 import com.bitlove.fetlife.event.LoginStartedEvent;
@@ -26,6 +28,8 @@ import com.bitlove.fetlife.model.pojos.AuthBody;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.pojos.Friend;
+import com.bitlove.fetlife.model.pojos.FriendRequest;
+import com.bitlove.fetlife.model.pojos.FriendRequest_Table;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message_Table;
@@ -57,6 +61,8 @@ public class FetLifeApiIntentService extends IntentService {
     public static final String ACTION_APICALL_SEND_MESSAGES = "com.bitlove.fetlife.action.apicall.send_messages";
     public static final String ACTION_APICALL_SET_MESSAGES_READ = "com.bitlove.fetlife.action.apicall.set_messages_read";
     public static final String ACTION_APICALL_LOGON_USER = "com.bitlove.fetlife.action.apicall.logon_user";
+    public static final String ACTION_APICALL_FRIENDREQUESTS = "com.bitlove.fetlife.action.apicall.friendrequests";
+    public static final String ACTION_APICALL_SEND_FRIENDREQUESTS = "com.bitlove.fetlife.action.apicall.send_friendrequests";
 
     private static final String CONSTANT_PREF_KEY_REFRESH_TOKEN = "com.bitlove.fetlife.key.pref.token.refresh";
     private static final String EXTRA_PARAMS = "com.bitlove.fetlife.extra.params";
@@ -136,6 +142,9 @@ public class FetLifeApiIntentService extends IntentService {
                 case ACTION_APICALL_FRIENDS:
                     result = retriveFriends(params);
                     break;
+                case ACTION_APICALL_FRIENDREQUESTS:
+                    result = retriveFriendRequests(params);
+                    break;
                 case ACTION_APICALL_MESSAGES:
                     result = retrieveMessages(params);
                     break;
@@ -144,6 +153,9 @@ public class FetLifeApiIntentService extends IntentService {
                     break;
                 case ACTION_APICALL_SET_MESSAGES_READ:
                     result = setMessagesRead(params);
+                    break;
+                case ACTION_APICALL_SEND_FRIENDREQUESTS:
+                    result = sendPendingFriendRequests();
                     break;
             }
 
@@ -335,6 +347,45 @@ public class FetLifeApiIntentService extends IntentService {
         }
     }
 
+    private boolean sendPendingFriendRequests() throws IOException {
+
+        boolean stackedResult = false;
+        List<FriendRequest> pendingFriendRequests = new Select().from(FriendRequest.class).where(FriendRequest_Table.pending.is(true)).queryList();
+        for (FriendRequest pendingFriendRequest : pendingFriendRequests) {
+            if (!sendPendingFriendRequest(pendingFriendRequest)) {
+                pendingFriendRequest.delete();
+            } else if (!stackedResult) {
+                stackedResult = true;
+            }
+        }
+        return stackedResult;
+    }
+
+    private boolean sendPendingFriendRequest(FriendRequest pendingFriendRequest) throws IOException {
+        Call<FriendRequest> friendRequestsCall;
+        switch (pendingFriendRequest.getPendingState()) {
+            case ACCEPTED:
+                friendRequestsCall = getFetLifeApi().acceptFriendRequests(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingFriendRequest.getId());
+                break;
+            case REJECTED:
+                friendRequestsCall = getFetLifeApi().removeFriendRequests(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingFriendRequest.getId());
+                break;
+            default:
+                return false;
+        }
+
+        Response<FriendRequest> friendRequestResponse = friendRequestsCall.execute();
+        if (friendRequestResponse.isSuccess()) {
+            pendingFriendRequest.delete();
+            getFetLifeApplication().getEventBus().post(new FriendRequestSendSucceededEvent());
+            return true;
+        } else {
+            pendingFriendRequest.delete();
+            getFetLifeApplication().getEventBus().post(new FriendRequestSendFailedEvent());
+            return false;
+        }
+    }
+
     private boolean startNewConversation(String localConversationId, Message startMessage) throws IOException {
 
         Conversation pendingConversation = new Select().from(Conversation.class).where(Conversation_Table.id.is(localConversationId)).querySingle();
@@ -452,6 +503,34 @@ public class FetLifeApiIntentService extends IntentService {
                 public void execute(DatabaseWrapper databaseWrapper) {
                     for (Friend friend : friends) {
                         friend.save();
+                    }
+                }
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean retriveFriendRequests(String[] params) throws IOException {
+        final int limit = getIntFromParams(params, 0, 10);
+        final int page = getIntFromParams(params, 1, 1);
+
+        Call<List<FriendRequest>> getFriendRequestsCall = getFetLifeApi().getFriendRequests(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), limit, page);
+        Response<List<FriendRequest>> friendRequestsResponse = getFriendRequestsCall.execute();
+        if (friendRequestsResponse.isSuccess()) {
+            final List<FriendRequest> friendRequests = friendRequestsResponse.body();
+            FlowManager.getDatabase(FetLifeDatabase.class).executeTransaction(new ITransaction() {
+                @Override
+                public void execute(DatabaseWrapper databaseWrapper) {
+                    for (FriendRequest friendRequest : friendRequests) {
+                        FriendRequest storedFriendRequest = new Select().from(FriendRequest.class).where(FriendRequest_Table.id.is(friendRequest.getId())).querySingle();
+                        if (storedFriendRequest != null) {
+                            //skip
+                        } else {
+                            friendRequest.setClientId(UUID.randomUUID().toString());
+                            friendRequest.save();
+                        }
                     }
                 }
             });

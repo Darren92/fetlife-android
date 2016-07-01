@@ -53,6 +53,11 @@
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"></activity>
+        <activity
+            android:name=".view.FriendRequestsActivity"
+            android:label="@string/title_activity_friendrequests"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"></activity>
 
         <service
             android:name=".model.service.FetLifeApiIntentService"

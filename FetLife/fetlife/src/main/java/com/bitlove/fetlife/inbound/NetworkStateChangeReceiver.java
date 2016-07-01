@@ -13,11 +13,12 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
 
         int status = NetworkUtil.getConnectivityStatusString(context);
-        if (!"android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-            if(status != NetworkUtil.NETWORK_STATUS_NOT_CONNECTED){
-                if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES)) {
-                    FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES);
-                }
+        if(status != NetworkUtil.NETWORK_STATUS_NOT_CONNECTED){
+            if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES)) {
+                FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES);
+            }
+            if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_SEND_FRIENDREQUESTS)) {
+                FetLifeApiIntentService.startApiCall(context, FetLifeApiIntentService.ACTION_APICALL_SEND_FRIENDREQUESTS);
             }
         }
     }
