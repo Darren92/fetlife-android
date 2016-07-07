@@ -5,8 +5,7 @@ Welcome to FetLife's open-source Android app!
 # WARNING!
 
 Due to recent security imporvements Android App below version 1.1.2 won't be able to be used any more.
-New version will be released within 24 hours.
-We keep you updated. 
+Please use the latest released version.
 
 Thank you for your understandings.
 
