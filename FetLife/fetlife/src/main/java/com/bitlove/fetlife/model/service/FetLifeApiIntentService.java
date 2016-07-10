@@ -30,6 +30,8 @@ import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.pojos.Friend;
 import com.bitlove.fetlife.model.pojos.FriendRequest;
 import com.bitlove.fetlife.model.pojos.FriendRequest_Table;
+import com.bitlove.fetlife.model.pojos.FriendSuggestion;
+import com.bitlove.fetlife.model.pojos.FriendSuggestion_Table;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
 import com.bitlove.fetlife.model.pojos.Message_Table;
@@ -358,7 +360,28 @@ public class FetLifeApiIntentService extends IntentService {
                 stackedResult = true;
             }
         }
+        List<FriendSuggestion> pendingFriendSuggestions = new Select().from(FriendSuggestion.class).where(FriendSuggestion_Table.pending.is(true)).queryList();
+        for (FriendSuggestion pendingFriendSuggestion : pendingFriendSuggestions) {
+            if (!sendPendingFriendSuggestion(pendingFriendSuggestion)) {
+                pendingFriendSuggestion.delete();
+            } else if (!stackedResult) {
+                stackedResult = true;
+            }
+        }
         return stackedResult;
+    }
+
+    private boolean sendPendingFriendSuggestion(FriendSuggestion pendingFriendSuggestion) throws IOException {
+        Call<FriendRequest> createFriendRequestCall = getFetLifeApi().createFriendRequest(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingFriendSuggestion.getId());
+        Response<FriendRequest> friendRequestResponse = createFriendRequestCall.execute();
+        if (friendRequestResponse.isSuccess()) {
+            pendingFriendSuggestion.delete();
+            getFetLifeApplication().getEventBus().post(new FriendRequestSendSucceededEvent());
+            return true;
+        } else {
+            getFetLifeApplication().getEventBus().post(new FriendRequestSendFailedEvent());
+            return false;
+        }
     }
 
     private boolean sendPendingFriendRequest(FriendRequest pendingFriendRequest) throws IOException {

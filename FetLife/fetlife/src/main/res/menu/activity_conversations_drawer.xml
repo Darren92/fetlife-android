@@ -15,6 +15,12 @@
             android:id="@+id/nav_friendrequests"
             android:icon="@android:drawable/ic_menu_my_calendar"
             android:title="@string/menu_friendrequests" />
+
+        <item
+            android:id="@+id/nav_introduce"
+            android:icon="@android:drawable/ic_menu_share"
+            android:title="@string/menu_introduce" />
+
     </group>
 
     <group android:id="@+id/logout" android:checkableBehavior="single">

@@ -11,10 +11,12 @@ import android.view.View;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.FriendRequestSendFailedEvent;
 import com.bitlove.fetlife.event.FriendRequestSendSucceededEvent;
+import com.bitlove.fetlife.event.FriendSuggestionAddedEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.FriendRequest;
+import com.bitlove.fetlife.model.pojos.FriendSuggestion;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 
@@ -48,7 +50,7 @@ public class FriendRequestsActivity extends ResourceActivity
         floatingActionButton.setVisibility(View.GONE);
 
         friendRequestsAdapter = new FriendRequestsRecyclerAdapter(getFetLifeApplication().getImageLoader(), savedInstanceState == null);
-        friendRequestsAdapter.setOnItemClickListener(new FriendRequestsRecyclerAdapter.OnFriendRequestClickListener() {
+        friendRequestsAdapter.setOnFriendRequestClickListener(new FriendRequestsRecyclerAdapter.OnFriendRequestClickListener() {
             @Override
             public void onItemClick(FriendRequest friendRequest) {
             }
@@ -56,6 +58,21 @@ public class FriendRequestsActivity extends ResourceActivity
             @Override
             public void onAvatarClick(FriendRequest friendRequest) {
                 String url = friendRequest.getMemberLink();
+                if (url != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
+            }
+        });
+        friendRequestsAdapter.setOnFriendSuggestionClickListener(new FriendRequestsRecyclerAdapter.OnFriendSuggestionClickListener() {
+            @Override
+            public void onItemClick(FriendSuggestion friendSuggestion) {
+            }
+
+            @Override
+            public void onAvatarClick(FriendSuggestion friendSuggestion) {
+                String url = friendSuggestion.getLink();
                 if (url != null) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
@@ -151,6 +168,11 @@ public class FriendRequestsActivity extends ResourceActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFriendRequestDecisionSendFailed(FriendRequestSendFailedEvent friendRequestSendFailedEvent) {
+        friendRequestsAdapter.refresh();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFriendSuggestionAdded(FriendSuggestionAddedEvent friendSuggestionAddedEvent) {
         friendRequestsAdapter.refresh();
     }
 
