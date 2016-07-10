@@ -319,10 +319,10 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
     private void onBindHeaderViewHolder(FriendRequestViewHolder friendRequestViewHolder, boolean friendRequestItem) {
         if (friendRequestItem) {
             friendRequestViewHolder.headerText.setText(R.string.header_friendrequest);
-            friendRequestViewHolder.headerText.setVisibility(friendRequestList.isEmpty() ? View.GONE : View.VISIBLE);
+            friendRequestViewHolder.itemView.setVisibility(friendRequestList.isEmpty() ? View.GONE : View.VISIBLE);
         } else {
             friendRequestViewHolder.headerText.setText(R.string.header_friendsuggestion);
-            friendRequestViewHolder.headerText.setVisibility(friendSuggestionList.isEmpty() ? View.GONE : View.VISIBLE);
+            friendRequestViewHolder.itemView.setVisibility(friendSuggestionList.isEmpty() ? View.GONE : View.VISIBLE);
         }
     }
 

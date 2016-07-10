@@ -9,7 +9,7 @@
     </style>
 
     <style name="FriendRequestHeaderItem">
-        <item name="android:background">@drawable/listitem_background_accent_rounded</item>
+        <item name="android:background">@drawable/listitem_background_rounded</item>
         <item name="android:padding">@dimen/listitem_padding</item>
         <item name="android:layout_marginTop">@dimen/listitem_vertical_margin</item>
         <item name="android:layout_marginBottom">@dimen/listitem_vertical_margin</item>
