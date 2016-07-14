@@ -2,6 +2,8 @@ package com.bitlove.fetlife;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 
 import com.bitlove.fetlife.inbound.OnNotificationOpenedHandler;
@@ -33,6 +35,8 @@ public class FetLifeApplication extends Application {
 
     private static FetLifeApplication instance;
     private ImageLoader imageLoader;
+    private String versionText;
+    private int versionNumber;
 
     public static FetLifeApplication getInstance() {
         return instance;
@@ -84,6 +88,15 @@ public class FetLifeApplication extends Application {
         }
 
         eventBus = EventBus.getDefault();
+
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionText = pInfo.versionName;
+            versionNumber = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            versionText = getString(R.string.text_unknown);
+        }
+
     }
 
     public FetLifeService getFetLifeService() {
@@ -122,5 +135,13 @@ public class FetLifeApplication extends Application {
         deleteDatabase(FetLifeDatabase.NAME + ".db");
         //DBFlow library uses .db suffix, but they mentioned they might going to change this in the future
         deleteDatabase(FetLifeDatabase.NAME);
+    }
+
+    public String getVersionText() {
+        return versionText;
+    }
+
+    public int getVersionNumber() {
+        return versionNumber;
     }
 }
