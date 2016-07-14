@@ -76,8 +76,6 @@
                         <li>Use hardware menu button for opening the menu</li>
                     </ul>
 
-                </font>
-
             <p/>v1.2<br/>
                     <ul>
                         <li>Share your profile with others via NFC beam</li>
@@ -102,5 +100,5 @@
             <p/>
         ]]>
     </string>
-    <string name="snakckbar_version_notification">Check out what\'s new in v%1$s at \'About\' screen</string>
+    <string name="snackbar_version_notification">Check out what\'s new in v%1$s at \'About\' screen</string>
 </resources>

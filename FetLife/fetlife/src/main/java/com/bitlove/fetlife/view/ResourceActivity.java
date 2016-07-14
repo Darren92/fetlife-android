@@ -2,8 +2,6 @@ package com.bitlove.fetlife.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +30,6 @@ import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.model.pojos.Member;
-import com.bitlove.fetlife.model.resource.ImageLoader;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -117,7 +113,7 @@ public class ResourceActivity extends AppCompatActivity
         int lastVersionNotification = preferences.getInt(PREFERENCE_VERSION_NOTIFICATION_INT, 0);
         int versionNumber = getFetLifeApplication().getVersionNumber();
         if (lastVersionNotification < versionNumber) {
-            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.snakckbar_version_notification, getFetLifeApplication().getVersionText()), Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_version_notification, getFetLifeApplication().getVersionText()), Snackbar.LENGTH_LONG);
             snackbar.getView().setBackgroundColor(getResources().getColor(R.color.color_accent));
             snackbar.show();
             preferences.edit().putInt(PREFERENCE_VERSION_NOTIFICATION_INT, versionNumber).apply();
