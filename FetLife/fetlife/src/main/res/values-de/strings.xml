@@ -21,7 +21,7 @@
 	<string name="input_message_description">Deine Nachricht</string>
 	<string name="logon_title"></string>
 	<string name="menu_about">Über</string>
-	<string name="menu_converations">Unterhaltungen</string>
+	<string name="menu_conversations">Unterhaltungen</string>
 	<string name="menu_friendrequests">Freundschaftsanfragen</string>
 	<string name="menu_friends">Freunde</string>
 	<string name="menu_introduce">Profil teilen</string>
