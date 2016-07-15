@@ -25,8 +25,9 @@
     <string name="sign_up">Sign up Now!</string>
     <string name="forgot_login">Forgot your login info?</string>
 
-    <string name="menu_converations">Conversations</string>
+    <string name="menu_conversations">Conversations</string>
     <string name="message_sub_separator" translatable="false">" \@ "</string>
+
     <string name="progress_logging_in">Beaming you up...</string>
     <string name="error_connection_failed">Server could not be reached. Please check your internet connection</string>
     <string name="error_apicall_failed">Connection failed. Please try again later</string>
@@ -34,13 +35,11 @@
 
     <string name="new_message_indication">NEW</string>
     <string name="version_prefix">"App version: "</string>
-    <string name="error_saved_message">Log saved into file fetlife.log, Please send us the log file via our github project.</string>
     <string name="title_activity_friends">Friends</string>
     <string name="menu_friends">Friends</string>
     <string name="menu_logout">Log out</string>
     <string name="title_activity_friends_new_conversation">New Conversation</string>
     <string name="menu_about">About</string>
-    <string name="text_about">Official FetLife App v</string>
     <string name="text_unknown">unknown</string>
     <string name="button_new_conversation_discription">New Conversation</string>
     <string name="button_send_description">Send Message</string>
@@ -61,4 +60,47 @@
     <string name="header_friendsuggestion">Shared Profiles</string>
     <string name="nfc_tap_your_device">Tap your device to another Android device to activate the beam</string>
     <string name="message_nfc_turned_off">Please turn on NFC to enable this feature</string>
+    <string name="title_activity_about">About This App</string>
+
+    <!--TODO: consider improving about layout -->
+    <string name="text_about">
+        <![CDATA[
+
+            <h1>Official FetLife App v%1$s</h1>
+
+            <p>Version History</p>
+
+            <p/>v1.3<br/>
+                    <ul>
+                        <li>Receive broader set of Notification</li>
+                        <li>View your Notification History</li>
+                        <li>Get information about new features at about screen</li>
+                        <li>Use hardware menu button for opening the menu</li>
+                    </ul>
+
+            <p/>v1.2<br/>
+                    <ul>
+                        <li>Share your profile with others via NFC beam</li>
+                        <li>Accept shared profiles and create a new friend request at Friend Requests screen</li>
+                    </ul>
+
+            <p/>v1.1<br/>
+                    <ul>
+                        <li>View your list of incoming, pending friend requests</li>
+                        <li>Approve or Reject your pending friend requests</li>
+                    </ul>
+
+            <p/>v1.0<br/>
+                    <ul>
+                        <li>View your list of Conversations</li>
+                        <li>Read and respond to Conversations</li>
+                        <li>View your list of Friends</li>
+                        <li>Start new Conversation with a Friend</li>
+                        <li>Receive a push notification when you receive a new Message</li>
+                    </ul>
+
+            <p/>
+        ]]>
+    </string>
+    <string name="snackbar_version_notification">Check out what\'s new in v%1$s at \'About\' screen</string>
 </resources>

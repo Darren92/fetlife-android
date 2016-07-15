@@ -1,12 +1,13 @@
 package com.bitlove.fetlife.view;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,13 +30,14 @@ import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.model.pojos.Member;
-import com.bitlove.fetlife.model.resource.ImageLoader;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String PREFERENCE_VERSION_NOTIFICATION_INT = "PREFERENCE_VERSION_NOTIFICATION_INT";
 
     protected FloatingActionButton floatingActionButton;
     protected NavigationView navigationView;
@@ -103,6 +104,20 @@ public class ResourceActivity extends AppCompatActivity
                 });
             }
         }
+
+        showVersionSnackBarIfNeeded();
+    }
+
+    private void showVersionSnackBarIfNeeded() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int lastVersionNotification = preferences.getInt(PREFERENCE_VERSION_NOTIFICATION_INT, 0);
+        int versionNumber = getFetLifeApplication().getVersionNumber();
+        if (lastVersionNotification < versionNumber) {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_version_notification, getFetLifeApplication().getVersionText()), Snackbar.LENGTH_LONG);
+            snackbar.getView().setBackgroundColor(getResources().getColor(R.color.color_accent));
+            snackbar.show();
+            preferences.edit().putInt(PREFERENCE_VERSION_NOTIFICATION_INT, versionNumber).apply();
+        }
     }
 
     @Override
@@ -156,19 +171,7 @@ public class ResourceActivity extends AppCompatActivity
         } else if (id == R.id.nav_introduce) {
             AddNfcFriendActivity.startActivity(this);
         } else if (id == R.id.nav_about) {
-
-            String versionText;
-            try {
-                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                versionText = pInfo.versionName;
-            } catch (PackageManager.NameNotFoundException e) {
-                versionText = getString(R.string.text_unknown);
-            }
-
-            String aboutText = getString(R.string.text_about) + versionText;
-            showToast(aboutText);
-
-            return false;
+            AboutActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
