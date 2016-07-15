@@ -61,6 +61,7 @@
     <string name="message_nfc_turned_off">Please turn on NFC to enable this feature</string>
     <string name="title_activity_about">About This App</string>
 
+    <!--TODO: consider improving about layout -->
     <string name="text_about">
         <![CDATA[
 
