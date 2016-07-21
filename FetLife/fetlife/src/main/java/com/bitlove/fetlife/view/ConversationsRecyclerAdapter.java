@@ -11,7 +11,8 @@ import android.widget.TextView;
 
 import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.model.pojos.Conversation;
-import com.bitlove.fetlife.model.pojos.Conversation$Table;
+
+import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.resource.ImageLoader;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -24,7 +25,9 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
     private final ImageLoader imageLoader;
 
     public interface OnConversationClickListener {
-        public void onClick(Conversation conversation);
+        public void onItemClick(Conversation conversation);
+
+        public void onAvatarClick(Conversation conversation);
     }
 
     private List<Conversation> itemList;
@@ -41,7 +44,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
 
     private void loadItems() {
         //TODO: think of moving to separate thread with specific DB executor
-        itemList = new Select().from(Conversation.class).orderBy(false,Conversation$Table.DATE).queryList();
+        itemList = new Select().from(Conversation.class).orderBy(Conversation_Table.date,false).queryList();
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
         conversationViewHolder.headerText.setText(conversation.getNickname());
         conversationViewHolder.messageText.setText(conversation.getSubject());
 
-        if (conversation.getHasNewMessage()) {
+        if (conversation.getContainNewMessage()) {
             conversationViewHolder.newMessageIndicator.setVisibility(View.VISIBLE);
         } else {
             conversationViewHolder.newMessageIndicator.setVisibility(View.GONE);
@@ -69,16 +72,23 @@ public class ConversationsRecyclerAdapter extends RecyclerView.Adapter<Conversat
             @Override
             public void onClick(View v) {
                 if (onConversationClickListener != null) {
-                    onConversationClickListener.onClick(conversation);
+                    onConversationClickListener.onItemClick(conversation);
+                }
+            }
+        });
+
+        conversationViewHolder.avatarImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onConversationClickListener != null) {
+                    onConversationClickListener.onAvatarClick(conversation);
                 }
             }
         });
 
         conversationViewHolder.avatarImage.setImageResource(R.drawable.dummy_avatar);
-        String avatarUrl = conversation.getAvatar();
-        if (avatarUrl != null) {
-            imageLoader.loadImage(conversationViewHolder.itemView.getContext(), conversation.getAvatar(), conversationViewHolder.avatarImage);
-        }
+        String avatarUrl = conversation.getAvatarLink();
+        imageLoader.loadImage(conversationViewHolder.itemView.getContext(), avatarUrl, conversationViewHolder.avatarImage, R.drawable.dummy_avatar);
     }
 
     public void refresh() {

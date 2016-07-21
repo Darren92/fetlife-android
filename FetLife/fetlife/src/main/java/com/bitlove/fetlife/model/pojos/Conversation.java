@@ -9,8 +9,28 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = FetLifeDatabase.NAME)
+import java.util.UUID;
+
+@Table(database = FetLifeDatabase.class)
 public class Conversation extends BaseModel {
+
+    private static final String PREFIX_LOCAL = "%" + Conversation.class.getName() + ".PREFIX_LOCAL%";
+
+    public static boolean isLocal(String conversationId) {
+        return conversationId.startsWith(PREFIX_LOCAL);
+    }
+
+    public static String createLocalConversation(Member member) {
+        Conversation conversation = new Conversation();
+        conversation.setId(PREFIX_LOCAL + UUID.randomUUID().toString());
+        String dateString = DateUtil.toString(System.currentTimeMillis());
+        conversation.setCreatedAt(dateString);
+        conversation.setUpdatedAt(dateString);
+        conversation.setContainNewMessage(false);
+        conversation.setMember(member);
+        conversation.save();
+        return conversation.getId();
+    }
 
     @Column
     @PrimaryKey(autoincrement = false)
@@ -35,7 +55,7 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonProperty("has_new_messages")
-    private boolean hasNewMessage;
+    private boolean containNewMessage;
 
     @JsonProperty("member")
     private Member member;
@@ -46,7 +66,11 @@ public class Conversation extends BaseModel {
 
     @Column
     @JsonIgnore
-    private String avatar;
+    private String avatarLink;
+
+    @Column
+    @JsonIgnore
+    private String memberLink;
 
     @Column
     @JsonIgnore
@@ -100,12 +124,16 @@ public class Conversation extends BaseModel {
         this.date = date;
     }
 
-    public boolean getHasNewMessage() {
-        return hasNewMessage;
+    public boolean isContainNewMessage() {
+        return getContainNewMessage();
     }
 
-    public void setHasNewMessage(boolean hasNewMessage) {
-        this.hasNewMessage = hasNewMessage;
+    public boolean getContainNewMessage() {
+        return containNewMessage;
+    }
+
+    public void setContainNewMessage(boolean containNewMessage) {
+        this.containNewMessage = containNewMessage;
     }
 
     public Member getMember() {
@@ -117,10 +145,8 @@ public class Conversation extends BaseModel {
         if (member != null) {
             setMemberId(member.getId());
             setNickname(member.getNickname());
-            Avatar avatar = member.getAvatar();
-            if (avatar != null) {
-                setAvatar(avatar.getVariants().getIconUrl());
-            }
+            setAvatarLink(member.getAvatarLink());
+            setMemberLink(member.getLink());
         }
     }
 
@@ -135,13 +161,13 @@ public class Conversation extends BaseModel {
     }
 
     @JsonIgnore
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarLink() {
+        return avatarLink;
     }
 
     @JsonIgnore
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarLink(String avatarLink) {
+        this.avatarLink = avatarLink;
     }
 
     @JsonIgnore
@@ -152,5 +178,13 @@ public class Conversation extends BaseModel {
     @JsonIgnore
     public void setMemberId(String memberId) {
         this.memberId = memberId;
+    }
+
+    public String getMemberLink() {
+        return memberLink;
+    }
+
+    public void setMemberLink(String memberLink) {
+        this.memberLink = memberLink;
     }
 }

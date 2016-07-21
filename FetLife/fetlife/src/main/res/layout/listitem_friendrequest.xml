@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/listitem_height">
+
+    <FrameLayout
+        android:id="@+id/friendrequest_accept_layout"
+        android:visibility="gone"
+        style="@style/FriendRequestAcceptLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/friendrequest_accept_text"
+            android:text="@string/text_friendrequests_toaccept"
+            style="@style/FriendRequestDecisionText"
+            android:gravity="center_vertical|left"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/friendrequest_reject_layout"
+        android:visibility="gone"
+        style="@style/FriendRequestRejectLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/friendrequest_reject_text"
+            style="@style/FriendRequestDecisionText"
+            android:text="@string/text_friendrequests_toreject"
+            android:gravity="center_vertical|right"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight" />
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/swipeable_layout"
+        style="@style/FriendRequestItem"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/friendrequest_icon"
+
+            style="@style/FriendRequestAvatar"
+
+            android:layout_width="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+
+            android:src="@drawable/dummy_avatar" />
+
+        <TextView
+            android:id="@+id/friendrequest_lower"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            style="@style/FriendRequestLowerText"
+
+            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_alignParentBottom="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/friendrequest_upper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            style="@style/FriendRequestUpperText"
+
+            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_alignParentRight="true"
+
+            android:layout_above="@id/friendrequest_lower"
+            android:layout_alignWithParentIfMissing="true"
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/friendrequest_header"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            style="@style/FriendRequestHeader"
+
+            android:layout_toRightOf="@id/friendrequest_icon"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+
+            android:layout_above="@id/friendrequest_upper"
+            android:layout_alignWithParentIfMissing="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/friendrequest_right"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            style="@style/FriendRequestRightText"
+
+            android:layout_toRightOf="@id/friendrequest_lower"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
+
+
+    </RelativeLayout>
+</FrameLayout>

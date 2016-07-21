@@ -3,8 +3,11 @@ package com.bitlove.fetlife.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,10 +23,18 @@ import com.bitlove.fetlife.R;
 import com.bitlove.fetlife.event.LoginFailedEvent;
 import com.bitlove.fetlife.event.LoginFinishedEvent;
 import com.bitlove.fetlife.event.LoginStartedEvent;
+import com.bitlove.fetlife.model.db.FetLifeDatabase;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
+import com.onesignal.OneSignal;
+import com.raizlabs.android.dbflow.config.FlowConfig;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class LoginActivity extends Activity {
 
@@ -133,12 +144,45 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public static void startLogout(Context context) {
+    public static void logout(FetLifeApplication fetLifeApplication) {
+
+        fetLifeApplication.setAccessToken(null);
+
+        //TODO: think about to move to the intent service
+        PreferenceManager.getDefaultSharedPreferences(fetLifeApplication).edit().clear().apply();
+        OneSignal.setSubscription(false);
+
+        if (fetLifeApplication.getMe() != null) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION, 1);
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME, fetLifeApplication.getMe().getNickname());
+                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN, "");
+                OneSignal.sendTags(jsonObject);
+
+                String[] tags = new String[]{
+                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION,
+                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME,
+                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN
+                };
+                OneSignal.deleteTags(Arrays.asList(tags));
+
+            } catch (JSONException e) {
+                //TODO: error handling
+            }
+
+            fetLifeApplication.deleteDatabase();
+            FlowManager.destroy();
+            FlowManager.init(new FlowConfig.Builder(fetLifeApplication).build());
+
+            fetLifeApplication.removeMe();
+        }
+
         //TODO: add toast
-        Intent intent = new Intent(context, LoginActivity.class);
+        Intent intent = new Intent(fetLifeApplication, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK
         );
-        context.startActivity(intent);
+        fetLifeApplication.startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'io.fabric'
+
+def Properties releaseProperties = new Properties()
+def propFile = file('../../../fetlife-release/release.properties')
+if (propFile.canRead()) {
+    releaseProperties.load(new FileInputStream(propFile))
+} else {
+    releaseProperties = null;
+}
 
 android {
     compileSdkVersion 23
@@ -9,22 +18,66 @@ android {
         applicationId "com.bitlove.fetlife"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 600
-        versionName "0.6"
-        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
-                                onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
-                                onesignal_google_project_number: "875783571094"]
+        versionCode 10300
+        versionName "1.3.0"
     }
-    buildTypes {
-        debug {
-            buildConfigField "String", "CLIENT_ID", "\"d8f8ebd522bf5123c3f29db3c8faf09029a032b44f0d1739d4325cd3ccf11570\"";
-            buildConfigField "String", "CLIENT_SECRET", "\"47273306a9a3a3448a908748eff13a21a477cc46f6a3968b5c7d05611c4f2f26\"";
-            buildConfigField "String", "REDIRECT_URL", "\"urn:ietf:wg:oauth:2.0:oob\"";
-        }
+
+    signingConfigs {
+
         release {
+            if (releaseProperties != null) {
+                storeFile file(releaseProperties['ks.url'])
+                storePassword releaseProperties['ks.password']
+                keyAlias releaseProperties['ks.key.alias']
+                keyPassword releaseProperties['ks.key.password']
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+
+        debug {
+
+            ext.fabricApiKey = "9458d1130328510f43f88f9262670d7f81276071"
+            ext.fabricApiSecret = "44a9fb077adf858f979097d8315bd1de9124dda2c00b63a067015d3610315c0a"
+
+            manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
+                                    onesignal_app_id: "f439ffb1-98ef-4548-9769-cca2998ebcb8",
+                                    onesignal_google_project_number: "875783571094",
+                                    fabricApiKey: "${ext.fabricApiKey}"]
+
+            buildConfigField "String", "CLIENT_ID", "\"d8f8ebd522bf5123c3f29db3c8faf09029a032b44f0d1739d4325cd3ccf11570\""
+            buildConfigField "String", "CLIENT_SECRET", "\"47273306a9a3a3448a908748eff13a21a477cc46f6a3968b5c7d05611c4f2f26\""
+            buildConfigField "String", "REDIRECT_URL", "\"urn:ietf:wg:oauth:2.0:oob\""
+        }
+
+        release {
+            if (releaseProperties != null) {
+
+                ext.fabricApiKey = releaseProperties['fabric.apiKey']
+                ext.fabricApiSecret = releaseProperties['fabric.apiSecret']
+
+                manifestPlaceholders = [manifestApplicationId: "${defaultConfig.applicationId}",
+                                        onesignal_app_id: releaseProperties['onesignal.appId'],
+                                        onesignal_google_project_number: releaseProperties['onesignal.projectNumber'],
+                                        fabricApiKey: releaseProperties['fabric.apiKey']]
+
+                buildConfigField "String", "CLIENT_ID", releaseProperties['api.clientId']
+                buildConfigField "String", "CLIENT_SECRET", releaseProperties['api.clientSecret']
+                buildConfigField "String", "REDIRECT_URL", releaseProperties['api.redirectUrl']
+            }
+
+            signingConfig signingConfigs.release
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
         }
+
     }
 
     packagingOptions {
@@ -35,25 +88,58 @@ android {
     }
 }
 
+def dbflow_version = "3.0.1"
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:design:23.2.0'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.squareup.retrofit:converter-jackson:2.0.0-beta2'
-    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
-    compile "com.raizlabs.android:DBFlow-Core:2.2.1"
-    compile "com.raizlabs.android:DBFlow:2.2.1"
-    compile 'joda-time:joda-time:2.9.1'
-    compile 'com.onesignal:OneSignal:2.+@aar'
+
     compile 'com.google.android.gms:play-services-gcm:+'
     compile 'com.google.android.gms:play-services-analytics:+'
     compile "com.google.android.gms:play-services-location:+"
-    compile 'org.greenrobot:eventbus:3.0.0'
+
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.retrofit:converter-jackson:2.0.0-beta2'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+    compile 'com.onesignal:OneSignal:2.+@aar'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'joda-time:joda-time:2.9.1'
+
+    //dbflow
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+    apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
+        transitive = true;
+    }
 
     testCompile 'junit:junit:4.12'
+}
+
+
+import com.crashlytics.tools.utils.PropertiesUtils
+
+File crashlyticsProperties = new File("${project.projectDir.absolutePath}/fabric.properties")
+android.applicationVariants.all { variant ->
+
+    variant.outputs.each { output ->
+        output.outputFile = new File(
+                output.outputFile.parent,
+                output.outputFile.name.replace(".apk", "-${variant.versionName}.apk").replace("-release", ""))
+    }
+
+    def variantSuffix = variant.name.capitalize()
+    def generateResourcesTask = project.tasks.getByName("fabricGenerateResources${variantSuffix}")
+    def generatePropertiesTask = task("fabricGenerateProperties${variantSuffix}") << {
+        Properties properties = new Properties()
+        properties.put("apiSecret", variant.buildType.fabricApiSecret)
+        properties.put("apiKey", variant.buildType.fabricApiKey)
+        PropertiesUtils.injectPropertyInFile(crashlyticsProperties, properties, "")
+    }
+    generateResourcesTask.dependsOn generatePropertiesTask
 }

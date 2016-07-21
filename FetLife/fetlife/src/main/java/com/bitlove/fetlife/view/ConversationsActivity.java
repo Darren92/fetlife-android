@@ -2,7 +2,12 @@ package com.bitlove.fetlife.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -15,12 +20,16 @@ import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
 import com.bitlove.fetlife.model.pojos.Conversation;
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
+import com.onesignal.OneSignal;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ConversationsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -46,19 +55,50 @@ public class ConversationsActivity extends ResourceActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        //Temporary fix not to force previous version user to log out and login again to get notifications
+        //TODO: remove in later releases
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getFetLifeApplication());
+        if (getFetLifeApplication().getMe() != null && !preferences.getBoolean("v100FixApplied",false)) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(getFetLifeApplication().CONSTANT_ONESIGNAL_TAG_VERSION,1);
+                jsonObject.put(getFetLifeApplication().CONSTANT_ONESIGNAL_TAG_NICKNAME, getFetLifeApplication().getMe().getNickname());
+                jsonObject.put(getFetLifeApplication().CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN, getFetLifeApplication().getMe().getNotificationToken());
+                OneSignal.sendTags(jsonObject);
+
+                OneSignal.setSubscription(true);
+
+                preferences.edit().putBoolean("v100FixApplied",true);
+            } catch (JSONException e) {
+                //TODO: error handling
+            }
+        }
+
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Here you will be able to start new conversation", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                FriendsActivity.startActivity(ConversationsActivity.this, FriendsActivity.FriendListMode.NEW_CONVERSATION);
             }
         });
+        floatingActionButton.setContentDescription(getString(R.string.button_new_conversation_discription));
 
         conversationsAdapter = new ConversationsRecyclerAdapter(getFetLifeApplication().getImageLoader());
         conversationsAdapter.setOnItemClickListener(new ConversationsRecyclerAdapter.OnConversationClickListener() {
             @Override
-            public void onClick(Conversation conversation) {
+            public void onItemClick(Conversation conversation) {
                 MessagesActivity.startActivity(ConversationsActivity.this, conversation.getId(), conversation.getNickname(), false);
+            }
+
+            @Override
+            public void onAvatarClick(Conversation conversation) {
+                String url = conversation.getMemberLink();
+                if (url != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
             }
         });
         recyclerView.setAdapter(conversationsAdapter);
@@ -91,12 +131,6 @@ public class ConversationsActivity extends ResourceActivity
             return;
         }
 
-        conversationsModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
-            @Override
-            public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                conversationsAdapter.refresh();
-            }
-        });
         conversationsModelObserver.registerForContentChanges(this, Conversation.class);
         conversationsAdapter.refresh();
 
@@ -119,9 +153,11 @@ public class ConversationsActivity extends ResourceActivity
         getFetLifeApplication().getEventBus().unregister(this);
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConversationsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
         if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_CONVERSATIONS) {
+            conversationsAdapter.refresh();
             dismissProgress();
         }
     }
@@ -134,6 +170,7 @@ public class ConversationsActivity extends ResourceActivity
             } else {
                 showToast(getResources().getString(R.string.error_apicall_failed));
             }
+            conversationsAdapter.refresh();
             dismissProgress();
         }
     }

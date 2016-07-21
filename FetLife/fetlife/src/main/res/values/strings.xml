@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">FetLife</string>
 
-    <string name="google_app_id">latex-fetish-123456</string>
+    <string name="google_app_id" translatable="false">latex-fetish-123456</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">Username</string>
@@ -13,8 +13,8 @@
     <string name="error_invalid_password">This password is invalid</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="title_activity_conversations">FetLife</string>
-    <string name="title_activity_messages">FetLife</string>
+    <string name="title_activity_conversations" translatable="false">FetLife</string>
+    <string name="title_activity_messages" translatable="false">FetLife</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -25,8 +25,9 @@
     <string name="sign_up">Sign up Now!</string>
     <string name="forgot_login">Forgot your login info?</string>
 
-    <string name="menu_converations">Conversations</string>
-    <string name="message_sub_separator">" \@ "</string>
+    <string name="menu_conversations">Conversations</string>
+    <string name="message_sub_separator" translatable="false">" \@ "</string>
+
     <string name="progress_logging_in">Beaming you up...</string>
     <string name="error_connection_failed">Server could not be reached. Please check your internet connection</string>
     <string name="error_apicall_failed">Connection failed. Please try again later</string>
@@ -34,5 +35,72 @@
 
     <string name="new_message_indication">NEW</string>
     <string name="version_prefix">"App version: "</string>
-    <string name="error_saved_message">Log saved into file fetlife.log, Please send us the log file via our github project.</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="menu_friends">Friends</string>
+    <string name="menu_logout">Log out</string>
+    <string name="title_activity_friends_new_conversation">New Conversation</string>
+    <string name="menu_about">About</string>
+    <string name="text_unknown">unknown</string>
+    <string name="button_new_conversation_discription">New Conversation</string>
+    <string name="button_send_description">Send Message</string>
+    <string name="input_message_description">Your Message</string>
+    <string name="menu_friendrequests">Friend Requests</string>
+    <string name="title_activity_friendrequests">Friend Requests</string>
+    <string name="action_undo">UNDO</string>
+    <string name="text_friendrequests_rejected">Rejected</string>
+    <string name="text_friendrequests_accepted">Accepted</string>
+    <string name="text_friendrequests_toaccept">Accept</string>
+    <string name="text_friendrequests_toreject">Reject</string>
+    <string name="friendrequest_activity_hint">Swipe right to accept; left to reject</string>
+    <string name="undo_no_longer_possible">Undo is no longer possible</string>
+    <string name="menu_introduce">Share My Profile</string>
+    <string name="message_nfc_not_available">This feature requires NFC communication.</string>
+    <string name="message_android_version_not_sufficient">This feature requires a higher Android version.</string>
+    <string name="header_friendrequest">Friend Requests</string>
+    <string name="header_friendsuggestion">Shared Profiles</string>
+    <string name="nfc_tap_your_device">Tap your device to another Android device to activate the beam</string>
+    <string name="message_nfc_turned_off">Please turn on NFC to enable this feature</string>
+    <string name="title_activity_about">About This App</string>
+
+    <!--TODO: consider improving about layout -->
+    <string name="text_about">
+        <![CDATA[
+
+            <h1>Official FetLife App v%1$s</h1>
+
+            <p>Version History</p>
+
+            <p/>v1.3<br/>
+                    <ul>
+                        <li>Receive broader set of Notification</li>
+                        <li>View your Notification History</li>
+                        <li>Get information about new features at about screen</li>
+                        <li>Use hardware menu button for opening the menu</li>
+                    </ul>
+
+            <p/>v1.2<br/>
+                    <ul>
+                        <li>Share your profile with others via NFC beam</li>
+                        <li>Accept shared profiles and create a new friend request at Friend Requests screen</li>
+                    </ul>
+
+            <p/>v1.1<br/>
+                    <ul>
+                        <li>View your list of incoming, pending friend requests</li>
+                        <li>Approve or Reject your pending friend requests</li>
+                    </ul>
+
+            <p/>v1.0<br/>
+                    <ul>
+                        <li>View your list of Conversations</li>
+                        <li>Read and respond to Conversations</li>
+                        <li>View your list of Friends</li>
+                        <li>Start new Conversation with a Friend</li>
+                        <li>Receive a push notification when you receive a new Message</li>
+                    </ul>
+
+            <p/>
+        ]]>
+    </string>
+    <string name="snackbar_version_notification">Check out what\'s new in v%1$s at \'About\' screen</string>
 </resources>

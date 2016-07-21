@@ -1,11 +1,13 @@
 package com.bitlove.fetlife.view;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,33 +16,32 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bitlove.fetlife.FetLifeApplication;
 import com.bitlove.fetlife.R;
-import com.bitlove.fetlife.model.db.FetLifeDatabase;
+import com.bitlove.fetlife.event.AuthenticationFailedEvent;
 import com.bitlove.fetlife.model.pojos.Member;
-import com.onesignal.OneSignal;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Arrays;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class ResourceActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String PREFERENCE_VERSION_NOTIFICATION_INT = "PREFERENCE_VERSION_NOTIFICATION_INT";
+
     protected FloatingActionButton floatingActionButton;
     protected NavigationView navigationView;
     protected View navigationHeaderView;
-    protected ListView recyclerList;
     protected RecyclerView recyclerView;
     protected LinearLayoutManager recyclerLayoutManager;
     protected View inputLayout;
@@ -71,7 +72,6 @@ public class ResourceActivity extends AppCompatActivity
         inputIcon = findViewById(R.id.text_send_icon);
         textInput = (EditText) findViewById(R.id.text_input);
 
-        recyclerList = (ListView) findViewById(R.id.list_view);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(recyclerLayoutManager);
@@ -84,20 +84,39 @@ public class ResourceActivity extends AppCompatActivity
 
         navigationHeaderView = navigationView.getHeaderView(0);
 
-        try {
-            String versionPrefixText = getString(R.string.version_prefix);
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
-            headerSubTextView.setText(versionPrefixText + pInfo.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-
         Member me = getFetLifeApplication().getMe();
         if (me != null) {
             TextView headerTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_text);
             headerTextView.setText(me.getNickname());
-//        headerTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
-//        headerTextView.setText(getFetLifeApplication().getMe().getId());
+            TextView headerSubTextView = (TextView) navigationHeaderView.findViewById(R.id.nav_header_subtext);
+            headerSubTextView.setText(me.getMetaInfo());
+            ImageView headerAvatar = (ImageView) navigationHeaderView.findViewById(R.id.nav_header_image);
+            getFetLifeApplication().getImageLoader().loadImage(this, me.getAvatarLink(), headerAvatar, R.drawable.dummy_avatar);
+            final String selfLink = me.getLink();
+            if (selfLink != null) {
+                headerAvatar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(selfLink));
+                        startActivity(intent);
+                    }
+                });
+            }
+        }
+
+        showVersionSnackBarIfNeeded();
+    }
+
+    private void showVersionSnackBarIfNeeded() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int lastVersionNotification = preferences.getInt(PREFERENCE_VERSION_NOTIFICATION_INT, 0);
+        int versionNumber = getFetLifeApplication().getVersionNumber();
+        if (lastVersionNotification < versionNumber) {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_version_notification, getFetLifeApplication().getVersionText()), Snackbar.LENGTH_LONG);
+            snackbar.getView().setBackgroundColor(getResources().getColor(R.color.color_accent));
+            snackbar.show();
+            preferences.edit().putInt(PREFERENCE_VERSION_NOTIFICATION_INT, versionNumber).apply();
         }
     }
 
@@ -136,50 +155,40 @@ public class ResourceActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-
-            getFetLifeApplication().setAccessToken(null);
-
-            //TODO: think about to move to the intent service
-            PreferenceManager.getDefaultSharedPreferences(getFetLifeApplication()).edit().clear().apply();
-            OneSignal.setSubscription(false);
-
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION, 1);
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME, getFetLifeApplication().getMe().getNickname());
-                jsonObject.put(FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN, "");
-                OneSignal.sendTags(jsonObject);
-
-                String[] tags = new String[]{
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_VERSION,
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_NICKNAME,
-                        FetLifeApplication.CONSTANT_ONESIGNAL_TAG_MEMBER_TOKEN
-                };
-                OneSignal.deleteTags(Arrays.asList(tags));
-
-            } catch (JSONException e) {
-                //TODO: error handling
-            }
-
-            getFetLifeApplication().removeMe();
-
-            deleteDatabase(FetLifeDatabase.NAME);
-
-            LoginActivity.startLogout(this);
+            LoginActivity.logout(getFetLifeApplication());
         } else if (id == R.id.nav_conversations) {
             ConversationsActivity.startActivity(this);
+        } else if (id == R.id.nav_friends) {
+            FriendsActivity.startActivity(this);
+        } else if (id == R.id.nav_friendrequests) {
+            FriendRequestsActivity.startActivity(this);
+        } else if (id == R.id.nav_introduce) {
+            AddNfcFriendActivity.startActivity(this);
+        } else if (id == R.id.nav_about) {
+            AboutActivity.startActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent e) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.openDrawer(GravityCompat.START);
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, e);
     }
 
     protected void showProgress() {
@@ -193,11 +202,17 @@ public class ResourceActivity extends AppCompatActivity
     protected void verifyUser() {
 
         if (getFetLifeApplication().getMe() == null) {
-            LoginActivity.startLogout(this);
+            LoginActivity.logout(getFetLifeApplication());
             finish();
             overridePendingTransition(0, 0);
             return;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
+        showToast(getString(R.string.authentication_failed));
+        LoginActivity.logout(getFetLifeApplication());
     }
 
     protected FetLifeApplication getFetLifeApplication() {

@@ -6,20 +6,24 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ListView;
 
 import com.bitlove.fetlife.R;
-import com.bitlove.fetlife.event.AuthenticationFailedEvent;
+import com.bitlove.fetlife.event.MessageSendFailedEvent;
+import com.bitlove.fetlife.event.MessageSendSucceededEvent;
+import com.bitlove.fetlife.event.NewConversationEvent;
 import com.bitlove.fetlife.event.NewMessageEvent;
 import com.bitlove.fetlife.event.ServiceCallFailedEvent;
 import com.bitlove.fetlife.event.ServiceCallFinishedEvent;
 import com.bitlove.fetlife.event.ServiceCallStartedEvent;
+import com.bitlove.fetlife.model.pojos.Conversation;
+
+import com.bitlove.fetlife.model.pojos.Conversation_Table;
 import com.bitlove.fetlife.model.pojos.Member;
 import com.bitlove.fetlife.model.pojos.Message;
+
 import com.bitlove.fetlife.model.service.FetLifeApiIntentService;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.sql.language.Delete;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -40,11 +44,6 @@ public class MessagesActivity extends ResourceActivity
     private String conversationId;
     private boolean oldMessageloadingInProgress;
 
-//Polling
-//    private volatile boolean refreshRuns;
-//    private Handler handler = new Handler();
-//    private boolean isVisible;
-
     public static void startActivity(Context context, String conversationId, String title, boolean newTask) {
         context.startActivity(createIntent(context, conversationId, title, newTask));
     }
@@ -52,8 +51,9 @@ public class MessagesActivity extends ResourceActivity
     public static Intent createIntent(Context context, String conversationId, String title, boolean newTask) {
         Intent intent = new Intent(context, MessagesActivity.class);
         if (newTask) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra(EXTRA_CONVERSATION_ID, conversationId);
         intent.putExtra(EXTRA_CONVERSATION_TITLE, title);
         return intent;
@@ -70,23 +70,25 @@ public class MessagesActivity extends ResourceActivity
 
         setConversation(getIntent());
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+        if (!Conversation.isLocal(conversationId)) {
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
             {
-                if(!oldMessageloadingInProgress && dy < 0) {
-                    int lastVisibleItem = recyclerLayoutManager.findLastVisibleItemPosition();
-                    int totalItemCount = recyclerLayoutManager.getItemCount();
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+                {
+                    if(!oldMessageloadingInProgress && dy < 0) {
+                        int lastVisibleItem = recyclerLayoutManager.findLastVisibleItemPosition();
+                        int totalItemCount = recyclerLayoutManager.getItemCount();
 
-                    if (lastVisibleItem == (totalItemCount-1)) {
-                        oldMessageloadingInProgress = true;
-                        //TODO: not trigger call if the old messages were already triggered and there was no older message
-                        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId, Boolean.toString(false));
+                        if (lastVisibleItem == (totalItemCount-1)) {
+                            oldMessageloadingInProgress = true;
+                            //TODO: not trigger call if the old messages were already triggered and there was no older message
+                            FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId, Boolean.toString(false));
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -117,34 +119,17 @@ public class MessagesActivity extends ResourceActivity
 
         getFetLifeApplication().getEventBus().register(this);
 
-        messagesModelObserver.addModelChangeListener(new FlowContentObserver.OnModelStateChangedListener() {
-            @Override
-            public void onModelStateChanged(Class<? extends Model> table, BaseModel.Action action) {
-                messagesAdapter.refresh();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ListView messagesList = (ListView) findViewById(R.id.list_view);
-                        messagesList.setSelection(messagesList.getCount() - 1);
-                    }
-                });
-
-            }
-        });
         messagesModelObserver.registerForContentChanges(this, Message.class);
         messagesAdapter.refresh();
 
-        showProgress();
-        FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
+        if (!Conversation.isLocal(conversationId)) {
+            showProgress();
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
+        } else if (messagesAdapter.getItemCount() != 0) {
+            showProgress();
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES, conversationId);
+        }
 
-        ListView messagesList = (ListView) findViewById(R.id.list_view);
-        messagesList.setSelection(messagesList.getCount() - 1);
-
-//Polling
-//        isVisible = true;
-//        if (!refreshRuns) {
-//            setUpNextCall();
-//        }
     }
 
     @Override
@@ -155,25 +140,21 @@ public class MessagesActivity extends ResourceActivity
 
         getFetLifeApplication().getEventBus().unregister(this);
 
-//Polling
-//        isVisible = false;
     }
 
-//Polling
-//    private void setUpNextCall() {
-//        if (!isVisible) {
-//            refreshRuns = false;
-//            return;
-//        }
-//        refreshRuns = true;
-//        FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_MESSAGES, conversationId);
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                setUpNextCall();
-//            }
-//        }, 3000);
-//    }
+    @Override
+    public void onBackPressed() {
+        if (Conversation.isLocal(conversationId) && messagesAdapter.getItemCount() == 0) {
+            //TODO: consider using it in a db thread executor
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    new Delete().from(Conversation.class).where(Conversation_Table.id.is(conversationId)).query();
+                }
+            }).start();
+        }
+        super.onBackPressed();
+    }
 
     private void setMessagesRead() {
         final List<String> params = new ArrayList<>();
@@ -181,7 +162,7 @@ public class MessagesActivity extends ResourceActivity
 
         for (int i = 0; i < messagesAdapter.getItemCount(); i++) {
             Message message = messagesAdapter.getItem(i);
-            if (!message.getPending() && message.getIsNew()) {
+            if (!message.getPending() && message.isNewMessage()) {
                 params.add(message.getId());
             }
         }
@@ -204,6 +185,7 @@ public class MessagesActivity extends ResourceActivity
             setMessagesRead();
             oldMessageloadingInProgress = false;
             //TODO: solve setting this value false only if appropriate message call is finished (otherwise same call can be triggered twice)
+            messagesAdapter.refresh();
             dismissProgress();
         }
     }
@@ -218,6 +200,7 @@ public class MessagesActivity extends ResourceActivity
             }
             //TODO: solve setting this value false only if appropriate message call is failed (otherwise same call can be triggered twice)
             oldMessageloadingInProgress = false;
+            messagesAdapter.refresh();
             dismissProgress();
         }
     }
@@ -234,14 +217,32 @@ public class MessagesActivity extends ResourceActivity
         if (!conversationId.equals(newMessageEvent.getConversationId())) {
             //TODO: display (snackbar?) notification
         } else {
-            //wait for the already started refresh
+            messagesAdapter.refresh();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAuthenticationFailed(AuthenticationFailedEvent authenticationFailedEvent) {
-        showToast(getString(R.string.authentication_failed));
-        LoginActivity.startLogout(this);
+    public void onNewMessageSent(MessageSendSucceededEvent messageSendSucceededEvent) {
+        if (conversationId.equals(messageSendSucceededEvent.getConversationId())) {
+            messagesAdapter.refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageSendFailed(MessageSendFailedEvent messageSendFailedEvent) {
+        if (conversationId.equals(messageSendFailedEvent.getConversationId())) {
+            messagesAdapter.refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewConversation(NewConversationEvent newConversationEvent) {
+        if (newConversationEvent.getLocalConversationId().equals(conversationId)) {
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_CONVERSATION_ID, newConversationEvent.getConversationId());
+            onNewIntent(intent);
+        } else {
+        }
     }
 
     public void onSend(View v) {
@@ -252,6 +253,11 @@ public class MessagesActivity extends ResourceActivity
                 if (text == null || text.trim().length() == 0) {
                     return;
                 }
+
+                if (text.equalsIgnoreCase("fetlifeeastereggcrash")) {
+                    throw new RuntimeException("Surprise!");
+                }
+
                 Message message = new Message();
                 message.setPending(true);
                 message.setDate(System.currentTimeMillis());
@@ -266,9 +272,10 @@ public class MessagesActivity extends ResourceActivity
                     @Override
                     public void run() {
                         textInput.setText("");
+                        messagesAdapter.refresh();
                     }
                 });
-                FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_NEW_MESSAGE);
+                FetLifeApiIntentService.startApiCall(MessagesActivity.this, FetLifeApiIntentService.ACTION_APICALL_SEND_MESSAGES);
             }
         }).start();
     }

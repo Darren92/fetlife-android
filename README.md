@@ -2,10 +2,19 @@
 
 Welcome to FetLife's open-source Android app!
 
+# WARNING!
+
+Due to recent security imporvements Android App below version 1.1.2 won't be able to be used any more.
+Please use the latest released version.
+
+Thank you for your understandings.
+
 ### Features
 
 - View your list of conversations
 - Read and respond to conversations
+- View your list of friends
+- Start new conversation with a friend
 - Receive a push notification when you receive a new message
 
 ### Requirements
@@ -21,7 +30,7 @@ Welcome to FetLife's open-source Android app!
 
 1. Enable installing application from unknwon sources.
 For more information about how to do it please read the following [guideline](https://developer.android.com/distribute/tools/open-distribution.html#unknown-sources)
-2. Download and install the [fetlife-debug.apk](https://github.com/fetlife/fetlife-android/raw/master/FetLifeApp/fetlife-debug.apk) to your device
+2. Download and install the [fetlife-1.2.1.apk](https://github.com/fetlife/fetlife-android/releases/download/v1.2.1/fetlife-1.2.1.apk) to your device
 3. (Optional) disable application install from unknown sources.
 
 ### Kinksters Helping Kinksters
