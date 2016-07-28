@@ -62,17 +62,22 @@
 
         <activity
             android:name=".view.AddNfcFriendActivity"
-            android:theme="@style/AppTheme.Dialog">
+            android:theme="@style/AppTheme.Dialog.Transparent">
+        </activity>
+
+        <service
+            android:name=".model.service.FetLifeApiIntentService"
+            android:exported="false" />
+
+        <activity
+            android:name=".inbound.NfcFiendActivity"
+            android:theme="@style/AppTheme.Transparent">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="application/vnd.com.bitlove.fetlife"/>
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".model.service.FetLifeApiIntentService"
-            android:exported="false" />
 
         <receiver
             android:name=".inbound.NetworkStateChangeReceiver">

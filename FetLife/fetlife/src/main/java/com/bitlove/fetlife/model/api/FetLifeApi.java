@@ -67,7 +67,7 @@ public interface FetLifeApi {
 
     @FormUrlEncoded
     @POST("/api/v2/me/friendrequests")
-    Call<FriendRequest> createFriendRequests(@Header("Authorization") String authHeader, @Field("member_id") String friendId);
+    Call<FriendRequest> createFriendRequest(@Header("Authorization") String authHeader, @Field("member_id") String friendId);
 
 
 }

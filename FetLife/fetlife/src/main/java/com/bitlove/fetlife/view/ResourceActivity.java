@@ -152,6 +152,8 @@ public class ResourceActivity extends AppCompatActivity
             FriendsActivity.startActivity(this);
         } else if (id == R.id.nav_friendrequests) {
             FriendRequestsActivity.startActivity(this);
+        } else if (id == R.id.nav_introduce) {
+            AddNfcFriendActivity.startActivity(this);
         } else if (id == R.id.nav_about) {
 
             String versionText;

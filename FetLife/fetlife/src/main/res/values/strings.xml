@@ -45,8 +45,8 @@
     <string name="button_new_conversation_discription">New Conversation</string>
     <string name="button_send_description">Send Message</string>
     <string name="input_message_description">Your Message</string>
-    <string name="menu_friendrequests">Friendrequests</string>
-    <string name="title_activity_friendrequests">Friendrequests</string>
+    <string name="menu_friendrequests">Friend Requests</string>
+    <string name="title_activity_friendrequests">Friend Requests</string>
     <string name="action_undo">UNDO</string>
     <string name="text_friendrequests_rejected">Rejected</string>
     <string name="text_friendrequests_accepted">Accepted</string>
@@ -54,4 +54,10 @@
     <string name="text_friendrequests_toreject">Reject</string>
     <string name="friendrequest_activity_hint">Swipe right to accept; left to reject</string>
     <string name="undo_no_longer_possible">Undo is no longer possible</string>
+    <string name="menu_introduce">Introduce</string>
+    <string name="nfc_not_available">This feature requires NFC communication.</string>
+    <string name="android_version_not_sufficient">This feature requires higher Android version</string>
+    <string name="header_friendrequest">Friend Requests</string>
+    <string name="header_friendsuggestion">Friend Suggestions</string>
+    <string name="nfc_tap_your_device">Tap your device to another Android device to activite the beam</string>
 </resources>
