@@ -43,17 +43,17 @@ public class FetLifeService {
 
     public FetLifeService(FetLifeApplication fetLifeApplication) throws Exception {
 
-        String keyStoreType = KeyStore.getDefaultType();
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("fetlife", loadCertificate(fetLifeApplication));
-
-        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
-
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, tmf.getTrustManagers(), null);
+//        String keyStoreType = KeyStore.getDefaultType();
+//        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+//        keyStore.load(null, null);
+//        keyStore.setCertificateEntry("fetlife", loadCertificate(fetLifeApplication));
+//
+//        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+//        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+//        tmf.init(keyStore);
+//
+//        SSLContext context = SSLContext.getInstance("TLS");
+//        context.init(null, tmf.getTrustManagers(), null);
 
         OkHttpClient client = new OkHttpClient();
         client.setHostnameVerifier(new HostnameVerifier() {
@@ -62,7 +62,7 @@ public class FetLifeService {
                 return hostname.endsWith(HOST_NAME);
             }
         });
-        client.setSslSocketFactory(context.getSocketFactory());
+        //client.setSslSocketFactory(context.getSocketFactory());
         client.interceptors().add(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {

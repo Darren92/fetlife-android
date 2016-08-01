@@ -45,8 +45,8 @@
     <string name="button_new_conversation_discription">New Conversation</string>
     <string name="button_send_description">Send Message</string>
     <string name="input_message_description">Your Message</string>
-    <string name="menu_friendrequests">Friendrequests</string>
-    <string name="title_activity_friendrequests">Friendrequests</string>
+    <string name="menu_friendrequests">Friend Requests</string>
+    <string name="title_activity_friendrequests">Friend Requests</string>
     <string name="action_undo">UNDO</string>
     <string name="text_friendrequests_rejected">Rejected</string>
     <string name="text_friendrequests_accepted">Accepted</string>
