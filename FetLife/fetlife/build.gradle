@@ -18,8 +18,8 @@ android {
         applicationId "com.bitlove.fetlife"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 10100
-        versionName "1.1.0"
+        versionCode 10102
+        versionName "1.1.2"
     }
 
     signingConfigs {

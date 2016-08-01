@@ -2,6 +2,13 @@
 
 Welcome to FetLife's open-source Android app!
 
+# WARNING!
+
+Due to recent security imporvements Android App below version 1.1.2 won't be able to be used any more.
+Please use the latest released version.
+
+Thank you for your understandings.
+
 ### Features
 
 - View your list of conversations
@@ -23,7 +30,7 @@ Welcome to FetLife's open-source Android app!
 
 1. Enable installing application from unknwon sources.
 For more information about how to do it please read the following [guideline](https://developer.android.com/distribute/tools/open-distribution.html#unknown-sources)
-2. Download and install the [fetlife-1.0.2.apk](https://github.com/fetlife/fetlife-android/releases/download/v1.0.2/fetlife-1.0.2.apk) to your device
+2. Download and install the [fetlife-1.1.2.apk](https://github.com/fetlife/fetlife-android/releases/download/v1.1.2/fetlife-1.1.2.apk) to your device
 3. (Optional) disable application install from unknown sources.
 
 ### Kinksters Helping Kinksters
