@@ -10,8 +10,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bitlove.fetlife.FetLifeApplication;
@@ -37,17 +35,23 @@ public class AddNfcFriendActivity extends Activity implements NfcAdapter.CreateN
         setContentView(R.layout.activity_add_nfc_friend);
 
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            Toast.makeText(this, getString(R.string.android_version_not_sufficient), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.message_android_version_not_sufficient), Toast.LENGTH_LONG).show();
             finish();
             return;
         }
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            Toast.makeText(this, getString(R.string.nfc_not_available), Toast.LENGTH_LONG).show();
+        if (mNfcAdapter == null) {
+            Toast.makeText(this, getString(R.string.message_nfc_not_available), Toast.LENGTH_LONG).show();
             finish();
             return;
         }
+        if (!mNfcAdapter.isEnabled()) {
+            Toast.makeText(this, getString(R.string.message_nfc_truned_off), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         // Register callback
         mNfcAdapter.setNdefPushMessageCallback(this, this);
 

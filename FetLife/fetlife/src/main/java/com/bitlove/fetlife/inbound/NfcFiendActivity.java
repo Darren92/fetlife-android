@@ -37,7 +37,7 @@ public class NfcFiendActivity extends Activity {
             getFetLifeApplication().getEventBus().post(new FriendSuggestionAddedEvent());
 
             //TODO replace with Android notification
-            Toast.makeText(context, "You received a new Introduction. Check your Friend Requests page", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "You received a new Shared Profile. Check your Friend Requests page", Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             //Should not happen, force a crash to get the report if it did
