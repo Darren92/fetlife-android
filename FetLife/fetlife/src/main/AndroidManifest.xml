@@ -70,7 +70,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".inbound.NfcFiendActivity"
+            android:name=".inbound.NfcFriendActivity"
             android:theme="@style/AppTheme.Transparent">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>

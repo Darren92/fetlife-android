@@ -15,7 +15,7 @@ import com.bitlove.fetlife.event.FriendSuggestionAddedEvent;
 import com.bitlove.fetlife.model.pojos.FriendSuggestion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class NfcFiendActivity extends Activity {
+public class NfcFriendActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

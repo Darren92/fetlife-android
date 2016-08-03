@@ -47,7 +47,7 @@ public class AddNfcFriendActivity extends Activity implements NfcAdapter.CreateN
             return;
         }
         if (!mNfcAdapter.isEnabled()) {
-            Toast.makeText(this, getString(R.string.message_nfc_truned_off), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.message_nfc_turned_off), Toast.LENGTH_LONG).show();
             finish();
             return;
         }

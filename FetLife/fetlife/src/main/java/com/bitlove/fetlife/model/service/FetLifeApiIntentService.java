@@ -372,14 +372,13 @@ public class FetLifeApiIntentService extends IntentService {
     }
 
     private boolean sendPendingFriendSuggestion(FriendSuggestion pendingFriendSuggestion) throws IOException {
-        Call<FriendRequest> creatFriendRequestCall = getFetLifeApi().createFriendRequest(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingFriendSuggestion.getId());
-        Response<FriendRequest> friendRequestResponse = creatFriendRequestCall.execute();
+        Call<FriendRequest> createFriendRequestCall = getFetLifeApi().createFriendRequest(FetLifeService.AUTH_HEADER_PREFIX + getFetLifeApplication().getAccessToken(), pendingFriendSuggestion.getId());
+        Response<FriendRequest> friendRequestResponse = createFriendRequestCall.execute();
         if (friendRequestResponse.isSuccess()) {
             pendingFriendSuggestion.delete();
             getFetLifeApplication().getEventBus().post(new FriendRequestSendSucceededEvent());
             return true;
         } else {
-            pendingFriendSuggestion.delete();
             getFetLifeApplication().getEventBus().post(new FriendRequestSendFailedEvent());
             return false;
         }
