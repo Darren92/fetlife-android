@@ -2,7 +2,9 @@ package com.bitlove.fetlife.view;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,41 @@ public class FriendRequestsRecyclerAdapter extends RecyclerView.Adapter<FriendRe
         } catch (Throwable t) {
             itemList = new ArrayList<>();
         }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                FriendRequestsRecyclerAdapter.this.onItemRemove(viewHolder, recyclerView);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    void onItemRemove(final RecyclerView.ViewHolder viewHolder, final RecyclerView recyclerView) {
+        final int adapterPosition = viewHolder.getAdapterPosition();
+        final FriendRequest friendRequest = itemList.get(adapterPosition);
+        Snackbar snackbar = Snackbar
+                .make(recyclerView, "REMOVED", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemList.add(adapterPosition, friendRequest);
+                        notifyItemInserted(adapterPosition);
+                        recyclerView.scrollToPosition(adapterPosition);
+                    }
+                });
+        snackbar.show();
+        itemList.remove(adapterPosition);
+        notifyItemRemoved(adapterPosition);
     }
 
     @Override

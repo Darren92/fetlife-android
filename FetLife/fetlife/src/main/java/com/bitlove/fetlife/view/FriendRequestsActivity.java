@@ -20,17 +20,17 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class FriendRequestRequestsActivity extends ResourceActivity
+public class FriendRequestsActivity extends ResourceActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String EXTRA_FRIEND_LIST_MODE = "com.bitlove.fetlife.extra.friendRequest_list_mode";
+    public static final String EXTRA_FRIENDREQUEST_LIST_MODE = "com.bitlove.fetlife.extra.friendRequest_list_mode";
 
     public enum FriendRequestListMode {
         NEW_CONVERSATION,
-        FRIEND_PROFILE
+        FRIENDREQUEST_PROFILE
     }
 
-    private static final int FRIENDS_PAGE_COUNT = 10;
+    private static final int FRIENDREQUESTS_PAGE_COUNT = 10;
 
     private FlowContentObserver friendRequestsModelObserver;
     private FriendRequestsRecyclerAdapter friendRequestsAdapter;
@@ -38,7 +38,7 @@ public class FriendRequestRequestsActivity extends ResourceActivity
     private int requestedPage = 1;
 
     public static void startActivity(Context context) {
-        context.startActivity(createIntent(context, FriendRequestListMode.FRIEND_PROFILE));
+        context.startActivity(createIntent(context, FriendRequestListMode.FRIENDREQUEST_PROFILE));
     }
 
     public static void startActivity(Context context, FriendRequestListMode friendRequestListMode) {
@@ -46,8 +46,8 @@ public class FriendRequestRequestsActivity extends ResourceActivity
     }
 
     public static Intent createIntent(Context context, FriendRequestListMode friendRequestListMode) {
-        Intent intent = new Intent(context, FriendRequestRequestsActivity.class);
-        intent.putExtra(EXTRA_FRIEND_LIST_MODE, friendRequestListMode.toString());
+        Intent intent = new Intent(context, FriendRequestsActivity.class);
+        intent.putExtra(EXTRA_FRIENDREQUEST_LIST_MODE, friendRequestListMode.toString());
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
@@ -62,15 +62,6 @@ public class FriendRequestRequestsActivity extends ResourceActivity
         friendRequestsAdapter.setOnItemClickListener(new FriendRequestsRecyclerAdapter.OnFriendRequestClickListener() {
             @Override
             public void onItemClick(FriendRequest friendRequest) {
-                switch (getFriendRequestListMode()) {
-                    case NEW_CONVERSATION:
-                        MessagesActivity.startActivity(FriendRequestRequestsActivity.this, Conversation.createLocalConversation(friendRequest), friendRequest.getNickname(), false);
-                        finish();
-                        return;
-                    case FRIEND_PROFILE:
-                        onAvatarClick(friendRequest);
-                        return;
-                }
             }
 
             @Override
@@ -93,8 +84,8 @@ public class FriendRequestRequestsActivity extends ResourceActivity
                     int pastVisiblesItems = recyclerLayoutManager.findFirstVisibleItemPosition();
                     int lastVisiblePosition = visibleItemCount + pastVisiblesItems;
 
-                    if (lastVisiblePosition >= (requestedPage * FRIENDS_PAGE_COUNT)) {
-                        FetLifeApiIntentService.startApiCall(FriendRequestRequestsActivity.this, FetLifeApiIntentService.ACTION_APICALL_FRIENDS, Integer.toString(FRIENDS_PAGE_COUNT), Integer.toString(++requestedPage));
+                    if (lastVisiblePosition >= (requestedPage * FRIENDREQUESTS_PAGE_COUNT)) {
+                        FetLifeApiIntentService.startApiCall(FriendRequestsActivity.this, FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS, Integer.toString(FRIENDREQUESTS_PAGE_COUNT), Integer.toString(++requestedPage));
                     }
 
                 }
@@ -103,7 +94,7 @@ public class FriendRequestRequestsActivity extends ResourceActivity
     }
 
     private FriendRequestListMode getFriendRequestListMode() {
-        return FriendRequestListMode.valueOf(getIntent().getStringExtra(EXTRA_FRIEND_LIST_MODE));
+        return FriendRequestListMode.valueOf(getIntent().getStringExtra(EXTRA_FRIENDREQUEST_LIST_MODE));
     }
 
     @Override
@@ -122,8 +113,8 @@ public class FriendRequestRequestsActivity extends ResourceActivity
         showProgress();
         getFetLifeApplication().getEventBus().register(this);
 
-        if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_FRIENDS)) {
-            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_FRIENDS, Integer.toString(FRIENDS_PAGE_COUNT));
+        if (!FetLifeApiIntentService.isActionInProgress(FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS)) {
+            FetLifeApiIntentService.startApiCall(this, FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS, Integer.toString(FRIENDREQUESTS_PAGE_COUNT));
         }
 
         requestedPage = 1;
@@ -140,7 +131,7 @@ public class FriendRequestRequestsActivity extends ResourceActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFriendRequestsCallFinished(ServiceCallFinishedEvent serviceCallFinishedEvent) {
-        if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDS) {
+        if (serviceCallFinishedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS) {
             friendRequestsAdapter.refresh();
             dismissProgress();
         }
@@ -148,7 +139,7 @@ public class FriendRequestRequestsActivity extends ResourceActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFriendRequestsCallFailed(ServiceCallFailedEvent serviceCallFailedEvent) {
-        if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDS) {
+        if (serviceCallFailedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS) {
             if (serviceCallFailedEvent.isServerConnectionFailed()) {
                 showToast(getResources().getString(R.string.error_connection_failed));
             } else {
@@ -161,7 +152,7 @@ public class FriendRequestRequestsActivity extends ResourceActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFriendRequestCallStarted(ServiceCallStartedEvent serviceCallStartedEvent) {
-        if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDS) {
+        if (serviceCallStartedEvent.getServiceCallAction() == FetLifeApiIntentService.ACTION_APICALL_FRIENDREQUESTS) {
             showProgress();
         }
     }

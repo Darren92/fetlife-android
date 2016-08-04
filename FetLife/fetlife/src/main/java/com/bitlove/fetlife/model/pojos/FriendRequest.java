@@ -34,6 +34,9 @@ public class FriendRequest extends BaseModel {
     private boolean pending;
 
     @Column
+    private String link;
+
+    @Column
     private String nickname;
 
     @Column
@@ -97,4 +100,14 @@ public class FriendRequest extends BaseModel {
     public void setAvatarLink(String avatarLink) {
         this.avatarLink = avatarLink;
     }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
 }
+
+
